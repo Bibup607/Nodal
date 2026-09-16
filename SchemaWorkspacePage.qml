@@ -5,15 +5,15 @@ import QtQuick.Layouts
 import "CustomButtons"
 
 Item {
-    id: window
-    width: 1200
-    height: 800
-    visible: true
-
     // Rectangle {
     //     anchors.fill: parent
     //     color: "#0D1117"
     // }
+
+    FontLoader {
+          id: interBold
+          source: "qrc:/fonts/Inter_18pt-Bold.ttf"
+    }
 
     Rectangle {   // фон всей шапки
         width: parent.width
@@ -33,9 +33,18 @@ Item {
             RowLayout { // левая зона: лого + breadcrumb
 
                 Image {
-
+                        width: 28
+                        height: 28
+                        source: "qrc:/Images/logo.svg"
                 }
-                Text { text: "Nodal" }
+
+                Text {
+                        text: "Nodal"
+                        font.family: interBold.font.family
+                        font.pixelSize: 16
+                        font.bold: true
+                        color: "white"
+                }
             }
 
             Item { Layout.fillWidth: true }
@@ -50,15 +59,21 @@ Item {
             Item { Layout.fillWidth: true }
 
             RowLayout { // правая зона
-                Button { text: "Export SQL" }
+
+                ImportButton {
+                            text: "Import SQL"
+                            width: 100
+                            height: 35
+                }
             }
 
             Item { Layout.fillWidth: true }
 
             WindowControls {
-                    onCloseRequested: window.close()
-                    onMinimizeRequested: window.showMinimized()
-                    onMaximizeRequested: window.showMaximized()
+                    onCloseRequested: Window.window.close()
+                    onMinimizeRequested: Window.window.showMinimized()
+                    onMaximizeRequested: Window.window.showMaximized()
+                    // Window.window — ссылка на реальное окно, доступна из любого Item
             }
         }
 

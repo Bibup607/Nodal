@@ -23,11 +23,13 @@ qt_add_qml_module(appNodalDB
     URI NodalDB
     QML_FILES
         Main.qml
-        QML_FILES ProjectLauncherPage.qml
-        QML_FILES SchemaWorkspacePage.qml
-        QML_FILES
-        QML_FILES CustomButtons/ToolbarButton.qml
-        QML_FILES CustomButtons/WindowControls.qml
+        ProjectLauncherPage.qml
+        SchemaWorkspacePage.qml
+        CustomButtons/ToolbarButton.qml
+        CustomButtons/WindowControls.qml
+    RESOURCES
+        resourse.qrc
+        QML_FILES CustomButtons/ImportButton.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

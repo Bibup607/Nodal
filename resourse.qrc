@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Images/logo.svg</file>
+        <file>fonts/Inter_18pt-Bold.ttf</file>
+    </qresource>
+</RCC>

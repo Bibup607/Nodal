@@ -2,6 +2,7 @@ import QtQuick
 
 Row {
     id: windowControls
+    spacing: 8
 
     signal closeRequested()
     signal minimizeRequested()
@@ -10,10 +11,14 @@ Row {
     Rectangle {
         width: 12
         height: 12
-        color: "#f0544f"
         radius: 6
 
+        color: mouseArea.containsMouse ? "#c23b37" : "#f0544f"
+        Behavior on color { ColorAnimation { duration: 150 } }
+
         MouseArea {
+            id: mouseArea
+            hoverEnabled: true
             anchors.fill: parent
             onClicked: closeRequested()
         }
@@ -22,10 +27,14 @@ Row {
     Rectangle {
         width: 12
         height: 12
-        color: "#fabd2b"
         radius: 6
 
+        color: mouseArea2.containsMouse ? "#c99418" : "#fabd2b"
+        Behavior on color { ColorAnimation { duration: 150 } }
+
         MouseArea {
+            id: mouseArea2
+            hoverEnabled: true
             anchors.fill: parent
             onClicked: minimizeRequested()
         }
@@ -34,10 +43,14 @@ Row {
     Rectangle {
         width: 12
         height: 12
-        color: "#2ec757"
         radius: 6
 
+        color: mouseArea3.containsMouse ? "#22a041" : "#2ec757"
+        Behavior on color { ColorAnimation { duration: 150 } }
+
         MouseArea {
+            id: mouseArea3
+            hoverEnabled: true
             anchors.fill: parent
             onClicked: maximizeRequested()
         }
