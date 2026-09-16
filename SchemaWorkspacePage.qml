@@ -50,10 +50,26 @@ Item {
             Item { Layout.fillWidth: true }
 
             RowLayout { // центр: инструменты
-                Button { text: "Select" }
-                Button { text: "Pan" }
-                Button { text: "Table" }
-                Button { text: "Relation" }
+                ToolbarButton {
+                        text: "Select"
+                        Layout.preferredWidth: 90
+                        Layout.preferredHeight: 35
+                }
+                ToolbarButton {
+                        text: "Pan"
+                        Layout.preferredWidth: 90
+                        Layout.preferredHeight: 35
+                }
+                ToolbarButton {
+                        text: "Table"
+                        Layout.preferredWidth: 90
+                        Layout.preferredHeight: 35
+                }
+                ToolbarButton {
+                        text: "Relation"
+                        Layout.preferredWidth: 90
+                        Layout.preferredHeight: 35
+                }
             }
 
             Item { Layout.fillWidth: true }
@@ -61,9 +77,10 @@ Item {
             RowLayout { // правая зона
 
                 ImportButton {
-                            text: "Import SQL"
-                            width: 100
-                            height: 35
+                            text: "Export SQL"
+                            font.bold: true
+                            Layout.preferredWidth: 90
+                            Layout.preferredHeight: 30
                 }
             }
 

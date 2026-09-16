@@ -16,7 +16,6 @@ T.Button {
     contentItem: Text {
         text: control.text
         font: control.font
-        font.bold: control.bold
         color: "black"
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
