@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(QT_QML_GENERATE_QMLLS_INI ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -27,9 +27,10 @@ qt_add_qml_module(appNodalDB
         SchemaWorkspacePage.qml
         CustomButtons/ToolbarButton.qml
         CustomButtons/WindowControls.qml
+        CustomButtons/ImportButton.qml
     RESOURCES
         resourse.qrc
-        QML_FILES CustomButtons/ImportButton.qml
+
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -44,7 +45,7 @@ set_target_properties(appNodalDB PROPERTIES
 )
 
 target_link_libraries(appNodalDB
-    PRIVATE Qt6::Quick
+    PRIVATE Qt6::Quick Qt6::QuickControls2
 )
 
 install(TARGETS appNodalDB

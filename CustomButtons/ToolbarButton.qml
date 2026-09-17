@@ -1,7 +1,7 @@
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Templates as T
 
-Button {
+T.Button {
     id: control
 
     width: 100
@@ -9,7 +9,8 @@ Button {
 
 
     checkable: true
-    hoverEnabled: false
+    hoverEnabled: true
+
 
     // background
     property color normalColorbg: "#11151c"
@@ -28,15 +29,13 @@ Button {
     property color activeColori: "#52d6a6"
 
     background: Rectangle {
-        color: checked ? activeColorbg : normalColorbg
+            color: control.checked ? activeColorbg : (control.hovered ? activeColorbg : normalColorbg)
+            radius: 6
+            border.width: 1
+            border.color: control.checked ? activeColorb : (control.hovered ? activeColorb : normalColorb)
 
-        radius: 6
-
-        border {
-            width: 1
-            color: checked ? activeColorb : normalColorb
+            Behavior on color { ColorAnimation { duration: 150 } }
         }
-    }
 
     Image {
         anchors {
@@ -47,12 +46,14 @@ Button {
     }
 
     contentItem: Text {
-        text: control.text
-        color: checked ? activeColort : normalColort
+            text: control.text
+            color: control.checked ? activeColort : (control.hovered ? activeColort : normalColort)
+            font.pixelSize: 12
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
 
-        font.pixelSize: 12
-
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-    }
+        HoverHandler {
+            cursorShape: Qt.PointingHandCursor
+        }
 }

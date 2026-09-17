@@ -29,4 +29,8 @@ T.Button {
             ColorAnimation { duration: 150 }
         }
     }
+
+    HoverHandler {
+        cursorShape: Qt.PointingHandCursor
+    }
 }

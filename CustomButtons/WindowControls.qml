@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Window
 
 Row {
     id: windowControls
@@ -7,6 +8,8 @@ Row {
     signal closeRequested()
     signal minimizeRequested()
     signal maximizeRequested()
+
+
 
     Rectangle {
         width: 12
@@ -21,6 +24,10 @@ Row {
             hoverEnabled: true
             anchors.fill: parent
             onClicked: closeRequested()
+
+            HoverHandler {
+                cursorShape: Qt.PointingHandCursor
+            }
         }
     }
 
@@ -37,6 +44,10 @@ Row {
             hoverEnabled: true
             anchors.fill: parent
             onClicked: minimizeRequested()
+
+            HoverHandler {
+                cursorShape: Qt.PointingHandCursor
+            }
         }
     }
 
@@ -53,6 +64,12 @@ Row {
             hoverEnabled: true
             anchors.fill: parent
             onClicked: maximizeRequested()
+
+
+
+            HoverHandler {
+                cursorShape: Qt.PointingHandCursor
+            }
         }
     }
 }
