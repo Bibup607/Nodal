@@ -34,7 +34,7 @@ Item {
                 anchors.leftMargin: 12
                 anchors.rightMargin: 12
 
-                RowLayout { // левая зона: лого + breadcrumb
+                RowLayout { // левая зона лого
 
                     Image {
                             width: 28
@@ -53,23 +53,39 @@ Item {
 
                 Item { Layout.fillWidth: true }
 
-                RowLayout { // центр: инструменты
+                RowLayout { // центр инструменты
                     ToolbarButton {
-                            text: "Select"
-                            Layout.preferredWidth: 90
-                            Layout.preferredHeight: 35
+
+                        imageSource: "qrc:/Images/select-icon-active.svg"
+                            // source: control.checked ? "qrc:/Images/select-icon-active.svg" : "qrc:/Images/select.svg"
+
+                        text: "Select"
+                        Layout.preferredWidth: 90
+                        Layout.preferredHeight: 35
                     }
                     ToolbarButton {
+
+                        Image {
+                            source: ""
+                        }
                             text: "Pan"
                             Layout.preferredWidth: 90
                             Layout.preferredHeight: 35
                     }
                     ToolbarButton {
+
+                        Image {
+                            source: ""
+                        }
                             text: "Table"
                             Layout.preferredWidth: 90
                             Layout.preferredHeight: 35
                     }
                     ToolbarButton {
+
+                        Image {
+                            source: ""
+                        }
                             text: "Relation"
                             Layout.preferredWidth: 90
                             Layout.preferredHeight: 35
@@ -112,52 +128,95 @@ Item {
             }
         }
 
-        // ==== Тело страницы: сайдбар + будущий канвас ====
+        // тело страницы сайдбар + будущий канвас
         RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: 0
 
-            // Панель поиска (сайдбар) — прижата к левому краю
             Rectangle {
                 Layout.preferredWidth: 206
                 Layout.fillHeight: true
                 color: "#11151c"
 
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 8
-
-                    Text {
-                                text: "SCHEMA EXPLORER"
-                                color: "#a1a9b7"
-                                font.bold: true
-                                Layout.alignment: Qt.AlignLeft
-                                Layout.leftMargin: 14
-                                Layout.topMargin: 14
-                    }
-
-                    TextField {
-                                placeholderText: "Filter tables..."
-                                placeholderTextColor: "#a1a9b7"
-                                color: "#a1a9b7"
-                                font.pointSize: 10
-                                Layout.alignment: Qt.AlignLeft
-                                Layout.leftMargin: 14
-                                Layout.preferredWidth: 178
-
-                                background: Rectangle {
-                                            color: "#0d1117"
-                                            border.color: "#252c37"
-                                            border.width: 1
-                                }
-                            }
-
-                    Item { Layout.fillHeight: true }
-                }
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: Window.window.visibility === Window.Maximized ? 885 : 660
+                height: 1
+                color: "#252c37"
             }
 
-            // Место под будущий канвас со схемой
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 45
+                height: 1
+                color: "#252c37"
+            }
+
+            Rectangle {
+                // барьер справа
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                width: 1
+                color: "#252c37"
+            }
+
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        spacing: 8
+
+                        Text {
+                                    text: "SCHEMA EXPLORER"
+                                    color: "#a1a9b7"
+                                    font.bold: true
+                                    Layout.alignment: Qt.AlignLeft
+                                    Layout.leftMargin: 14
+                                    Layout.topMargin: 14
+                        }
+
+                        TextField {
+
+                            Image {
+                                source: "qrc:/Images/search.svg"
+                                width: 13
+                                height: 13
+
+                                anchors {
+                                    left: parent.left
+                                    leftMargin: 10
+                                    verticalCenter: parent.verticalCenter
+                                }
+                            }
+                                    placeholderText: "Filter tables..."
+                                    placeholderTextColor: "#a1a9b7"
+                                    color: "#a1a9b7"
+                                    font.pointSize: 10
+                                    Layout.alignment: Qt.AlignLeft
+                                    Layout.leftMargin: 14
+                                    Layout.preferredWidth: 178
+                                    leftPadding: 30
+
+
+
+                                    background: Rectangle {
+                                                color: "#0d1117"
+                                                border.color: "#252c37"
+                                                border.width: 1
+                                                radius: 6
+                                    }
+                                }
+
+                        Item { Layout.fillHeight: true }
+                    }
+            }
+
+            // Место под будущий канвас
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true

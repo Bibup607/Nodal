@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Templates as T
 
+
 T.Button {
     id: control
 
@@ -11,6 +12,8 @@ T.Button {
     checkable: true
     hoverEnabled: true
 
+
+    // property url imageSource
 
     // background
     property color normalColorbg: "#11151c"
@@ -42,6 +45,11 @@ T.Button {
             left: parent.left
             leftMargin: 10
             verticalCenter: parent.verticalCenter
+
+            width: 13
+            height: 13
+
+            source: control.imageSource
         }
     }
 

@@ -2,5 +2,13 @@
     <qresource prefix="/">
         <file>Images/logo.svg</file>
         <file>fonts/Inter_18pt-Bold.ttf</file>
+        <file>Images/pan.svg</file>
+        <file>Images/relation.svg</file>
+        <file>Images/search.svg</file>
+        <file>Images/select.svg</file>
+        <file>Images/pan-icon-active.svg</file>
+        <file>Images/relation-icon-active.svg</file>
+        <file>Images/select-icon-active.svg</file>
+        <file>Images/table-icon-active.svg</file>
     </qresource>
 </RCC>
