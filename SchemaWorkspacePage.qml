@@ -10,9 +10,8 @@ Item {
         color: "#0D1117"
     }
 
-    FontLoader {
-          id: interBold
-          source: "qrc:/fonts/Inter_18pt-Bold.ttf"
+    Fonts {
+        id: fonts
     }
 
     ColumnLayout {
@@ -44,7 +43,7 @@ Item {
 
                     Text {
                             text: "Nodal"
-                            font.family: interBold.font.family
+                            font.family: fonts.interBold.family
                             font.pixelSize: 16
                             font.bold: true
                             color: "white"
@@ -55,39 +54,49 @@ Item {
 
                 RowLayout { // центр инструменты
                     ToolbarButton {
-
-                        imageSource: "qrc:/Images/select-icon-active.svg"
-                            // source: control.checked ? "qrc:/Images/select-icon-active.svg" : "qrc:/Images/select.svg"
+                        imageSource: "qrc:/Images/select.svg"
+                        imageSourceActive: "qrc:/Images/select-icon-active.svg"
 
                         text: "Select"
-                        Layout.preferredWidth: 90
+
+                        leftPadding: 10
+
+                        Layout.preferredWidth: 70
                         Layout.preferredHeight: 35
                     }
-                    ToolbarButton {
 
-                        Image {
-                            source: ""
-                        }
+                    ToolbarButton {
+                        imageSource: "qrc:/Images/pan.svg"
+                        imageSourceActive: "qrc:/Images/pan-icon-active.svg"
+
                             text: "Pan"
-                            Layout.preferredWidth: 90
+
+                            leftPadding: 15
+
+                            Layout.preferredWidth: 60
                             Layout.preferredHeight: 35
                     }
-                    ToolbarButton {
 
-                        Image {
-                            source: ""
-                        }
+                    ToolbarButton {
+                        imageSource: "qrc:/Images/table.svg"
+                        imageSourceActive: "qrc:/Images/table-icon-active.svg"
+
                             text: "Table"
-                            Layout.preferredWidth: 90
+
+                            leftPadding: 12
+
+                            Layout.preferredWidth: 65
                             Layout.preferredHeight: 35
                     }
                     ToolbarButton {
+                        imageSource: "qrc:/Images/relation.svg"
+                        imageSourceActive: "qrc:/Images/relation-icon-active.svg"
 
-                        Image {
-                            source: ""
-                        }
                             text: "Relation"
-                            Layout.preferredWidth: 90
+
+                            leftPadding: 15
+
+                            Layout.preferredWidth: 80
                             Layout.preferredHeight: 35
                     }
                 }
@@ -99,7 +108,7 @@ Item {
                     ImportButton {
                                 text: "Save"
                                 font.bold: true
-                                Layout.preferredWidth: 90
+                                Layout.preferredWidth: 60
                                 Layout.preferredHeight: 30
                     }
 
@@ -210,7 +219,28 @@ Item {
                                                 border.width: 1
                                                 radius: 6
                                     }
-                                }
+                        }
+
+                        Item {
+
+                            anchors.fill: parent
+                            anchors.topMargin: 100
+
+                            Image {
+                                source: "qrc:/Images/database.svg"
+                                x: 32
+                                width: 14
+                                height: 14
+                            }
+
+                            Text {
+                                text: "commerce_db"
+                                color: "white"
+                                leftPadding: 53
+                                font.family: fonts.jetBrainsMB.family
+                                font.pointSize: 9
+                            }
+                        }
 
                         Item { Layout.fillHeight: true }
                     }

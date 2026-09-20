@@ -10,5 +10,9 @@
         <file>Images/relation-icon-active.svg</file>
         <file>Images/select-icon-active.svg</file>
         <file>Images/table-icon-active.svg</file>
+        <file>Images/table.svg</file>
+        <file>Images/chevron-down.svg</file>
+        <file>Images/database.svg</file>
+        <file>fonts/JetBrainsMono-Bold.ttf</file>
     </qresource>
 </RCC>

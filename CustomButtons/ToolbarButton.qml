@@ -5,15 +5,8 @@ import QtQuick.Templates as T
 T.Button {
     id: control
 
-    width: 100
-    height: 40
-
-
     checkable: true
     hoverEnabled: true
-
-
-    // property url imageSource
 
     // background
     property color normalColorbg: "#11151c"
@@ -31,6 +24,9 @@ T.Button {
     property color normalColori: "#a1a9b7"
     property color activeColori: "#52d6a6"
 
+    property url imageSource
+    property url imageSourceActive
+
     background: Rectangle {
             color: control.checked ? activeColorbg : (control.hovered ? activeColorbg : normalColorbg)
             radius: 6
@@ -41,17 +37,17 @@ T.Button {
         }
 
     Image {
+        width: 13
+        height: 13
+        source: (control.checked || control.hovered) ? control.imageSourceActive : control.imageSource
+
         anchors {
             left: parent.left
             leftMargin: 10
             verticalCenter: parent.verticalCenter
-
-            width: 13
-            height: 13
-
-            source: control.imageSource
         }
     }
+
 
     contentItem: Text {
             text: control.text
