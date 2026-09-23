@@ -15,6 +15,6 @@ ApplicationWindow {
         anchors.fill: parent
         // initialItem: "ProjectLauncherPage.qml" потом вернуть
 
-        initialItem: "SchemaWorkspacePage.qml"
+        initialItem: "Pages/ProjectLauncher/ProjectLauncherPage.qml"
     }
 }

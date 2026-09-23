@@ -14,5 +14,7 @@
         <file>Images/chevron-down.svg</file>
         <file>Images/database.svg</file>
         <file>fonts/JetBrainsMono-Bold.ttf</file>
+        <file>Images/table-grid-icon-active.svg</file>
+        <file>Images/table-grid.svg</file>
     </qresource>
 </RCC>
