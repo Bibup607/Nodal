@@ -20,10 +20,6 @@ T.Button {
     property color normalColort: "#a1a9b7"
     property color activeColort: "#52d6a6"
 
-    // image
-    property color normalColori: "#a1a9b7"
-    property color activeColori: "#52d6a6"
-
     property url imageSource
     property url imageSourceActive
 

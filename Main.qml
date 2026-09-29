@@ -1,20 +1,16 @@
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Window
+import "Pages/SchemaWorkspace"
 
-
-ApplicationWindow {
-    id: window
-    width: 1200
+Window {
+    id: appWindow
+    width: 1280
     height: 800
     visible: true
-    title: "Nodal"
+    title: "NodalDB"
     flags: Qt.Window | Qt.FramelessWindowHint
 
-    StackView {
-        id: stackView
+    SchemaWorkspacePage {
         anchors.fill: parent
-        // initialItem: "ProjectLauncherPage.qml" потом вернуть
-
-        initialItem: "Pages/ProjectLauncher/ProjectLauncherPage.qml"
     }
 }
