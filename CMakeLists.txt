@@ -26,6 +26,7 @@ qt_add_qml_module(appNodalDB
         Fonts.qml
         Pages/ProjectLauncher/ProjectLauncherPage.qml
         Pages/SchemaWorkspace/SchemaWorkspacePage.qml
+        Pages/SchemaWorkspace/InfiniteCanvas.qml
         Pages/SchemaWorkspace/CustomButtons/ImportButton.qml
         Pages/SchemaWorkspace/CustomButtons/ToolbarButton.qml
         Pages/SchemaWorkspace/CustomButtons/WindowControls.qml

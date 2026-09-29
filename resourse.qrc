@@ -16,5 +16,6 @@
         <file>fonts/JetBrainsMono-Bold.ttf</file>
         <file>Images/table-grid-icon-active.svg</file>
         <file>Images/table-grid.svg</file>
+        <file>Pages/SchemaWorkspace/InfiniteCanvas.qml</file>
     </qresource>
 </RCC>

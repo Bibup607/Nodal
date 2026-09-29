@@ -259,16 +259,53 @@ Item {
                 }
             }
 
-            // Центральная зона (Рабочий канвас)
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                Text {
-                    anchors.centerIn: parent
-                    text: "Рабочая область готова под бесконечный канвас"
-                    color: "#30363d"
-                    font.pointSize: 14
+                InfiniteCanvas {
+                    id: workspaceCanvas
+                    anchors.fill: parent
+
+                    Rectangle {
+                        id: tableCard
+                        x: 80
+                        y: 80
+                        width: 180
+                        height: 120
+                        radius: 8
+                        color: "#11151c"
+                        border.color: "#52d6a6"
+                        border.width: 1
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "users"
+                            color: "white"
+                            font.bold: true
+                        }
+
+                        // обработчик тачпада и мышки
+                        DragHandler {
+                            id: cardDragHandler
+                            target: tableCard
+
+                            // реагирует на левую кнопку
+                            acceptedButtons: Qt.LeftButton
+
+                            // приоритет выше чем у холста чтобы двигалась именно карточка а не вся сцена
+                            grabPermissions: PointerHandler.TakeOverForbidden | PointerHandler.CanTakeOverFromItems
+
+                            // делим на текущий zoom канваса чтобы скорость движения карточки под пальцем
+                            // не ускорялась и не замедлялась при приближении/отдалении
+                            xAxis.onActiveValueChanged: (delta) => {
+                                tableCard.x += delta / workspaceCanvas.zoom
+                            }
+                            yAxis.onActiveValueChanged: (delta) => {
+                                tableCard.y += delta / workspaceCanvas.zoom
+                            }
+                        }
+                    }
                 }
             }
         }
