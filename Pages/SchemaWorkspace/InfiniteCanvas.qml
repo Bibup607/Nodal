@@ -76,23 +76,41 @@ Item {
         transformOrigin: Item.TopLeft
 
         Repeater {
-            model: canvasRoot.tablesModel
-            delegate: TableCard {
-                id: cardItem
+                    model: canvasRoot.tablesModel
+                    delegate: TableCard {
+                        id: cardItem
 
-                isSelected: canvasRoot.seletedTableIndex === index
+                        // сохраняем индекс таблицы для замыканий
+                        readonly property int currentTableIndex: index
 
-                onSelected: {
-                    canvasRoot.selectedTableIndex = index
-                }
+                        // исправлена опечатка (было seletedTableIndex)
+                        isSelected: canvasRoot.selectedTableIndex === index
 
-                onRequestAddColumn: {
-                    if (canvasRoot.tablesModel) {
-                    canvasRoot.tablesModel.addColumnToTable(index)
+                        onSelected: {
+                            canvasRoot.selectedTableIndex = index
+                        }
+
+                        onRequestAddColumn: {
+                            if (canvasRoot.tablesModel) {
+                                canvasRoot.tablesModel.addColumnToTable(cardItem.currentTableIndex)
+                            }
+                        }
+
+                        // переименование таблицы
+                        onNameChanged: (newName) => {
+                            if (canvasRoot.tablesModel && canvasRoot.tablesModel.setTableName) {
+                                canvasRoot.tablesModel.setTableName(cardItem.currentTableIndex, newName)
+                            }
+                        }
+
+                        // переключение ключей PK / FK / NONE
+                        onFieldKeyChanged: (fieldIndex, keyType) => {
+                            if (canvasRoot.tablesModel) {
+                                canvasRoot.tablesModel.setFieldKey(cardItem.currentTableIndex, fieldIndex, keyType)
+                            }
+                        }
                     }
                 }
-            }
-        }
     }
 
     // перемещение камеры
@@ -108,6 +126,7 @@ Item {
             canvasRoot.panY += delta.y
         }
     }
+
 
     // зум к точке под курсором
     WheelHandler {

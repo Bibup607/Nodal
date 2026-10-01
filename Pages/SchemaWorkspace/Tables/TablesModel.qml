@@ -1,32 +1,65 @@
 import QtQuick
 
-
 ListModel {
-    id: schemaTableModels
+    id: tablesModelRoot
 
-    function addNewTable(spawnX, spawnY) {
-        let nextNumber = count + 1
-        let defaultName = "table_" + nextNumber
-
-        append({
-            tableName: defaultName,
-            posX: spawnX,
-            posY: spawnY,
-            fields: [
-               {
-                    name: "id",
-                    type: "uuid",
-                    isPk: true,       // флаг Primary Key включён
-                    isFk: false       // флаг Foreign Key выключен
-               }
-            ]
-        })
+    // дефолтная тестовая таблица для старта
+    ListElement {
+        tableName: "users"
+        posX: 100
+        posY: 100
+        fields: [
+            ListElement { name: "id"; type: "uuid"; isPk: true; isFk: false },
+            ListElement { name: "username"; type: "varchar"; isPk: false; isFk: false }
+        ]
     }
 
-    function addColumnToTable(tableIndex) {
-        let table = get(tableIndex)
+    function addNewTable() {
+            append({
+                tableName: "table_" + (count + 1),
+                posX: 120 + (count * 40),
+                posY: 120 + (count * 40),
+                fields: [
+                    {
+                        name: "id",
+                        type: "uuid",
+                        isPk: true,
+                        isFk: false
+                    }
+                ]
+            })
+        }
 
-        if(table) {
+    // переключение статуса ключа поля PK FK или обычное
+    function setFieldKey(tableIndex, fieldIndex, keyType) {
+        if (tableIndex < 0 || tableIndex >= count) return
+        let table = get(tableIndex)
+        if (!table || !table.fields || fieldIndex < 0 || fieldIndex >= table.fields.count) return
+
+        if (keyType === "PK") {
+            // сбрасываем старый PK у остальных колонок таблицы
+            for (let i = 0; i < table.fields.count; ++i) {
+                if (i !== fieldIndex && table.fields.get(i).isPk) {
+                    table.fields.setProperty(i, "isPk", false)
+                }
+            }
+            table.fields.setProperty(fieldIndex, "isPk", true)
+            table.fields.setProperty(fieldIndex, "isFk", false)
+        } else if (keyType === "FK") {
+            table.fields.setProperty(fieldIndex, "isPk", false)
+            table.fields.setProperty(fieldIndex, "isFk", true)
+        } else {
+            // сброс в обычное поле без ключей
+            table.fields.setProperty(fieldIndex, "isPk", false)
+            table.fields.setProperty(fieldIndex, "isFk", false)
+        }
+    }
+
+    // добавление новой дефолтной колонки в конец таблицы
+    function addColumnToTable(tableIndex) {
+        if (tableIndex < 0 || tableIndex >= count) return
+        let table = get(tableIndex)
+        if (table && table.fields) {
             table.fields.append({
                 name: "column_" + (table.fields.count + 1),
                 type: "varchar",

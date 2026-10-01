@@ -266,7 +266,7 @@ Item {
                         }
 
                         TablesModel {
-                            Layout.fillWidth: true
+                            id: tablesModel
                         }
                     }
 
