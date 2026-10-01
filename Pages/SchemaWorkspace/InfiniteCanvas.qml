@@ -1,9 +1,13 @@
 import QtQuick
+import "Tables"
 
 Item {
     id: canvasRoot
 
     clip: true // обрезка того что выходит за рамку
+
+    property var tablesModel: null
+    property int selectedTableIndex: -1
 
     property real panX: 0
     property real panY: 0
@@ -70,6 +74,25 @@ Item {
         scale: canvasRoot.zoom
 
         transformOrigin: Item.TopLeft
+
+        Repeater {
+            model: canvasRoot.tablesModel
+            delegate: TableCard {
+                id: cardItem
+
+                isSelected: canvasRoot.seletedTableIndex === index
+
+                onSelected: {
+                    canvasRoot.selectedTableIndex = index
+                }
+
+                onRequestAddColumn: {
+                    if (canvasRoot.tablesModel) {
+                    canvasRoot.tablesModel.addColumnToTable(index)
+                    }
+                }
+            }
+        }
     }
 
     // перемещение камеры

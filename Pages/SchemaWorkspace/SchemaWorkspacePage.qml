@@ -3,9 +3,9 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
 
-import NodalDB
+import "../../"
+import "Tables"
 import "CustomButtons"
-import "SideBar"
 
 Item {
     id: workspaceRoot
@@ -18,6 +18,14 @@ Item {
 
     Fonts {
         id: fonts
+    }
+
+    TablesModel {
+        id: globalTablesModel
+    }
+
+    Component.onCompleted: {
+        globalTablesModel.addNewTable(150, 150)
     }
 
     ColumnLayout {
@@ -85,12 +93,19 @@ Item {
                     }
 
                     ToolbarButton {
+                        id: addTableBtn
                         imageSource: "qrc:/Images/table.svg"
                         imageSourceActive: "qrc:/Images/table-icon-active.svg"
                         text: "Table"
                         leftPadding: 12
                         Layout.preferredWidth: 65
                         Layout.preferredHeight: 35
+
+                        onClicked: {
+                            let spawnX = (-workspaceCanvas.panX + 200) / workspaceCanvas.zoom
+                            let spawnY = (-workspaceCanvas.panY + 150) / workspaceCanvas.zoom
+                            globalTablesModel.addNewTable(spawnX, spawnY)
+                        }
                     }
 
                     ToolbarButton {
@@ -266,6 +281,7 @@ Item {
                 InfiniteCanvas {
                     id: workspaceCanvas
                     anchors.fill: parent
+                    tablesModel: globalTablesModel
 
                     ListModel {
                         id: dynamicTablesModel
@@ -273,25 +289,11 @@ Item {
 
                     Rectangle {
                         id: tableCard
-                        x: 80
-                        y: 80
-                        width: 180
-                        height: 120
-                        radius: 8
-                        color: "#11151c"
-                        border.color: "#52d6a6"
-                        border.width: 1
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: "users"
-                            color: "white"
-                            font.bold: true
-                        }
 
                         // обработчик тачпада и мышки
                         DragHandler {
                             id: cardDragHandler
+
                             target: tableCard
 
                             // реагирует на левую кнопку
