@@ -267,6 +267,10 @@ Item {
                     id: workspaceCanvas
                     anchors.fill: parent
 
+                    ListModel {
+                        id: dynamicTablesModel
+                    }
+
                     Rectangle {
                         id: tableCard
                         x: 80

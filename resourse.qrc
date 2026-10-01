@@ -17,5 +17,6 @@
         <file>Images/table-grid-icon-active.svg</file>
         <file>Images/table-grid.svg</file>
         <file>Pages/SchemaWorkspace/InfiniteCanvas.qml</file>
+        <file>Pages/SchemaWorkspace/TableCard.qml</file>
     </qresource>
 </RCC>

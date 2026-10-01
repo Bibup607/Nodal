@@ -27,10 +27,11 @@ qt_add_qml_module(appNodalDB
         Pages/ProjectLauncher/ProjectLauncherPage.qml
         Pages/SchemaWorkspace/SchemaWorkspacePage.qml
         Pages/SchemaWorkspace/InfiniteCanvas.qml
+        Pages/SchemaWorkspace/Tables/TablesModel.qml
+        Pages/SchemaWorkspace/Tables/TableCard.qml
         Pages/SchemaWorkspace/CustomButtons/ImportButton.qml
         Pages/SchemaWorkspace/CustomButtons/ToolbarButton.qml
         Pages/SchemaWorkspace/CustomButtons/WindowControls.qml
-        Pages/SchemaWorkspace/SideBar/TablesModel.qml
     RESOURCES
         resourse.qrc
 )
