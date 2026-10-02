@@ -16,6 +16,7 @@ Rectangle {
     signal requestAddColumn()
     signal nameChanged(string newName)
     signal fieldKeyChanged(int fieldIndex, string keyType)
+    signal fieldTypeChanged(int fieldIndex, string newType)
 
     color: "#121721"
     radius: 10
@@ -234,13 +235,106 @@ Rectangle {
                     }
                 }
 
-                // Тип данных поля
-                Text {
-                    text: type
-                    color: "#a78bfa"
-                    font.family: "Monospace"
-                    font.pixelSize: 12
+                Item {
+                    id: typeSelector
+                    implicitWidth: typeText.implicitWidth + 8
+                    implicitHeight: 20
                     Layout.alignment: Qt.AlignRight
+
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: 4
+                        color: typeMouseArea.containsMouse ? "#1e293b" : "transparent"
+                    }
+
+                    Text {
+                        id: typeText
+                        anchors.fill: parent
+                        text: type
+                        color: typeMouseArea.containsMouse ? "#c4b5fd" : "#a78bfa"
+                        font.pixelSize: 12
+                    }
+
+                    MouseArea {
+                        id: typeMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            root.forceActiveFocus()
+                            typeMenu.open()
+                        }
+                    }
+
+                    Menu {
+                        id: typeMenu
+                        y: typeSelector.height + 4
+                        width: 130
+                        padding: 4
+
+                        background: Rectangle {
+                            color: "#11151c"
+                            border.color: "#252c37"
+                            border.width: 1
+                            radius: 8
+                        }
+
+                        delegate: MenuItem {
+                            id: typeMenuItem
+                            implicitHeight: 26
+
+                            contentItem: Text {
+                                leftPadding: 6
+                                text: typeMenuItem.text
+                                font.family: "Monospace"
+                                font.pixelSize: 11
+                                font.bold: typeMenuItem.highlighted
+                                color: typeMenuItem.highlighted ? "#c4b5fd" : "#cbd5e1"
+                                verticalAlignment: Text.AlignVCenter
+                            }
+
+                            background: Rectangle {
+                                radius: 4
+                                color: typeMenuItem.highlighted ? "#1b222c" : "transparent"
+                            }
+                        }
+                        // Список основных типов PostgreSQL
+                        Action { text: "uuid"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "uuid") }
+                        Action { text: "serial"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "serial") }
+                        Action { text: "bigserial"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "bigserial") }
+
+                        // Целые числа
+                        Action { text: "smallint"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "smallint") }
+                        Action { text: "integer"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "integer") }
+                        Action { text: "bigint"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "bigint") }
+
+                        // Дробные и точные числа
+                        Action { text: "numeric"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "numeric") }
+                        Action { text: "real"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "real") }
+                        Action { text: "double"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "double") }
+
+                        // Строки и текст
+                        Action { text: "varchar"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "varchar") }
+                        Action { text: "char"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "char") }
+                        Action { text: "text"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "text") }
+
+                        // Логический
+                        Action { text: "boolean"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "boolean") }
+
+                        // Дата и время
+                        Action { text: "date"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "date") }
+                        Action { text: "time"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "time") }
+                        Action { text: "timestamp"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "timestamp") }
+                        Action { text: "timestamptz"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "timestamptz") }
+
+                        // Документы и бинарники
+                        Action { text: "json"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "json") }
+                        Action { text: "jsonb"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "jsonb") }
+                        Action { text: "bytea"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "bytea") }
+
+                        // Сеть
+                        Action { text: "inet"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "inet") }
+                    }
                 }
             }
         }

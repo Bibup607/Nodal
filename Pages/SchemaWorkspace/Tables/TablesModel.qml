@@ -68,4 +68,12 @@ ListModel {
             })
         }
     }
+    // функция смены типа данных
+    function setFieldType(tableIndex, fieldIndex, newType) {
+        if (tableIndex < 0 || tableIndex >= count) return
+        let table = get(tableIndex)
+        if (!table || !table.fields || fieldIndex < 0 || fieldIndex >= table.fields.count) return
+        table.fields.setProperty(fieldIndex, "type", newType)
+
+    }
 }

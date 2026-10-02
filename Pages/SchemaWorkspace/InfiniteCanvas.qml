@@ -109,6 +109,12 @@ Item {
                                 canvasRoot.tablesModel.setFieldKey(cardItem.currentTableIndex, fieldIndex, keyType)
                             }
                         }
+
+                        onFieldTypeChanged: (fieldIndex, newType) => {
+                            if (canvasRoot.tablesModel) {
+                                canvasRoot.tablesModel.setFieldType(cardItem.currentTableIndex, fieldIndex, newType)
+                            }
+                        }
                     }
                 }
     }
