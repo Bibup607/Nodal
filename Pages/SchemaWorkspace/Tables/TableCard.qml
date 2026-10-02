@@ -38,6 +38,40 @@ Rectangle {
         anchors.margins: 12
         spacing: 10
 
+        Item {
+            Layout.fillWidth: true
+            implicitHeight: 14
+
+            Rectangle {
+                width: 36
+                height: 4
+                radius: 2
+                color: handleMouseArea.pressed ? "#34d399" : (handleMouseArea.containsMouse ? "#475569" : "#1e293b")
+            }
+
+            MouseArea {
+                id: handleMouseArea
+                anchors.fill: parent
+                hoverEnabled: true
+
+                cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+                drag.target: root
+
+                onPressed: {
+                    root.z = 100
+                    root.forceActiveFocus()
+                    root.isSelected = true
+                    root.selected()
+                }
+
+                onReleased: {
+                    root.z = 1
+                    model.posX = Math.round(root.x)
+                    model.posY = Math.round(root.y)
+                }
+            }
+        }
+
         // шапка таблицы
         RowLayout {
             Layout.fillWidth: true
