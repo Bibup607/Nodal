@@ -109,6 +109,7 @@ Item {
                     }
 
                     ToolbarButton {
+                        id: relationBtn
                         imageSource: "qrc:/Images/relation.svg"
                         imageSourceActive: "qrc:/Images/relation-icon-active.svg"
                         text: "Relation"
@@ -223,125 +224,172 @@ Item {
                         }
                     }
 
-                    // База данных и список таблиц
-                    ColumnLayout {
+                    // Область прокрутки списка
+                    ScrollView {
                         Layout.fillWidth: true
-                        Layout.leftMargin: 10
-                        Layout.topMargin: 10
-                        spacing: 8
+                        Layout.fillHeight: true
+                        clip: true
 
-                        Row {
-                            spacing: 8
-                            property bool isDbExpanded: chevronIcon.rotation === 0
+                        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
-                            Image {
-                                id: chevronIcon
-                                rotation: 0
-                                width: 13
-                                height: 13
-                                source: "qrc:/Images/chevron-down.svg"
+                        // Скроллбар
+                        ScrollBar.vertical: ScrollBar {
+                            parent: parent
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.right: parent.right
+                            anchors.rightMargin: 1
+                            width: 3
+                            policy: ScrollBar.AsNeeded
 
-                                Behavior on rotation {
-                                    NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+                            contentItem: Rectangle {
+                                implicitWidth: 3
+                                radius: 1.5
+                                color: parent.pressed ? "#52d6a6" : (parent.hovered ? "#475569" : "#262f3f")
+
+                                Behavior on color {
+                                    ColorAnimation { duration: 150 }
                                 }
-
-                                MouseArea {
-                                    anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: chevronIcon.rotation = (chevronIcon.rotation === 0 ? 180 : 0)
-                                }
                             }
 
-                            Image {
-                                source: "qrc:/Images/database.svg"
-                                width: 14
-                                height: 14
-                            }
-
-                            Text {
-                                text: "commerce_db"
-                                color: "white"
-                                font.family: fonts.jetBrainsMB.family
-                                font.pointSize: 9
-                            }
-
-                            Text {
-                                text: globalTablesModel.count
-                                color: "#64748b"
-                                font.family: fonts.jetBrainsMB.family
-                                font.pointSize: 9
-                                leftPadding: 6
+                            background: Rectangle {
+                                color: "transparent"
                             }
                         }
 
-                        Repeater {
-                            model: globalTablesModel
+                        // База данных и список таблиц
+                        Column {
+                            width: 206
+                            height: implicitHeight
+                            spacing: 8
+                            topPadding: 10
+                            bottomPadding: 16
 
-                            delegate: ColumnLayout {
-                                id: tableDelegate
+                            Item {
+                                width: 178
+                                height: 22
+                                x: 14
 
-                                property bool isExpanded: false
-                                property bool isSelected: workspaceCanvas.selectedTableIndex === index
+                                Row {
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 8
 
-                                Rectangle {
-                                    id: rowBg
-                                    width: 160
+                                    Image {
+                                        id: chevronIcon
+                                        rotation: 0
+                                        width: 13
+                                        height: 13
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        source: "qrc:/Images/chevron-down.svg"
+
+                                        Behavior on rotation {
+                                            NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+                                        }
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: chevronIcon.rotation = (chevronIcon.rotation === 0 ? 180 : 0)
+                                        }
+                                    }
+
+                                    Image {
+                                        source: "qrc:/Images/database.svg"
+                                        width: 14
+                                        height: 14
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+
+                                    Text {
+                                        text: "commerce_db"
+                                        color: "white"
+                                        font.family: fonts.jetBrainsMB.family
+                                        font.pointSize: 9
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+
+                                Text {
+                                    text: globalTablesModel.count
+                                    color: "#64748b"
+                                    font.family: fonts.jetBrainsMB.family
+                                    font.pointSize: 9
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            // Список карточек таблиц
+                            Repeater {
+                                model: globalTablesModel
+
+                                delegate: Item {
+                                    width: 178
                                     height: 30
-                                    radius: 6
-                                    Layout.leftMargin: 10
+                                    x: 14
 
-                                    property color normalColorbg: "transparent"
-                                    property color activeColorbg: "#183c35"
-                                    property color normalColort: "#a1a9b7"
-                                    property color activeColort: "#52d6a6"
+                                    property bool isSelected: workspaceCanvas.selectedTableIndex === index
 
-                                    color: (tableDelegate.isSelected || rowMouse.containsMouse) ? activeColorbg : normalColorbg
-
-                                    Behavior on color {
-                                        ColorAnimation { duration: 150 }
-                                    }
-
-                                    MouseArea {
-                                        id: rowMouse
+                                    Rectangle {
+                                        id: rowBg
                                         anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: {
-                                            workspaceCanvas.selectedTableIndex = (workspaceCanvas.selectedTableIndex === index ? -1 : index)
-                                        }
-                                    }
+                                        radius: 6
 
-                                    Text {
-                                        text: model.tableName
-                                        color: (tableDelegate.isSelected || rowMouse.containsMouse) ? rowBg.activeColort : rowBg.normalColort
-                                        font.family: fonts.jetBrainsMB.family
-                                        font.pointSize: 8
-                                        topPadding: 8
-                                        leftPadding: 12
+                                        property color normalColorbg: "transparent"
+                                        property color activeColorbg: "#183c35"
+                                        property color normalColort: "#a1a9b7"
+                                        property color activeColort: "#52d6a6"
+
+                                        color: (isSelected || rowMouse.containsMouse) ? activeColorbg : normalColorbg
 
                                         Behavior on color {
                                             ColorAnimation { duration: 150 }
                                         }
-                                    }
 
-                                    Text {
-                                        text: model.fields ? model.fields.count : 0
-                                        font.family: fonts.jetBrainsMB.family
-                                        color: (tableDelegate.isSelected || rowMouse.containsMouse) ? rowBg.activeColort : rowBg.normalColort
-                                        font.pointSize: 8
-                                        topPadding: 8
-                                        leftPadding: 145
+                                        MouseArea {
+                                            id: rowMouse
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: {
+                                                workspaceCanvas.selectedTableIndex = (workspaceCanvas.selectedTableIndex === index ? -1 : index)
+                                            }
+                                        }
 
-                                        Behavior on color {
-                                            ColorAnimation { duration: 150 }
+                                        Text {
+                                            text: model.tableName
+                                            color: (isSelected || rowMouse.containsMouse) ? rowBg.activeColort : rowBg.normalColort
+                                            font.family: fonts.jetBrainsMB.family
+                                            font.pointSize: 8
+                                            anchors.left: parent.left
+                                            anchors.leftMargin: 12
+                                            anchors.verticalCenter: parent.verticalCenter
+
+                                            Behavior on color {
+                                                ColorAnimation { duration: 150 }
+                                            }
+                                        }
+
+                                        Text {
+                                            text: model.fields ? model.fields.count : 0
+                                            font.family: fonts.jetBrainsMB.family
+                                            color: (isSelected || rowMouse.containsMouse) ? rowBg.activeColort : rowBg.normalColort
+                                            font.pointSize: 8
+                                            anchors.right: parent.right
+                                            anchors.rightMargin: 12
+                                            anchors.verticalCenter: parent.verticalCenter
+
+                                            Behavior on color {
+                                                ColorAnimation { duration: 150 }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-
-                    Item { Layout.fillHeight: true }
                 }
             }
 
@@ -357,20 +405,12 @@ Item {
                     Rectangle {
                         id: tableCard
 
-                        // обработчик тачпада и мышки
                         DragHandler {
                             id: cardDragHandler
-
                             target: tableCard
-
-                            // реагирует на левую кнопку
                             acceptedButtons: Qt.LeftButton
-
-                            // приоритет выше чем у холста чтобы двигалась именно карточка а не вся сцена
                             grabPermissions: PointerHandler.TakeOverForbidden | PointerHandler.CanTakeOverFromItems
 
-                            // делим на текущий zoom канваса чтобы скорость движения карточки под пальцем
-                            // не ускорялась и не замедлялась при приближении/отдалении
                             xAxis.onActiveValueChanged: (delta) => {
                                 tableCard.x += delta / workspaceCanvas.zoom
                             }
