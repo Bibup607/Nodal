@@ -10,7 +10,7 @@ Rectangle {
     x: model.posX
     y: model.posY
 
-    property bool isSelected: false
+    property bool isSelected: workspaceCanvas.selectedTableIndex === index
 
     signal selected()
     signal requestAddColumn()
@@ -26,7 +26,7 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            root.isSelected = true
+            workspaceCanvas.selectedTableIndex = (workspaceCanvas.selectedTableIndex === index ? -1 : index)
             root.selected()
         }
     }
@@ -60,7 +60,7 @@ Rectangle {
                 onPressed: {
                     root.z = 100
                     root.forceActiveFocus()
-                    root.isSelected = true
+                    workspaceCanvas.selectedTableIndex = index
                     root.selected()
                 }
 
@@ -104,6 +104,7 @@ Rectangle {
                 onEditingFinished: {
                     focus = false
                     if (text.trim() !== "") {
+                        globalTablesModel.setTableName(index, text.trim())
                         root.nameChanged(text.trim())
                     }
                 }
@@ -251,7 +252,7 @@ Rectangle {
                     }
                 }
 
-                // Имя поля
+                // имя поля
                 TextField {
                     placeholderText: "..."
                     placeholderTextColor: "#64748b"

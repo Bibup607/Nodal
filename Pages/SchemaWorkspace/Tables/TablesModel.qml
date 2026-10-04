@@ -82,4 +82,11 @@ ListModel {
             remove(tableIndex)
         }
     }
+
+    // фунция синхронизации смены имени таблицы с сайдбаром
+    function setTableName(tableIndex, newName) {
+        if (tableIndex >= 0 && tableIndex < count) {
+            setProperty(tableIndex, "tableName", newName)
+        }
+    }
 }

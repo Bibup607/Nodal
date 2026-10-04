@@ -270,6 +270,7 @@ Item {
                                 color: "#64748b"
                                 font.family: fonts.jetBrainsMB.family
                                 font.pointSize: 9
+                                leftPadding: 6
                             }
                         }
 
