@@ -76,4 +76,10 @@ ListModel {
         table.fields.setProperty(fieldIndex, "type", newType)
 
     }
+    // функция удаления таблицы
+    function removeTable(tableIndex) {
+        if(tableIndex >= 0 && tableIndex < count) {
+            remove(tableIndex)
+        }
+    }
 }

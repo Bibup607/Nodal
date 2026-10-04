@@ -232,6 +232,7 @@ Item {
 
                         Row {
                             spacing: 8
+                            property bool isDbExpanded: chevronIcon.rotation === 0
 
                             Image {
                                 id: chevronIcon
@@ -263,10 +264,79 @@ Item {
                                 font.family: fonts.jetBrainsMB.family
                                 font.pointSize: 9
                             }
+
+                            Text {
+                                text: globalTablesModel.count
+                                color: "#64748b"
+                                font.family: fonts.jetBrainsMB.family
+                                font.pointSize: 9
+                            }
                         }
 
-                        TablesModel {
-                            id: tablesModel
+                        Repeater {
+                            model: globalTablesModel
+
+                            delegate: ColumnLayout {
+                                id: tableDelegate
+
+                                property bool isExpanded: false
+                                property bool isSelected: workspaceCanvas.selectedTableIndex === index
+
+                                Rectangle {
+                                    id: rowBg
+                                    width: 160
+                                    height: 30
+                                    radius: 6
+                                    Layout.leftMargin: 10
+
+                                    property color normalColorbg: "transparent"
+                                    property color activeColorbg: "#183c35"
+                                    property color normalColort: "#a1a9b7"
+                                    property color activeColort: "#52d6a6"
+
+                                    color: (tableDelegate.isSelected || rowMouse.containsMouse) ? activeColorbg : normalColorbg
+
+                                    Behavior on color {
+                                        ColorAnimation { duration: 150 }
+                                    }
+
+                                    MouseArea {
+                                        id: rowMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            workspaceCanvas.selectedTableIndex = (workspaceCanvas.selectedTableIndex === index ? -1 : index)
+                                        }
+                                    }
+
+                                    Text {
+                                        text: model.tableName
+                                        color: (tableDelegate.isSelected || rowMouse.containsMouse) ? rowBg.activeColort : rowBg.normalColort
+                                        font.family: fonts.jetBrainsMB.family
+                                        font.pointSize: 8
+                                        topPadding: 8
+                                        leftPadding: 12
+
+                                        Behavior on color {
+                                            ColorAnimation { duration: 150 }
+                                        }
+                                    }
+
+                                    Text {
+                                        text: model.fields ? model.fields.count : 0
+                                        font.family: fonts.jetBrainsMB.family
+                                        color: (tableDelegate.isSelected || rowMouse.containsMouse) ? rowBg.activeColort : rowBg.normalColort
+                                        font.pointSize: 8
+                                        topPadding: 8
+                                        leftPadding: 145
+
+                                        Behavior on color {
+                                            ColorAnimation { duration: 150 }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -282,10 +352,6 @@ Item {
                     id: workspaceCanvas
                     anchors.fill: parent
                     tablesModel: globalTablesModel
-
-                    ListModel {
-                        id: dynamicTablesModel
-                    }
 
                     Rectangle {
                         id: tableCard
