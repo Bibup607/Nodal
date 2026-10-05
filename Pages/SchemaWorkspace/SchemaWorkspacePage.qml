@@ -3,9 +3,11 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
 
+import NodalDB
 import "../../"
 import "Tables"
 import "CustomButtons"
+
 
 Item {
     id: workspaceRoot
@@ -20,8 +22,14 @@ Item {
         id: fonts
     }
 
-    TablesModel {
+    TableItemsView {
         id: globalTablesModel
+    }
+
+    TablesFilterProxyModel {
+        id: filteredTablesModel
+        sourceModel: globalTablesModel      // говорим, откуда брать таблицы
+        filterPattern: searchField.text     // привязываем к тексту из строки поиска
     }
 
     Component.onCompleted: {
@@ -198,6 +206,8 @@ Item {
 
                     // Поле поиска
                     TextField {
+                        id: searchField
+
                         Image {
                             source: "qrc:/Images/search.svg"
                             width: 13
@@ -311,7 +321,7 @@ Item {
                                 }
 
                                 Text {
-                                    text: globalTablesModel.count
+                                    text: filteredTablesModel.count
                                     color: "#64748b"
                                     font.family: fonts.jetBrainsMB.family
                                     font.pointSize: 9
@@ -323,14 +333,15 @@ Item {
 
                             // Список карточек таблиц
                             Repeater {
-                                model: globalTablesModel
+                                model: filteredTablesModel
 
                                 delegate: Item {
                                     width: 178
                                     height: 30
                                     x: 14
 
-                                    property bool isSelected: workspaceCanvas.selectedTableIndex === index
+                                    readonly property int realIndex: filteredTablesModel.mapToSourceRow(index)
+                                    property bool isSelected: workspaceCanvas.selectedTableIndex === realIndex
 
                                     Rectangle {
                                         id: rowBg
@@ -354,7 +365,7 @@ Item {
                                             hoverEnabled: true
                                             cursorShape: Qt.PointingHandCursor
                                             onClicked: {
-                                                workspaceCanvas.selectedTableIndex = (workspaceCanvas.selectedTableIndex === index ? -1 : index)
+                                                workspaceCanvas.selectedTableIndex = (workspaceCanvas.selectedTableIndex === realIndex ? -1 : realIndex)
                                             }
                                         }
 
@@ -421,6 +432,11 @@ Item {
                     }
                 }
             }
+        }
+
+        Rectangle {
+            id: rightInspector
+
         }
     }
 }

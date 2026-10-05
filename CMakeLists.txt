@@ -6,7 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(QT_QML_GENERATE_QMLLS_INI ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Qml)
+
+# Отключает предупреждение QTP0004 для вложенных папок QML
+qt_policy(SET QTP0004 NEW)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -21,34 +24,45 @@ qt_add_executable(appNodalDB
 
 qt_add_qml_module(appNodalDB
     URI NodalDB
+    VERSION 1.0
     QML_FILES
         Main.qml
         Fonts.qml
         Pages/ProjectLauncher/ProjectLauncherPage.qml
         Pages/SchemaWorkspace/SchemaWorkspacePage.qml
         Pages/SchemaWorkspace/InfiniteCanvas.qml
-        Pages/SchemaWorkspace/Tables/TablesModel.qml
         Pages/SchemaWorkspace/Tables/TableCard.qml
+        Pages/SchemaWorkspace/Tables/TableItemsView.qml
         Pages/SchemaWorkspace/CustomButtons/ImportButton.qml
         Pages/SchemaWorkspace/CustomButtons/ToolbarButton.qml
         Pages/SchemaWorkspace/CustomButtons/WindowControls.qml
     RESOURCES
         resourse.qrc
+    SOURCES
+        models/tablesmodel.h
+        models/tablesmodel.cpp
+        models/tablesfilterproxymodel.h
+        models/tablesfilterproxymodel.cpp
 )
 
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
+# Подключение путей к заголовкам для корректной генерации метатипов
+target_include_directories(appNodalDB PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/models
+)
+
 set_target_properties(appNodalDB PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appNodalDB
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(appNodalDB
-    PRIVATE Qt6::Quick Qt6::QuickControls2
+target_link_libraries(appNodalDB PRIVATE
+    Qt6::Core
+    Qt6::Quick
+    Qt6::QuickControls2
+    Qt6::Qml
 )
 
 install(TARGETS appNodalDB
