@@ -12,6 +12,7 @@ Rectangle {
 
     property bool isSelected: workspaceCanvas.selectedTableIndex === index
 
+    signal removeTable()
     signal selected()
     signal requestAddColumn()
     signal nameChanged(string newName)
@@ -118,7 +119,87 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: root.requestAddColumn()
+                    onClicked: menuAction.open()
+                }
+
+                Menu {
+                    id: menuAction
+                    width: 95
+
+                    MenuItem {
+                        id: addColumnItem
+                        text: "Add Column"
+                        height: 28
+
+                        onTriggered: {
+                            root.requestAddColumn()
+                        }
+
+                        background: Rectangle {
+                            implicitWidth: parent.width
+                            implicitHeight: 28
+                            radius: 4
+                            color: addColumnItem.down ? "#1f4e43" : (addColumnItem.hovered ? "#183c35" : "transparent")
+
+                            Behavior on color {
+                                ColorAnimation { duration: 120 }
+                            }
+                        }
+
+                        contentItem: Text {
+                            text: addColumnItem.text
+                            color: addColumnItem.down ? "#ffffff" : (addColumnItem.hovered ? "#52d6a6" : "#a1a9b7")
+                            font.pixelSize: 10
+                            font.family: "Monospace"
+                            verticalAlignment: Text.AlignVCenter
+                            leftPadding: 8
+
+                            Behavior on color {
+                                ColorAnimation { duration: 120 }
+                            }
+                        }
+                    }
+
+                    MenuItem {
+                        id: delTable
+                        text: "Del Table"
+                        height: 28
+
+                        onTriggered: {
+                            root.removeTable()
+                        }
+
+                        background: Rectangle {
+                            implicitWidth: parent.width
+                            implicitHeight: 28
+                            radius: 4
+                            color: delTable.down ? "#541c24" : (delTable.hovered ? "#3d141b" : "transparent")
+
+                            Behavior on color {
+                                ColorAnimation { duration: 120 }
+                            }
+                        }
+
+                        contentItem: Text {
+                            text: delTable.text
+                            color: delTable.down ? "#ffffff" : (delTable.hovered ? "#ef4444" : "#a1a9b7")
+                            font.pixelSize: 10
+                            font.family: "Monospace"
+                            verticalAlignment: Text.AlignVCenter
+                            leftPadding: 8
+
+                            Behavior on color {
+                                ColorAnimation { duration: 120 }
+                            }
+                        }
+                    }
+
+                    background: Rectangle {
+                        color: "#11151C"
+                        border.width: 1
+                        border.color: "#252c37"
+                        radius: 6
+                    }
                 }
             }
         }

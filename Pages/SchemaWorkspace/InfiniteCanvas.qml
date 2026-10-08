@@ -76,47 +76,60 @@ Item {
         transformOrigin: Item.TopLeft
 
         Repeater {
-                    model: canvasRoot.tablesModel
-                    delegate: TableCard {
-                        id: cardItem
+            model: canvasRoot.tablesModel
+            delegate: TableCard {
+                id: cardItem
 
-                        // сохраняем индекс таблицы для замыканий
-                        readonly property int currentTableIndex: index
+                // сохраняем индекс таблицы для замыканий
+                readonly property int currentTableIndex: index
 
-                        // исправлена опечатка (было seletedTableIndex)
-                        isSelected: canvasRoot.selectedTableIndex === index
+                // исправлена опечатка (было seletedTableIndex)
+                isSelected: canvasRoot.selectedTableIndex === index
 
-                        onSelected: {
-                            canvasRoot.selectedTableIndex = index
+                onSelected: {
+                    canvasRoot.selectedTableIndex = index
+                }
+
+                onRemoveTable: {
+                    if (canvasRoot.tablesModel) {
+                        if (canvasRoot.selectedTableIndex === cardItem.currentTableIndex) {
+                            canvasRoot.selectedTableIndex = -1
                         }
-
-                        onRequestAddColumn: {
-                            if (canvasRoot.tablesModel) {
-                                canvasRoot.tablesModel.addColumnToTable(cardItem.currentTableIndex)
-                            }
-                        }
-
-                        // переименование таблицы
-                        onNameChanged: (newName) => {
-                            if (canvasRoot.tablesModel && canvasRoot.tablesModel.setTableName) {
-                                canvasRoot.tablesModel.setTableName(cardItem.currentTableIndex, newName)
-                            }
-                        }
-
-                        // переключение ключей PK / FK / NONE
-                        onFieldKeyChanged: (fieldIndex, keyType) => {
-                            if (canvasRoot.tablesModel) {
-                                canvasRoot.tablesModel.setFieldKey(cardItem.currentTableIndex, fieldIndex, keyType)
-                            }
-                        }
-
-                        onFieldTypeChanged: (fieldIndex, newType) => {
-                            if (canvasRoot.tablesModel) {
-                                canvasRoot.tablesModel.setFieldType(cardItem.currentTableIndex, fieldIndex, newType)
-                            }
+                        if (canvasRoot.tablesModel.removeTable) {
+                            canvasRoot.tablesModel.removeTable(cardItem.currentTableIndex)
+                        } else if (canvasRoot.tablesModel.removeRow) {
+                            canvasRoot.tablesModel.removeRow(cardItem.currentTableIndex)
                         }
                     }
                 }
+
+                onRequestAddColumn: {
+                    if (canvasRoot.tablesModel) {
+                        canvasRoot.tablesModel.addColumnToTable(cardItem.currentTableIndex)
+                    }
+                }
+
+                // переименование таблицы
+                onNameChanged: (newName) => {
+                    if (canvasRoot.tablesModel && canvasRoot.tablesModel.setTableName) {
+                        canvasRoot.tablesModel.setTableName(cardItem.currentTableIndex, newName)
+                    }
+                }
+
+                // переключение ключей PK / FK / NONE
+                onFieldKeyChanged: (fieldIndex, keyType) => {
+                    if (canvasRoot.tablesModel) {
+                        canvasRoot.tablesModel.setFieldKey(cardItem.currentTableIndex, fieldIndex, keyType)
+                    }
+                }
+
+                onFieldTypeChanged: (fieldIndex, newType) => {
+                    if (canvasRoot.tablesModel) {
+                        canvasRoot.tablesModel.setFieldType(cardItem.currentTableIndex, fieldIndex, newType)
+                    }
+                }
+            }
+        }
     }
 
     // перемещение камеры
