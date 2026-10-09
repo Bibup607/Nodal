@@ -442,11 +442,109 @@ Item {
                                             color: (isSelected || rowMouse.containsMouse) ? rowBg.activeColort : rowBg.normalColort
                                             font.pointSize: 8
                                             anchors.right: parent.right
-                                            anchors.rightMargin: 12
+                                            anchors.rightMargin: 30
                                             anchors.verticalCenter: parent.verticalCenter
 
                                             Behavior on color {
                                                 ColorAnimation { duration: 150 }
+                                            }
+                                        }
+
+                                        Text {
+                                            id: dotsBtn
+                                            text: "⋮"
+                                            color: dotsMouse.containsMouse || tableAction.visible ? "#52d6a6" : "#a1a9b7"
+                                            font.pointSize: 15
+                                            anchors.right: parent.right
+                                            anchors.rightMargin: 9
+                                            anchors.verticalCenter: parent.verticalCenter
+
+                                            MouseArea {
+                                                id: dotsMouse
+                                                anchors.fill: parent
+                                                hoverEnabled: true
+                                                cursorShape: Qt.PointingHandCursor
+                                                onClicked: tableAction.open()
+                                            }
+
+                                            Menu {
+                                                id: tableAction
+                                                y: dotsBtn.height + 4
+                                                width: 140
+                                                padding: 4
+
+                                                background: Rectangle {
+                                                    color: "#11151c"
+                                                    border.color: "#252c37"
+                                                    border.width: 1
+                                                    radius: 8
+                                                }
+
+                                                delegate: MenuItem {
+                                                    id: menuItem
+                                                    implicitHeight: 28
+
+                                                    // Проверяем, помечен ли action как деструктивный
+                                                    readonly property bool isDestructive: menuItem.action && menuItem.action.isDestructive === true
+
+                                                    contentItem: Text {
+                                                        text: menuItem.text
+                                                        font.family: "Monospace"
+                                                        font.pixelSize: 11
+                                                        font.bold: menuItem.highlighted
+
+                                                        // Красный текст для удаления, иначе изумрудный
+                                                        color: menuItem.highlighted
+                                                               ? (menuItem.isDestructive ? "#ef4444" : "#52d6a6")
+                                                               : "#cbd5e1"
+
+                                                        verticalAlignment: Text.AlignVCenter
+                                                        leftPadding: 8
+
+                                                        Behavior on color {
+                                                            ColorAnimation { duration: 150 }
+                                                        }
+                                                    }
+
+                                                    background: Rectangle {
+                                                        radius: 4
+
+                                                        // Тёмно-красный фон при наведении на удаление, иначе тёмно-зеленый/серый
+                                                        color: menuItem.highlighted
+                                                               ? (menuItem.isDestructive ? "#2d1519" : "#1b222c")
+                                                               : "transparent"
+
+                                                        Behavior on color {
+                                                            ColorAnimation { duration: 150 }
+                                                        }
+                                                    }
+                                                }
+
+                                                Action {
+                                                    text: "Rename table"
+                                                    onTriggered: rowDelegate.isEditing = true
+                                                }
+
+                                                Action {
+                                                    text: "Add column"
+                                                    onTriggered: globalTablesModel.addColumn(realIndex)
+                                                }
+
+                                                Action {
+                                                    text: "Add comment"
+                                                    onTriggered: globalTablesModel.addComment(realIndex)
+                                                }
+
+                                                Action {
+                                                    text: "Duplicate table"
+                                                    onTriggered: globalTablesModel.duplicateTable(realIndex)
+                                                }
+
+                                                Action {
+                                                    text: "Delete table"
+                                                    property bool isDestructive: true
+                                                    onTriggered: globalTablesModel.removeTable(realIndex)
+                                                }
                                             }
                                         }
                                     }
@@ -485,11 +583,6 @@ Item {
                     }
                 }
             }
-        }
-
-        Rectangle {
-            id: rightInspector
-
         }
     }
 }

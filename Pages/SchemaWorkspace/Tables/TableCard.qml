@@ -521,11 +521,6 @@ Rectangle {
                             text: "M : 1"
                             onTriggered: console.log("Selected M:1 for field", rowItem.fieldRowIndex)
                         }
-
-                        Action {
-                            text: "M : M"
-                            onTriggered: console.log("Selected M:M for field", rowItem.fieldRowIndex)
-                        }
                     }
                 }
             }
