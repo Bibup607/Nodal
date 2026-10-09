@@ -452,6 +452,82 @@ Rectangle {
                         Action { text: "inet"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "inet") }
                     }
                 }
+
+                Rectangle {
+                    id: connectorPort
+                    width: 8
+                    height: 8
+                    radius: 4
+                    Layout.alignment: Qt.AlignVCenter
+
+                    color: portMouseArea.containsMouse ? "#52d6a6" : "#262f3f"
+                    border.width: 1
+                    border.color: portMouseArea.containsMouse ? "#ffffff" : "#52d6a6"
+
+                    MouseArea {
+                        id: portMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.CrossCursor
+
+                        onPressed: (mouse) => {
+                            relationMenu.open()
+                        }
+                    }
+
+                    Menu {
+                        id: relationMenu
+                        y: connectorPort.height + 4
+                        width: 80
+                        padding: 4
+
+                        background: Rectangle {
+                            color: "#11151c"
+                            border.color: "#252c37"
+                            border.width: 1
+                            radius: 8
+                        }
+
+                        delegate: MenuItem {
+                            id: relMenuItem
+                            implicitHeight: 28
+
+                            contentItem: Text {
+                                text: relMenuItem.text
+                                font.family: "Monospace"
+                                font.pixelSize: 11
+                                font.bold: relMenuItem.highlighted
+                                color: relMenuItem.highlighted ? "#52d6a6" : "#cbd5e1"
+                                verticalAlignment: Text.AlignVCenter
+                            }
+
+                            background: Rectangle {
+                                radius: 4
+                                color: relMenuItem.highlighted ? "#1b222c" : "transparent"
+                            }
+                        }
+
+                        Action {
+                            text: "1 : 1"
+                            onTriggered: console.log("Selected 1:1 for field", rowItem.fieldRowIndex)
+                        }
+
+                        Action {
+                            text: "1 : M"
+                            onTriggered: console.log("Selected 1:M for field", rowItem.fieldRowIndex)
+                        }
+
+                        Action {
+                            text: "M : 1"
+                            onTriggered: console.log("Selected M:1 for field", rowItem.fieldRowIndex)
+                        }
+
+                        Action {
+                            text: "M : M"
+                            onTriggered: console.log("Selected M:M for field", rowItem.fieldRowIndex)
+                        }
+                    }
+                }
             }
         }
     }
