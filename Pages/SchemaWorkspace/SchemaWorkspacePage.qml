@@ -100,19 +100,72 @@ Item {
                         Layout.preferredHeight: 35
                     }
 
-                    ToolbarButton {
+                    Rectangle {
                         id: addTableBtn
-                        imageSource: "qrc:/Images/table.svg"
-                        imageSourceActive: "qrc:/Images/table-icon-active.svg"
-                        text: "Table"
-                        leftPadding: 12
                         Layout.preferredWidth: 65
                         Layout.preferredHeight: 35
+                        radius: 6
 
-                        onClicked: {
-                            let spawnX = (-workspaceCanvas.panX + 200) / workspaceCanvas.zoom
-                            let spawnY = (-workspaceCanvas.panY + 150) / workspaceCanvas.zoom
-                            globalTablesModel.addNewTable(spawnX, spawnY)
+                        readonly property color normalBg: "#11151c"
+                        readonly property color activeBg: "#183c35"
+
+                        readonly property color normalBorder: "#252c37"
+                        readonly property color activeBorder: "#52d6a6"
+
+                        readonly property color normalText: "#a1a9b7"
+                        readonly property color activeText: "#52d6a6"
+
+                        color: (mouseArea.pressed || mouseArea.containsMouse) ? activeBg : normalBg
+                        border.width: 1
+                        border.color: (mouseArea.pressed || mouseArea.containsMouse) ? activeBorder : normalBorder
+
+                        Behavior on color {
+                            ColorAnimation { duration: 150 }
+                        }
+
+                        Behavior on border.color {
+                            ColorAnimation { duration: 150 }
+                        }
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: 10
+                            anchors.rightMargin: 8
+                            spacing: 6
+
+                            Image {
+                                id: btnIcon
+                                source: (mouseArea.pressed || mouseArea.containsMouse) ? "qrc:/Images/table-icon-active.svg" : "qrc:/Images/table.svg"
+                                sourceSize.width: 13
+                                sourceSize.height: 13
+                                Layout.alignment: Qt.AlignVCenter
+                            }
+
+                            Text {
+                                id: btnText
+                                text: "Table"
+                                color: (mouseArea.pressed || mouseArea.containsMouse) ? addTableBtn.activeText : addTableBtn.normalText
+                                font.pixelSize: 12
+                                font.family: "Monospace"
+                                Layout.alignment: Qt.AlignVCenter
+
+                                Behavior on color {
+                                    ColorAnimation { duration: 150 }
+                                }
+                            }
+                        }
+
+                        MouseArea {
+                            id: mouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+
+                            onClicked: {
+                                let spawnX = (-workspaceCanvas.panX + 200) / workspaceCanvas.zoom
+                                let spawnY = (-workspaceCanvas.panY + 150) / workspaceCanvas.zoom
+                                globalTablesModel.addNewTable(spawnX, spawnY)
+                            }
                         }
                     }
 
