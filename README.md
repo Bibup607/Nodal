@@ -39,5 +39,5 @@
 
 1. **Клонируйте репозиторий:**
    ```bash
-   git clone [https://github.com/your-username/NodalDB.git](https://github.com/your-username/NodalDB.git)
+   git clone [https://github.com/Bibup607/NodalDB.git](https://github.com/Bibup607/NodalDB.git)
    cd NodalDB
