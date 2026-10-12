@@ -89,4 +89,22 @@ ListModel {
             setProperty(tableIndex, "tableName", newName)
         }
     }
+
+    function duplicateTable(tableIndex) {
+        if (tableIndex < 0 || tableIndex >= count) return
+        let src = get(tableIndex)
+
+        let fieldsCopy = []
+        for (let i = 0; i < src.fields.count; ++i) {
+            let f = src.fields.get(i)
+            fieldsCopy.push({ name: f.name, type: f.type, isPk: f.isPk, isFk: f.isFk })
+        }
+
+        append({
+            tableName: src.tableName + "_copy",
+            posX: src.posX + 40,
+            posY: src.posY + 40,
+            fields: fieldsCopy
+        })
+    }
 }

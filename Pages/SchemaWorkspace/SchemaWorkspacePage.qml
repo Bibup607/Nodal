@@ -524,7 +524,7 @@ Item {
 
                                                 Action {
                                                     text: "Add column"
-                                                    onTriggered: globalTablesModel.addColumn(realIndex)
+                                                    onTriggered: globalTablesModel.addColumnToTable(realIndex)
                                                 }
 
                                                 Action {
