@@ -91,16 +91,14 @@ Item {
                 }
 
                 onRemoveTable: {
-                    if (canvasRoot.tablesModel) {
-                        if (canvasRoot.selectedTableIndex === cardItem.currentTableIndex) {
-                            canvasRoot.selectedTableIndex = -1
-                        }
-                        if (canvasRoot.tablesModel.removeTable) {
-                            canvasRoot.tablesModel.removeTable(cardItem.currentTableIndex)
-                        } else if (canvasRoot.tablesModel.removeRow) {
-                            canvasRoot.tablesModel.removeRow(cardItem.currentTableIndex)
-                        }
+                    const sel = canvasRoot.tablesModel
+                    if (cardItem.currentTableIndex === sel) {
+                        canvasRoot.tablesModel = -1
                     }
+                    else if (sel > cardItem.currentTableIndex) {
+                        canvasRoot.tablesModel = sel -1
+                    }
+                    globalTablesModel.removeTable(cardItem.currentTableIndex)
                 }
 
                 onRequestAddColumn: {

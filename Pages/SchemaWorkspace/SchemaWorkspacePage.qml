@@ -484,7 +484,6 @@ Item {
                                                     id: menuItem
                                                     implicitHeight: 28
 
-                                                    // Проверяем, помечен ли action как деструктивный
                                                     readonly property bool isDestructive: menuItem.action && menuItem.action.isDestructive === true
 
                                                     contentItem: Text {
@@ -493,7 +492,6 @@ Item {
                                                         font.pixelSize: 11
                                                         font.bold: menuItem.highlighted
 
-                                                        // Красный текст для удаления, иначе изумрудный
                                                         color: menuItem.highlighted
                                                                ? (menuItem.isDestructive ? "#ef4444" : "#52d6a6")
                                                                : "#cbd5e1"
@@ -509,7 +507,6 @@ Item {
                                                     background: Rectangle {
                                                         radius: 4
 
-                                                        // Тёмно-красный фон при наведении на удаление, иначе тёмно-зеленый/серый
                                                         color: menuItem.highlighted
                                                                ? (menuItem.isDestructive ? "#2d1519" : "#1b222c")
                                                                : "transparent"
@@ -543,7 +540,16 @@ Item {
                                                 Action {
                                                     text: "Delete table"
                                                     property bool isDestructive: true
-                                                    onTriggered: globalTablesModel.removeTable(realIndex)
+                                                    onTriggered: {
+                                                        const sel = workspaceCanvas.selectedTableIndex
+                                                        if (realIndex === sel) {
+                                                            workspaceCanvas.selectedTableIndex = -1
+                                                        }
+                                                        else if (sel > realIndex) {
+                                                            workspaceCanvas.selectedTableIndex = sel -1
+                                                        }
+                                                        globalTablesModel.removeTable(realIndex)
+                                                    }
                                                 }
                                             }
                                         }
