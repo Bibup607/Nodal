@@ -90,6 +90,7 @@ ListModel {
         }
     }
 
+    // функция лублирования таблицы
     function duplicateTable(tableIndex) {
         if (tableIndex < 0 || tableIndex >= count) return
         let src = get(tableIndex)

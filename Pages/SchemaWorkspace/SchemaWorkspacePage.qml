@@ -389,12 +389,35 @@ Item {
                                 model: filteredTablesModel
 
                                 delegate: Item {
+                                    id: rowDelegate
                                     width: 178
                                     height: 30
                                     x: 14
 
                                     readonly property int realIndex: filteredTablesModel.mapToSourceRow(index)
                                     property bool isSelected: workspaceCanvas.selectedTableIndex === realIndex
+                                    property bool isEditing: false
+
+                                    // при входе в режим редактирования подставляем текущее имя и даем фокус полю
+                                    onIsEditingChanged: {
+                                        if (isEditing) {
+                                            renameField.text = model.tableName
+                                            Qt.callLater(function() {
+                                                renameField.forceActiveFocus()
+                                                renameField.selectAll()
+                                            })
+                                        }
+                                    }
+
+                                    // сохраняет новое имя, пустое имя игнорируем
+                                    function commitRename() {
+                                        if (!isEditing) return
+                                        const newName = renameField.text.trim()
+                                        isEditing = false
+                                        if (newName !== "" && newName !== model.tableName) {
+                                            globalTablesModel.setTableName(realIndex, newName)
+                                        }
+                                    }
 
                                     Rectangle {
                                         id: rowBg
@@ -424,6 +447,7 @@ Item {
 
                                         Text {
                                             text: model.tableName
+                                            visible: !rowDelegate.isEditing
                                             color: (isSelected || rowMouse.containsMouse) ? rowBg.activeColort : rowBg.normalColort
                                             font.family: fonts.jetBrainsMB.family
                                             font.pointSize: 8
@@ -434,6 +458,42 @@ Item {
                                             Behavior on color {
                                                 ColorAnimation { duration: 150 }
                                             }
+                                        }
+
+                                        // поле переименования, показывается вместо имени в режиме редактирования
+                                        TextField {
+                                            id: renameField
+                                            visible: rowDelegate.isEditing
+                                            anchors.left: parent.left
+                                            anchors.leftMargin: 6
+                                            anchors.right: parent.right
+                                            anchors.rightMargin: 48
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            height: 24
+                                            leftPadding: 6
+                                            rightPadding: 6
+                                            topPadding: 0
+                                            bottomPadding: 0
+                                            verticalAlignment: TextInput.AlignVCenter
+                                            maximumLength: 20
+                                            selectByMouse: true
+                                            color: "#ffffff"
+                                            selectionColor: "#1f4e43"
+                                            font.family: fonts.jetBrainsMB.family
+                                            font.pointSize: 8
+
+                                            background: Rectangle {
+                                                radius: 4
+                                                color: "#11151c"
+                                                border.width: 1
+                                                border.color: "#52d6a6"
+                                            }
+
+                                            onAccepted: rowDelegate.commitRename()
+                                            onActiveFocusChanged: {
+                                                if (!activeFocus) rowDelegate.commitRename()
+                                            }
+                                            Keys.onEscapePressed: rowDelegate.isEditing = false
                                         }
 
                                         Text {
@@ -517,9 +577,18 @@ Item {
                                                     }
                                                 }
 
+                                                // включаем редактирование только после закрытия меню, иначе меню заберет фокус у поля
+                                                property bool renameRequested: false
+                                                onClosed: {
+                                                    if (renameRequested) {
+                                                        renameRequested = false
+                                                        rowDelegate.isEditing = true
+                                                    }
+                                                }
+
                                                 Action {
                                                     text: "Rename table"
-                                                    onTriggered: rowDelegate.isEditing = true
+                                                    onTriggered: tableAction.renameRequested = true
                                                 }
 
                                                 Action {
