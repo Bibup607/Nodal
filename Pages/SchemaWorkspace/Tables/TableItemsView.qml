@@ -8,6 +8,8 @@ ListModel {
         tableName: "users"
         posX: 100
         posY: 100
+        comment: ""
+        hasComment: false
         fields: [
             ListElement { name: "id"; type: "uuid"; isPk: true; isFk: false },
             ListElement { name: "username"; type: "varchar"; isPk: false; isFk: false }
@@ -19,6 +21,8 @@ ListModel {
                 tableName: "table_" + (count + 1),
                 posX: 120 + (count * 40),
                 posY: 120 + (count * 40),
+                comment: "",
+                hasComment: false,
                 fields: [
                     {
                         name: "id",
@@ -105,7 +109,24 @@ ListModel {
             tableName: src.tableName + "_copy",
             posX: src.posX + 40,
             posY: src.posY + 40,
+            comment: src.comment,
+            hasComment: src.hasComment,
             fields: fieldsCopy
         })
+    }
+
+    // открывает область комментария у таблицы
+    function addComment(tableIndex) {
+        if (tableIndex >= 0 && tableIndex < count) {
+            setProperty(tableIndex, "hasComment", true)
+        }
+    }
+
+    // сохраняет текст комментария пустой комментарий скрывает область
+    function setTableComment(tableIndex, text) {
+        if (tableIndex >= 0 && tableIndex < count) {
+            setProperty(tableIndex, "comment", text)
+            setProperty(tableIndex, "hasComment", text.trim() !== "")
+        }
     }
 }

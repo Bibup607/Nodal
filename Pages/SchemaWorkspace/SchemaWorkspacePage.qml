@@ -391,7 +391,8 @@ Item {
                                 delegate: Item {
                                     id: rowDelegate
                                     width: 178
-                                    height: 30
+                                    // строка растет вниз, когда открыт комментарий
+                                    height: 30 + (commentField.visible ? commentField.height + 4 : 0)
                                     x: 14
 
                                     readonly property int realIndex: filteredTablesModel.mapToSourceRow(index)
@@ -409,7 +410,7 @@ Item {
                                         }
                                     }
 
-                                    // сохраняет новое имя, пустое имя игнорируем
+                                    // сохраняет новое имя пустое имя игнорируем
                                     function commitRename() {
                                         if (!isEditing) return
                                         const newName = renameField.text.trim()
@@ -419,9 +420,21 @@ Item {
                                         }
                                     }
 
+                                    // открывает область комментария и ставит в нее курсор
+                                    function startComment() {
+                                        globalTablesModel.addComment(realIndex)
+                                        Qt.callLater(function() {
+                                            commentField.forceActiveFocus()
+                                            commentField.cursorPosition = commentField.length
+                                        })
+                                    }
+
                                     Rectangle {
                                         id: rowBg
-                                        anchors.fill: parent
+                                        anchors.top: parent.top
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        height: 30
                                         radius: 6
 
                                         property color normalColorbg: "transparent"
@@ -579,10 +592,15 @@ Item {
 
                                                 // включаем редактирование только после закрытия меню, иначе меню заберет фокус у поля
                                                 property bool renameRequested: false
+                                                property bool commentRequested: false
                                                 onClosed: {
                                                     if (renameRequested) {
                                                         renameRequested = false
                                                         rowDelegate.isEditing = true
+                                                    }
+                                                    if (commentRequested) {
+                                                        commentRequested = false
+                                                        rowDelegate.startComment()
                                                     }
                                                 }
 
@@ -598,7 +616,7 @@ Item {
 
                                                 Action {
                                                     text: "Add comment"
-                                                    onTriggered: globalTablesModel.addComment(realIndex)
+                                                    onTriggered: tableAction.commentRequested = true
                                                 }
 
                                                 Action {
@@ -622,6 +640,38 @@ Item {
                                                 }
                                             }
                                         }
+                                    }
+
+                                    // область комментария под названием таблицы
+                                    TextArea {
+                                        id: commentField
+                                        visible: model.hasComment
+                                        anchors.top: rowBg.bottom
+                                        anchors.topMargin: 4
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        text: model.comment
+                                        placeholderText: "Comment..."
+                                        placeholderTextColor: "#64748b"
+                                        wrapMode: TextEdit.Wrap
+                                        selectByMouse: true
+                                        padding: 6
+                                        leftPadding: 12
+                                        color: "#cbd5e1"
+                                        selectionColor: "#1f4e43"
+                                        font.family: fonts.jetBrainsMB.family
+                                        font.pointSize: 8
+
+                                        background: Rectangle {
+                                            radius: 4
+                                            color: "#11151c"
+                                            border.width: 1
+                                            border.color: commentField.activeFocus ? "#52d6a6" : "#252c37"
+                                        }
+
+                                        // сохраняем при потере фокуса, пустой комментарий закроет область
+                                        onEditingFinished: globalTablesModel.setTableComment(rowDelegate.realIndex, text)
+                                        Keys.onEscapePressed: commentField.focus = false
                                     }
                                 }
                             }
