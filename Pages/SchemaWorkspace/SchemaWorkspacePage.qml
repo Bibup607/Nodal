@@ -422,6 +422,7 @@ Item {
 
                                     // открывает область комментария и ставит в нее курсор
                                     function startComment() {
+                                        workspaceCanvas.selectedTableIndex = realIndex
                                         globalTablesModel.addComment(realIndex)
                                         Qt.callLater(function() {
                                             commentField.forceActiveFocus()
@@ -645,7 +646,7 @@ Item {
                                     // область комментария под названием таблицы
                                     TextArea {
                                         id: commentField
-                                        visible: model.hasComment
+                                        visible: model.hasComment && rowDelegate.isSelected
                                         anchors.top: rowBg.bottom
                                         anchors.topMargin: 4
                                         anchors.left: parent.left
@@ -672,6 +673,8 @@ Item {
                                         // сохраняем при потере фокуса, пустой комментарий закроет область
                                         onEditingFinished: globalTablesModel.setTableComment(rowDelegate.realIndex, text)
                                         Keys.onEscapePressed: commentField.focus = false
+                                        Keys.onReturnPressed: commentField.focus = false
+                                        Keys.onEnterPressed: commentField.focus = false
                                     }
                                 }
                             }
