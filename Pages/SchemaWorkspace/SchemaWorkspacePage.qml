@@ -322,11 +322,15 @@ Item {
 
                         // База данных и список таблиц
                         Column {
+                            id: dbSection
                             width: 206
                             height: implicitHeight
                             spacing: 8
                             topPadding: 10
                             bottomPadding: 16
+
+                            // true = список таблиц развернут
+                            property bool isExpanded: true
 
                             Item {
                                 width: 178
@@ -340,7 +344,7 @@ Item {
 
                                     Image {
                                         id: chevronIcon
-                                        rotation: 0
+                                        rotation: dbSection.isExpanded ? 0 : 180
                                         width: 13
                                         height: 13
                                         anchors.verticalCenter: parent.verticalCenter
@@ -353,7 +357,7 @@ Item {
                                         MouseArea {
                                             anchors.fill: parent
                                             cursorShape: Qt.PointingHandCursor
-                                            onClicked: chevronIcon.rotation = (chevronIcon.rotation === 0 ? 180 : 0)
+                                            onClicked: dbSection.isExpanded = !dbSection.isExpanded
                                         }
                                     }
 
@@ -390,6 +394,7 @@ Item {
 
                                 delegate: Item {
                                     id: rowDelegate
+                                    visible: dbSection.isExpanded
                                     width: 178
                                     // строка растет вниз, когда открыт комментарий
                                     height: 30 + (commentField.visible ? commentField.height + 4 : 0)
