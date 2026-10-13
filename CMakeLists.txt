@@ -22,6 +22,11 @@ qt_add_executable(appNodalDB
     main.cpp
 )
 
+# Иконка exe для проводника, ярлыков и закрепления в панели задач
+if(WIN32)
+    target_sources(appNodalDB PRIVATE app.rc)
+endif()
+
 qt_add_qml_module(appNodalDB
     URI NodalDB
     VERSION 1.0
