@@ -11,6 +11,7 @@ Rectangle {
     y: model.posY
 
     property bool isSelected: workspaceCanvas.selectedTableIndex === index
+    readonly property int tableIndex: index
 
     signal removeTable()
     signal selected()
@@ -18,6 +19,14 @@ Rectangle {
     signal nameChanged(string newName)
     signal fieldKeyChanged(int fieldIndex, string keyType)
     signal fieldTypeChanged(int fieldIndex, string newType)
+    signal relationStarted(int fieldIndex, string relType)
+    signal portClicked(int fieldIndex)
+
+    function portPoint(fieldIndex, rightSide) {
+        let row = fieldsRepeater.count > fieldIndex ? fieldsRepeater.itemAt(fieldIndex) : null
+        let rowCenterY = row ? mainLayout.y + row.y + row.height / 2 : height / 2
+        return Qt.point(rightSide ? x + width : x, y + rowCenterY)
+    }
 
     color: "#121721"
     radius: 10
@@ -213,6 +222,7 @@ Rectangle {
 
         // список колонок
         Repeater {
+            id: fieldsRepeater
             model: fields
 
             delegate: RowLayout {
@@ -460,9 +470,14 @@ Rectangle {
                     radius: 4
                     Layout.alignment: Qt.AlignVCenter
 
-                    color: portMouseArea.containsMouse ? "#52d6a6" : "#262f3f"
+                    readonly property bool isPending: workspaceCanvas.isConnecting
+                                                      && workspaceCanvas.pendingTable === root.tableIndex
+                                                      && workspaceCanvas.pendingField === rowItem.fieldRowIndex
+                    readonly property bool isLit: portMouseArea.containsMouse || isPending
+
+                    color: isLit ? "#52d6a6" : "#262f3f"
                     border.width: 1
-                    border.color: portMouseArea.containsMouse ? "#ffffff" : "#52d6a6"
+                    border.color: isLit ? "#ffffff" : "#52d6a6"
 
                     MouseArea {
                         id: portMouseArea
@@ -471,7 +486,10 @@ Rectangle {
                         cursorShape: Qt.CrossCursor
 
                         onPressed: (mouse) => {
-                            relationMenu.open()
+                            if (workspaceCanvas.isConnecting)
+                                root.portClicked(rowItem.fieldRowIndex)
+                            else
+                                relationMenu.open()
                         }
                     }
 
@@ -509,17 +527,17 @@ Rectangle {
 
                         Action {
                             text: "1 : 1"
-                            onTriggered: console.log("Selected 1:1 for field", rowItem.fieldRowIndex)
+                            onTriggered: root.relationStarted(rowItem.fieldRowIndex, "1:1")
                         }
 
                         Action {
                             text: "1 : M"
-                            onTriggered: console.log("Selected 1:M for field", rowItem.fieldRowIndex)
+                            onTriggered: root.relationStarted(rowItem.fieldRowIndex, "1:M")
                         }
 
                         Action {
                             text: "M : 1"
-                            onTriggered: console.log("Selected M:1 for field", rowItem.fieldRowIndex)
+                            onTriggered: root.relationStarted(rowItem.fieldRowIndex, "M:1")
                         }
                     }
                 }

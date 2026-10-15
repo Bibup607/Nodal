@@ -1,5 +1,6 @@
 import QtQuick
 import "Tables"
+import "Relations"
 
 Item {
     id: canvasRoot
@@ -7,7 +8,45 @@ Item {
     clip: true // обрезка того что выходит за рамку
 
     property var tablesModel: null
+    property var relationsModel: null
     property int selectedTableIndex: -1
+
+    property bool isConnecting: false
+    property int pendingTable: -1
+    property int pendingField: -1
+    property string pendingType: ""
+
+    readonly property real mouseWorldX: (canvasHover.point.position.x - panX) / zoom
+    readonly property real mouseWorldY: (canvasHover.point.position.y - panY) / zoom
+
+    function startRelation(tableIndex, fieldIndex, relType) {
+        pendingTable = tableIndex
+        pendingField = fieldIndex
+        pendingType = relType
+        isConnecting = true
+    }
+
+    function finishRelation(tableIndex, fieldIndex) {
+        if (relationsModel && relationsModel.addRelation(pendingTable, pendingField, tableIndex, fieldIndex, pendingType)) {
+            let fk = relationsModel.fkEnd(relationsModel.count - 1)
+            tablesModel.setFieldFk(fk.table, fk.field, true)
+        }
+        cancelRelation()
+    }
+
+    function cancelRelation() {
+        isConnecting = false
+        pendingTable = -1
+        pendingField = -1
+        pendingType = ""
+    }
+
+    function removeRelation(relationIndex) {
+        let fk = relationsModel.fkEnd(relationIndex)
+        relationsModel.remove(relationIndex)
+        if (!relationsModel.isFkUsed(fk.table, fk.field))
+            tablesModel.setFieldFk(fk.table, fk.field, false)
+    }
 
     property real panX: 0
     property real panY: 0
@@ -76,6 +115,20 @@ Item {
         transformOrigin: Item.TopLeft
 
         Repeater {
+            model: canvasRoot.relationsModel
+            delegate: RelationLine {
+                fromCard: tablesRepeater.count > fromTable ? tablesRepeater.itemAt(fromTable) : null
+                toCard: tablesRepeater.count > toTable ? tablesRepeater.itemAt(toTable) : null
+                fromField: model.fromField
+                toField: model.toField
+                relType: model.relType
+
+                onRemoveRequested: canvasRoot.removeRelation(index)
+            }
+        }
+
+        Repeater {
+            id: tablesRepeater
             model: canvasRoot.tablesModel
             delegate: TableCard {
                 id: cardItem
@@ -91,14 +144,22 @@ Item {
                 }
 
                 onRemoveTable: {
-                    const sel = canvasRoot.tablesModel
+                    const sel = canvasRoot.selectedTableIndex
                     if (cardItem.currentTableIndex === sel) {
-                        canvasRoot.tablesModel = -1
+                        canvasRoot.selectedTableIndex = -1
                     }
                     else if (sel > cardItem.currentTableIndex) {
-                        canvasRoot.tablesModel = sel -1
+                        canvasRoot.selectedTableIndex = sel -1
                     }
                     globalTablesModel.removeTable(cardItem.currentTableIndex)
+                }
+
+                onRelationStarted: (fieldIndex, relType) => {
+                    canvasRoot.startRelation(cardItem.currentTableIndex, fieldIndex, relType)
+                }
+
+                onPortClicked: (fieldIndex) => {
+                    canvasRoot.finishRelation(cardItem.currentTableIndex, fieldIndex)
                 }
 
                 onRequestAddColumn: {
@@ -128,6 +189,31 @@ Item {
                 }
             }
         }
+
+        RelationLine {
+            isPreview: true
+            visible: canvasRoot.isConnecting && fromCard !== null
+            fromCard: canvasRoot.isConnecting && tablesRepeater.count > canvasRoot.pendingTable
+                      ? tablesRepeater.itemAt(canvasRoot.pendingTable) : null
+            fromField: canvasRoot.pendingField
+            relType: canvasRoot.pendingType
+            previewEnd: Qt.point(canvasRoot.mouseWorldX, canvasRoot.mouseWorldY)
+        }
+    }
+
+    HoverHandler {
+        id: canvasHover
+    }
+
+    TapHandler {
+        enabled: canvasRoot.isConnecting
+        onTapped: canvasRoot.cancelRelation()
+    }
+
+    Shortcut {
+        sequence: "Esc"
+        enabled: canvasRoot.isConnecting
+        onActivated: canvasRoot.cancelRelation()
     }
 
     // перемещение камеры

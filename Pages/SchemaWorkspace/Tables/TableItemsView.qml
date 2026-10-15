@@ -59,6 +59,13 @@ ListModel {
         }
     }
 
+    function setFieldFk(tableIndex, fieldIndex, value) {
+        if (tableIndex < 0 || tableIndex >= count) return
+        let table = get(tableIndex)
+        if (!table || !table.fields || fieldIndex < 0 || fieldIndex >= table.fields.count) return
+        table.fields.setProperty(fieldIndex, "isFk", value)
+    }
+
     // добавление новой дефолтной колонки в конец таблицы
     function addColumnToTable(tableIndex) {
         if (tableIndex < 0 || tableIndex >= count) return

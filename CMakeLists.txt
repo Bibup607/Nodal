@@ -38,6 +38,8 @@ qt_add_qml_module(appNodalDB
         Pages/SchemaWorkspace/InfiniteCanvas.qml
         Pages/SchemaWorkspace/Tables/TableCard.qml
         Pages/SchemaWorkspace/Tables/TableItemsView.qml
+        Pages/SchemaWorkspace/Relations/RelationsModel.qml
+        Pages/SchemaWorkspace/Relations/RelationLine.qml
         Pages/SchemaWorkspace/CustomButtons/ImportButton.qml
         Pages/SchemaWorkspace/CustomButtons/ToolbarButton.qml
         Pages/SchemaWorkspace/CustomButtons/WindowControls.qml

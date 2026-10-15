@@ -6,6 +6,7 @@ import QtQuick.Window
 import NodalDB
 import "../../"
 import "Tables"
+import "Relations"
 import "CustomButtons"
 
 
@@ -24,6 +25,25 @@ Item {
 
     TableItemsView {
         id: globalTablesModel
+    }
+
+    RelationsModel {
+        id: globalRelationsModel
+    }
+
+    Connections {
+        target: globalTablesModel
+
+        function onRowsRemoved(parent, first, last) {
+            workspaceCanvas.cancelRelation()
+            for (let t = last; t >= first; --t) {
+                let freed = globalRelationsModel.removeTableRelations(t)
+                for (let e of freed) {
+                    if (!globalRelationsModel.isFkUsed(e.table, e.field))
+                        globalTablesModel.setFieldFk(e.table, e.field, false)
+                }
+            }
+        }
     }
 
     TablesFilterProxyModel {
@@ -696,6 +716,7 @@ Item {
                     id: workspaceCanvas
                     anchors.fill: parent
                     tablesModel: globalTablesModel
+                    relationsModel: globalRelationsModel
 
                     Rectangle {
                         id: tableCard
