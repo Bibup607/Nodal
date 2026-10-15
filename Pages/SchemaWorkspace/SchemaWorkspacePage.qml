@@ -188,16 +188,6 @@ Item {
                             }
                         }
                     }
-
-                    ToolbarButton {
-                        id: relationBtn
-                        imageSource: "qrc:/Images/relation.svg"
-                        imageSourceActive: "qrc:/Images/relation-icon-active.svg"
-                        text: "Relation"
-                        leftPadding: 15
-                        Layout.preferredWidth: 80
-                        Layout.preferredHeight: 35
-                    }
                 }
 
                 Item { Layout.fillWidth: true }
