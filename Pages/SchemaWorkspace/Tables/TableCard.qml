@@ -12,6 +12,7 @@ Rectangle {
 
     property bool isSelected: workspaceCanvas.selectedTableIndex === index
     readonly property int tableIndex: index
+    readonly property color tableColor: model.tableColor // чтобы связи брали цвет таблицы
 
     signal removeTable()
     signal selected()

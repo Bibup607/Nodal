@@ -18,7 +18,10 @@ Item {
 
     visible: fromCard !== null && (isPreview || toCard !== null)
 
-    readonly property color lineColor: badgeMouseArea.containsMouse ? "#ef4444" : "#52d6a6"
+    // линия берет цвет таблицы откуда начата связь при наведении на бейдж красная
+    readonly property color fromColor: badgeMouseArea.containsMouse ? "#ef4444" : (fromCard ? fromCard.tableColor : "#52d6a6")
+    readonly property color toColor: badgeMouseArea.containsMouse ? "#ef4444" : (toCard ? toCard.tableColor : fromColor)
+    readonly property color lineColor: fromColor
 
     readonly property real gap: 40
     readonly property bool toIsRight: toCard !== null && fromCard !== null
@@ -69,7 +72,7 @@ Item {
     Text {
         visible: !root.isPreview
         text: root.fromLabel
-        color: root.lineColor
+        color: root.fromColor
         font.family: "Monospace"
         font.pixelSize: 11
         font.bold: true
@@ -80,7 +83,7 @@ Item {
     Text {
         visible: !root.isPreview
         text: root.toLabel
-        color: root.lineColor
+        color: root.toColor
         font.family: "Monospace"
         font.pixelSize: 11
         font.bold: true
