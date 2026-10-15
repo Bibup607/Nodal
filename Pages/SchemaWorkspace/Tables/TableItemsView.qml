@@ -8,6 +8,7 @@ ListModel {
         tableName: "users"
         posX: 100
         posY: 100
+        tableColor: "#60a5fa"
         comment: ""
         hasComment: false
         fields: [
@@ -21,6 +22,7 @@ ListModel {
                 tableName: "table_" + (count + 1),
                 posX: 120 + (count * 40),
                 posY: 120 + (count * 40),
+                tableColor: "#60a5fa",
                 comment: "",
                 hasComment: false,
                 fields: [
@@ -116,10 +118,18 @@ ListModel {
             tableName: src.tableName + "_copy",
             posX: src.posX + 40,
             posY: src.posY + 40,
+            tableColor: src.tableColor,
             comment: src.comment,
             hasComment: src.hasComment,
             fields: fieldsCopy
         })
+    }
+
+    // смена цвета таблицы синхронно с сайдбаром и карточкой
+    function setTableColor(tableIndex, newColor) {
+        if (tableIndex >= 0 && tableIndex < count) {
+            setProperty(tableIndex, "tableColor", newColor)
+        }
     }
 
     // открывает область комментария у таблицы

@@ -41,6 +41,23 @@ Rectangle {
         }
     }
 
+    // цветная полоска сверху карточки
+    Rectangle {
+        anchors.top: parent.top
+        anchors.topMargin: root.border.width
+        anchors.left: parent.left
+        anchors.leftMargin: 12
+        anchors.right: parent.right
+        anchors.rightMargin: 12
+        height: 3
+        radius: 1.5
+        color: model.tableColor
+
+        Behavior on color {
+            ColorAnimation { duration: 150 }
+        }
+    }
+
     // главная вертикальная колонка
     ColumnLayout {
         id: mainLayout
@@ -90,7 +107,7 @@ Rectangle {
             Text {
                 text: "⊞"
                 font.pixelSize: 22
-                color: root.isSelected ? "#34d399" : "#60a5fa"
+                color: model.tableColor
             }
 
             TextField {

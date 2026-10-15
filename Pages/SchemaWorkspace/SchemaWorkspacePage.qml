@@ -484,6 +484,90 @@ Item {
                                             }
                                         }
 
+                                        // кнопка цвета таблицы по клику открывает палитру
+                                        Rectangle {
+                                            id: colorBtn
+                                            width: 10
+                                            height: 10
+                                            radius: 5
+                                            anchors.left: parent.left
+                                            anchors.leftMargin: 10
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            color: model.tableColor
+                                            border.width: colorMouse.containsMouse || colorPopup.visible ? 2 : 0
+                                            border.color: "#ffffff"
+                                            scale: colorMouse.containsMouse ? 1.2 : 1
+
+                                            Behavior on color {
+                                                ColorAnimation { duration: 150 }
+                                            }
+
+                                            Behavior on scale {
+                                                NumberAnimation { duration: 120 }
+                                            }
+
+                                            MouseArea {
+                                                id: colorMouse
+                                                anchors.fill: parent
+                                                anchors.margins: -4 // увеличиваем зону клика чтобы попасть по маленькому кружку
+                                                hoverEnabled: true
+                                                cursorShape: Qt.PointingHandCursor
+                                                onClicked: colorPopup.open()
+                                            }
+
+                                            // палитра выбора цвета
+                                            Popup {
+                                                id: colorPopup
+                                                y: colorBtn.height + 8
+                                                x: -6
+                                                padding: 8
+
+                                                // не palette потому что это имя уже занято у Popup
+                                                readonly property var swatchColors: [
+                                                    "#60a5fa", "#52d6a6", "#a78bfa", "#f472b6",
+                                                    "#f87171", "#fb923c", "#facc15", "#94a3b8"
+                                                ]
+
+                                                background: Rectangle {
+                                                    color: "#11151c"
+                                                    border.color: "#252c37"
+                                                    border.width: 1
+                                                    radius: 8
+                                                }
+
+                                                contentItem: Grid {
+                                                    columns: 4
+                                                    spacing: 6
+
+                                                    Repeater {
+                                                        model: colorPopup.swatchColors
+
+                                                        delegate: Rectangle {
+                                                            required property string modelData
+                                                            width: 18
+                                                            height: 18
+                                                            radius: 9
+                                                            color: modelData
+                                                            // обводка при наведении и у текущего цвета
+                                                            border.width: swatchMouse.containsMouse || Qt.colorEqual(modelData, colorBtn.color) ? 2 : 0
+                                                            border.color: "#ffffff"
+
+                                                            MouseArea {
+                                                                id: swatchMouse
+                                                                anchors.fill: parent
+                                                                hoverEnabled: true
+                                                                cursorShape: Qt.PointingHandCursor
+                                                                onClicked: {
+                                                                    globalTablesModel.setTableColor(rowDelegate.realIndex, parent.modelData)
+                                                                    colorPopup.close()
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
                                         Text {
                                             text: model.tableName
                                             visible: !rowDelegate.isEditing
@@ -491,7 +575,7 @@ Item {
                                             font.family: fonts.jetBrainsMB.family
                                             font.pointSize: 8
                                             anchors.left: parent.left
-                                            anchors.leftMargin: 12
+                                            anchors.leftMargin: 28
                                             anchors.verticalCenter: parent.verticalCenter
 
                                             Behavior on color {
@@ -504,7 +588,7 @@ Item {
                                             id: renameField
                                             visible: rowDelegate.isEditing
                                             anchors.left: parent.left
-                                            anchors.leftMargin: 6
+                                            anchors.leftMargin: 24
                                             anchors.right: parent.right
                                             anchors.rightMargin: 48
                                             anchors.verticalCenter: parent.verticalCenter
