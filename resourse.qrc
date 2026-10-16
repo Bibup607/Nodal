@@ -16,6 +16,18 @@
         <file>fonts/JetBrainsMono-Bold.ttf</file>
         <file>Images/table-grid-icon-active.svg</file>
         <file>Images/table-grid.svg</file>
+        <file>Images/clock.svg</file>
+        <file>Images/clock-icon-active.svg</file>
+        <file>Images/folder-open.svg</file>
+        <file>Images/folder-open-icon-active.svg</file>
+        <file>Images/plus-square.svg</file>
+        <file>Images/plus-square-icon-active.svg</file>
+        <file>Images/book.svg</file>
+        <file>Images/book-icon-active.svg</file>
+        <file>Images/keyboard.svg</file>
+        <file>Images/keyboard-icon-active.svg</file>
+        <file>Images/globe.svg</file>
+        <file>Images/globe-icon-active.svg</file>
         <file>Pages/SchemaWorkspace/InfiniteCanvas.qml</file>
 	<file>Pages/SchemaWorkspace/Tables/TableCard.qml</file>
     </qresource>

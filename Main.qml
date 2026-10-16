@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Window
-import "Pages/SchemaWorkspace"
+// import "Pages/SchemaWorkspace"
+import "Pages/ProjectLauncher"
 
 Window {
     id: appWindow
@@ -10,7 +11,7 @@ Window {
     title: "NodalDB"
     flags: Qt.Window | Qt.FramelessWindowHint
 
-    SchemaWorkspacePage {
+    ProjectLauncherPage {
         anchors.fill: parent
     }
 }

@@ -5,9 +5,14 @@ import QtQuick.Window
 
 import NodalDB
 import "../../"
+import "LauncherButtons"
 
 Item {
     anchors.fill: parent
+
+    Fonts {
+        id: fonts
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -79,36 +84,21 @@ Item {
             spacing: 0
 
 
-            Rectangle {
-                Layout.preferredWidth: 230
+            LauncherSidebar {
+                Layout.preferredWidth: 206
                 Layout.fillHeight: true
-                color: "#11151c"
+                recentCount: 4
 
-                // Разделительная граница справа от сайдбара
-                Rectangle {
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.right: parent.right
-                    width: 1
-                    color: "#252c37"
-                }
+                // поле поиска проектов еще не сделано
+                onRecentRequested: console.log("recent")
+                onOpenFileRequested: console.log("open project")
+                onCreateProjectRequested: console.log("new project")
+                onLanguageSelected: (code) => language = code
+            }
 
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 8
-
-                    Text {
-                        text: "GET STARTED"
-                        color: "#a1a9b7"
-                        font.pixelSize: 11
-                        font.bold: true
-                        Layout.alignment: Qt.AlignLeft
-                        Layout.leftMargin: 14
-                        Layout.topMargin: 14
-                    }
-
-                    Item { Layout.fillHeight: true }
-                }
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
             }
         }
     }
