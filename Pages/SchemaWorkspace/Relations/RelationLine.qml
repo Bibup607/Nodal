@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Shapes
 import QtQuick.Controls
+import "../Colors"
 
 Item {
     id: root
@@ -12,17 +13,24 @@ Item {
     property string relType: "1:M"
     property int fromSlot: 0
     property int toSlot: 0
+    property string customColor: "" // пустая строка значит цвет таблицы
+    property var colorStore: null
 
     property bool isPreview: false
     property point previewEnd: Qt.point(0, 0)
 
     signal removeRequested()
+    signal colorChangeRequested(string color)
 
     visible: fromCard !== null && (isPreview || toCard !== null)
 
-    // линия берет цвет таблицы откуда начата связь при наведении на бейдж красная
-    readonly property color fromColor: badgeMouseArea.containsMouse ? "#ef4444" : (fromCard ? fromCard.tableColor : "#52d6a6")
-    readonly property color toColor: badgeMouseArea.containsMouse ? "#ef4444" : (toCard ? toCard.tableColor : fromColor)
+    readonly property bool hasCustomColor: customColor !== ""
+
+    // линия берет свой цвет или цвет таблицы откуда начата связь, при наведении на бейдж красная
+    readonly property color fromColor: badgeMouseArea.containsMouse ? "#ef4444"
+                                     : (hasCustomColor ? customColor : (fromCard ? fromCard.tableColor : "#52d6a6"))
+    readonly property color toColor: badgeMouseArea.containsMouse ? "#ef4444"
+                                   : (hasCustomColor ? customColor : (toCard ? toCard.tableColor : fromColor))
     readonly property color lineColor: fromColor
 
     readonly property real gap: 40
@@ -134,6 +142,16 @@ Item {
             onClicked: badgeMenu.open()
         }
 
+        ColorPickerPopup {
+            id: relationPicker
+            y: badge.height + 4
+
+            onColorAccepted: (color) => {
+                if (root.colorStore) root.colorStore.add(color)
+                root.colorChangeRequested(color)
+            }
+        }
+
         Menu {
             id: badgeMenu
             y: badge.height + 4
@@ -145,6 +163,52 @@ Item {
                 border.color: "#252c37"
                 border.width: 1
                 radius: 8
+            }
+
+            // палитра, "+" открывает создание своего цвета
+            Item {
+                width: badgeMenu.availableWidth
+                height: relationPalette.height + 8
+
+                ColorPalette {
+                    id: relationPalette
+                    anchors.centerIn: parent
+                    colorStore: root.colorStore
+                    currentColor: root.customColor
+
+                    onColorSelected: (color) => {
+                        root.colorChangeRequested(color)
+                        badgeMenu.close()
+                    }
+                    onAddRequested: {
+                        badgeMenu.close()
+                        relationPicker.openWith(root.hasCustomColor ? root.customColor
+                                                                    : (root.fromCard ? root.fromCard.tableColor : "#52d6a6"))
+                    }
+                }
+            }
+
+            MenuItem {
+                id: resetColor
+                text: "Reset color"
+                visible: root.hasCustomColor
+                height: visible ? implicitHeight : 0
+                implicitHeight: 28
+                onTriggered: root.colorChangeRequested("")
+
+                contentItem: Text {
+                    text: resetColor.text
+                    color: resetColor.highlighted ? "#52d6a6" : "#a1a9b7"
+                    font.family: "Monospace"
+                    font.pixelSize: 10
+                    verticalAlignment: Text.AlignVCenter
+                    leftPadding: 6
+                }
+
+                background: Rectangle {
+                    radius: 4
+                    color: resetColor.highlighted ? "#1b222c" : "transparent"
+                }
             }
 
             MenuItem {

@@ -40,6 +40,8 @@ qt_add_qml_module(appNodalDB
         Pages/SchemaWorkspace/Tables/TableItemsView.qml
         Pages/SchemaWorkspace/Relations/RelationsModel.qml
         Pages/SchemaWorkspace/Relations/RelationLine.qml
+        Pages/SchemaWorkspace/Colors/ColorPalette.qml
+        Pages/SchemaWorkspace/Colors/ColorPickerPopup.qml
         Pages/SchemaWorkspace/CustomButtons/ImportButton.qml
         Pages/SchemaWorkspace/CustomButtons/ToolbarButton.qml
         Pages/SchemaWorkspace/CustomButtons/WindowControls.qml

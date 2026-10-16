@@ -15,9 +15,15 @@ ListModel {
             fromField: fromField,
             toTable: toTable,
             toField: toField,
-            relType: relType
+            relType: relType,
+            relColor: "" // пустая строка значит брать цвет таблицы
         })
         return true
+    }
+
+    function setRelationColor(i, color) {
+        if (i < 0 || i >= count) return
+        setProperty(i, "relColor", color)
     }
 
     function fkEnd(i) {

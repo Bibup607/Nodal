@@ -9,6 +9,7 @@ Item {
 
     property var tablesModel: null
     property var relationsModel: null
+    property var colorStore: null
     property int selectedTableIndex: -1
 
     property bool isConnecting: false
@@ -124,8 +125,11 @@ Item {
                 relType: model.relType
                 fromSlot: canvasRoot.relationsModel.endpointSlot(index, model.fromTable, model.fromField)
                 toSlot: canvasRoot.relationsModel.endpointSlot(index, model.toTable, model.toField)
+                customColor: model.relColor
+                colorStore: canvasRoot.colorStore
 
                 onRemoveRequested: canvasRoot.removeRelation(index)
+                onColorChangeRequested: (color) => canvasRoot.relationsModel.setRelationColor(index, color)
             }
         }
 

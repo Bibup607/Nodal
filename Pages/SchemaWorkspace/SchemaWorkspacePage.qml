@@ -7,6 +7,7 @@ import NodalDB
 import "../../"
 import "Tables"
 import "Relations"
+import "Colors"
 import "CustomButtons"
 
 
@@ -29,6 +30,29 @@ Item {
 
     RelationsModel {
         id: globalRelationsModel
+    }
+
+    // общая палитра для таблиц и связей: базовые цвета и созданные пользователем
+    QtObject {
+        id: customColorStore
+
+        readonly property var baseColors: [
+            "#60a5fa", "#52d6a6", "#a78bfa", "#f472b6",
+            "#f87171", "#fb923c", "#facc15", "#94a3b8"
+        ]
+        property var colors: []
+
+        function add(c) {
+            c = c.toLowerCase()
+            if (baseColors.indexOf(c) !== -1 || colors.indexOf(c) !== -1) return
+            colors = colors.concat([c]) // новый массив чтобы сработало изменение свойства
+        }
+
+        function remove(i) {
+            let copy = colors.slice()
+            copy.splice(i, 1)
+            colors = copy
+        }
     }
 
     Connections {
@@ -512,12 +536,6 @@ Item {
                                                 x: -6
                                                 padding: 8
 
-                                                // не palette потому что это имя уже занято у Popup
-                                                readonly property var swatchColors: [
-                                                    "#60a5fa", "#52d6a6", "#a78bfa", "#f472b6",
-                                                    "#f87171", "#fb923c", "#facc15", "#94a3b8"
-                                                ]
-
                                                 background: Rectangle {
                                                     color: "#11151c"
                                                     border.color: "#252c37"
@@ -525,35 +543,30 @@ Item {
                                                     radius: 8
                                                 }
 
-                                                contentItem: Grid {
-                                                    columns: 4
-                                                    spacing: 6
+                                                contentItem: ColorPalette {
+                                                    colorStore: customColorStore
+                                                    currentColor: model.tableColor
 
-                                                    Repeater {
-                                                        model: colorPopup.swatchColors
-
-                                                        delegate: Rectangle {
-                                                            required property string modelData
-                                                            width: 18
-                                                            height: 18
-                                                            radius: 9
-                                                            color: modelData
-                                                            // обводка при наведении и у текущего цвета
-                                                            border.width: swatchMouse.containsMouse || Qt.colorEqual(modelData, colorBtn.color) ? 2 : 0
-                                                            border.color: "#ffffff"
-
-                                                            MouseArea {
-                                                                id: swatchMouse
-                                                                anchors.fill: parent
-                                                                hoverEnabled: true
-                                                                cursorShape: Qt.PointingHandCursor
-                                                                onClicked: {
-                                                                    globalTablesModel.setTableColor(rowDelegate.realIndex, parent.modelData)
-                                                                    colorPopup.close()
-                                                                }
-                                                            }
-                                                        }
+                                                    onColorSelected: (color) => {
+                                                        globalTablesModel.setTableColor(rowDelegate.realIndex, color)
+                                                        colorPopup.close()
                                                     }
+                                                    onAddRequested: {
+                                                        colorPopup.close()
+                                                        colorPicker.openWith(model.tableColor)
+                                                    }
+                                                }
+                                            }
+
+                                            // создание своего цвета, после Add он попадает в палитру и сразу ставится таблице
+                                            ColorPickerPopup {
+                                                id: colorPicker
+                                                y: colorBtn.height + 8
+                                                x: -6
+
+                                                onColorAccepted: (color) => {
+                                                    customColorStore.add(color)
+                                                    globalTablesModel.setTableColor(rowDelegate.realIndex, color)
                                                 }
                                             }
                                         }
@@ -791,6 +804,7 @@ Item {
                     anchors.fill: parent
                     tablesModel: globalTablesModel
                     relationsModel: globalRelationsModel
+                    colorStore: customColorStore
 
                     Rectangle {
                         id: tableCard
