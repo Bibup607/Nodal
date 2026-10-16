@@ -17,6 +17,11 @@ Item {
     property int pendingField: -1
     property string pendingType: ""
 
+    // текущий инструмент select или pan
+    property string tool: "select"
+
+    onToolChanged: if (tool === "pan") cancelRelation()
+
     readonly property real mouseWorldX: (canvasHover.point.position.x - panX) / zoom
     readonly property real mouseWorldY: (canvasHover.point.position.y - panY) / zoom
 
@@ -228,11 +233,30 @@ Item {
 
         target: null
 
-        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        // в select левой кнопкой пустой холст не двигается только средней
+        acceptedButtons: Qt.MiddleButton
 
         onTranslationChanged: (delta) => {
             canvasRoot.panX += delta.x
             canvasRoot.panY += delta.y
+        }
+    }
+
+    // в режиме pan перекрываем таблицы и тащим холст за любую точку
+    MouseArea {
+        id: panOverlay
+        anchors.fill: parent
+        visible: canvasRoot.tool === "pan"
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+
+        property point lastPos
+
+        onPressed: (mouse) => lastPos = Qt.point(mouse.x, mouse.y)
+        onPositionChanged: (mouse) => {
+            canvasRoot.panX += mouse.x - lastPos.x
+            canvasRoot.panY += mouse.y - lastPos.y
+            lastPos = Qt.point(mouse.x, mouse.y)
         }
     }
 

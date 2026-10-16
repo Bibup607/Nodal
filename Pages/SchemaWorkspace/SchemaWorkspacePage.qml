@@ -129,9 +129,13 @@ Item {
                         imageSourceActive: "qrc:/Images/select-icon-active.svg"
                         text: "Select"
                         leftPadding: 10
-                        checked: true
+                        // состояние берем из холста чтобы клик не сбивал привязку
+                        checkable: false
+                        checked: workspaceCanvas.tool === "select"
                         Layout.preferredWidth: 70
                         Layout.preferredHeight: 35
+
+                        onClicked: workspaceCanvas.tool = "select"
                     }
 
                     ToolbarButton {
@@ -140,8 +144,12 @@ Item {
                         imageSourceActive: "qrc:/Images/pan-icon-active.svg"
                         text: "Pan"
                         leftPadding: 15
+                        checkable: false
+                        checked: workspaceCanvas.tool === "pan"
                         Layout.preferredWidth: 60
                         Layout.preferredHeight: 35
+
+                        onClicked: workspaceCanvas.tool = "pan"
                     }
 
                     Rectangle {
