@@ -2,7 +2,7 @@ import QtQuick
 
 ListModel {
     id: relationsRoot
-
+    // функция добавление связей
     function addRelation(fromTable, fromField, toTable, toField, relType) {
         if (fromTable === toTable && fromField === toField) return false
         for (let i = 0; i < count; ++i) {
