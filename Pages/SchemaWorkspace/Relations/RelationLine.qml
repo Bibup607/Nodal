@@ -10,6 +10,8 @@ Item {
     property int fromField: -1
     property int toField: -1
     property string relType: "1:M"
+    property int fromSlot: 0
+    property int toSlot: 0
 
     property bool isPreview: false
     property point previewEnd: Qt.point(0, 0)
@@ -45,6 +47,13 @@ Item {
     readonly property string fromLabel: relType === "M:1" ? "M" : "1"
     readonly property string toLabel: relType === "1:M" ? "M" : "1"
 
+    // четные слоты над линией нечетные под ней, каждая следующая пара дальше от линии
+    function labelY(portY, slot, h) {
+        let level = Math.floor(slot / 2)
+        return slot % 2 === 0 ? portY - h - 1 - level * h
+                              : portY + 1 + level * h
+    }
+
     Shape {
         preferredRendererType: Shape.CurveRenderer
 
@@ -77,7 +86,7 @@ Item {
         font.pixelSize: 11
         font.bold: true
         x: root.fromRight ? root.p1.x + 6 : root.p1.x - 6 - width
-        y: root.p1.y - height - 1
+        y: root.labelY(root.p1.y, root.fromSlot, height)
     }
 
     Text {
@@ -88,7 +97,7 @@ Item {
         font.pixelSize: 11
         font.bold: true
         x: root.toRight ? root.p2.x + 6 : root.p2.x - 6 - width
-        y: root.p2.y - height - 1
+        y: root.labelY(root.p2.y, root.toSlot, height)
     }
 
     Rectangle {

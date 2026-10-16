@@ -36,6 +36,17 @@ ListModel {
     }
 
 
+    // порядковый номер связи среди тех что выходят из того же поля, нужен чтобы подписи не накладывались
+    function endpointSlot(relIndex, tableIndex, fieldIndex) {
+        let slot = 0
+        for (let i = 0; i < count && i < relIndex; ++i) {
+            let r = get(i)
+            if ((r.fromTable === tableIndex && r.fromField === fieldIndex)
+                    || (r.toTable === tableIndex && r.toField === fieldIndex)) ++slot
+        }
+        return slot
+    }
+
     function removeTableRelations(tableIndex) {
         let freed = []
         for (let i = count - 1; i >= 0; --i) {

@@ -122,6 +122,8 @@ Item {
                 fromField: model.fromField
                 toField: model.toField
                 relType: model.relType
+                fromSlot: canvasRoot.relationsModel.endpointSlot(index, model.fromTable, model.fromField)
+                toSlot: canvasRoot.relationsModel.endpointSlot(index, model.toTable, model.toField)
 
                 onRemoveRequested: canvasRoot.removeRelation(index)
             }
