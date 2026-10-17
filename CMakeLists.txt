@@ -33,11 +33,13 @@ qt_add_qml_module(appNodalDB
     QML_FILES
         Main.qml
         Fonts.qml
+        LineIcon.qml
         Pages/ProjectLauncher/ProjectLauncherPage.qml
         Pages/ProjectLauncher/LauncherButtons/LauncherNavItem.qml
         Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml
         Pages/ProjectLauncher/LauncherButtons/LanguagePopup.qml
         Pages/ProjectLauncher/LauncherButtons/ActionCard.qml
+        Pages/ProjectLauncher/RecentProjects/RecentProjectRow.qml
         Pages/SchemaWorkspace/SchemaWorkspacePage.qml
         Pages/SchemaWorkspace/InfiniteCanvas.qml
         Pages/SchemaWorkspace/Tables/TableCard.qml

@@ -9,7 +9,8 @@ T.AbstractButton {
     id: control
 
     implicitWidth: 260
-    implicitHeight: 134
+    // не ниже 134 но растет если содержимое не помещается
+    implicitHeight: Math.max(134, implicitContentHeight + topPadding + bottomPadding)
     padding: 16
     hoverEnabled: true
 
@@ -85,6 +86,8 @@ T.AbstractButton {
         Item { Layout.fillHeight: true }
 
         Text {
+            // минимальный отступ от описания если распорке не хватает места
+            Layout.topMargin: 14
             text: control.shortcutText
             color: control.primary ? "#52d6a6" : "#7d8796"
             opacity: control.primary ? 0.8 : 1.0

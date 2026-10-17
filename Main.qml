@@ -16,5 +16,6 @@ Window {
 
         onCreateProjectRequested: console.log("new project")
         onOpenFileRequested: console.log("open project")
+        onOpenProjectRequested: (path) => console.log("open recent", path)
     }
 }
