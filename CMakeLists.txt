@@ -37,6 +37,7 @@ qt_add_qml_module(appNodalDB
         Pages/ProjectLauncher/LauncherButtons/LauncherNavItem.qml
         Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml
         Pages/ProjectLauncher/LauncherButtons/LanguagePopup.qml
+        Pages/ProjectLauncher/LauncherButtons/ActionCard.qml
         Pages/SchemaWorkspace/SchemaWorkspacePage.qml
         Pages/SchemaWorkspace/InfiniteCanvas.qml
         Pages/SchemaWorkspace/Tables/TableCard.qml

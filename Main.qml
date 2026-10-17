@@ -13,5 +13,8 @@ Window {
 
     ProjectLauncherPage {
         anchors.fill: parent
+
+        onCreateProjectRequested: console.log("new project")
+        onOpenFileRequested: console.log("open project")
     }
 }

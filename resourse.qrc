@@ -29,6 +29,8 @@
         <file>Images/globe.svg</file>
         <file>Images/globe-icon-active.svg</file>
         <file>Pages/SchemaWorkspace/InfiniteCanvas.qml</file>
-	<file>Pages/SchemaWorkspace/Tables/TableCard.qml</file>
+        <file>Pages/SchemaWorkspace/Tables/TableCard.qml</file>
+        <file>Images/card-folder.svg</file>
+        <file>Images/card-plus.svg</file>
     </qresource>
 </RCC>
