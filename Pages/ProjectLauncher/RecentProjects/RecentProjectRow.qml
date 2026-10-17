@@ -70,7 +70,7 @@ T.ItemDelegate {
             // длинный путь сокращается троеточием посередине
             Text {
                 Layout.fillWidth: true
-                Layout.rightMargin: 90 // чтобы не залезать под дату
+                Layout.rightMargin: 90
                 text: row.path
                 color: "#7d8796"
                 font.family: fonts.jetBrainsMB.family

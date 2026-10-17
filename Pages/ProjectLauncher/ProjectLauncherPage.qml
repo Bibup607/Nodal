@@ -141,10 +141,10 @@ Item {
 
                 ColumnLayout {
                     id: content
-                    x: 60
+                    // на большом экране колонка шире и по центру минимум 60 по краям
+                    x: Math.max(60, (mainArea.availableWidth - width) / 2)
                     y: 56
-                    // не шире 835 и по 60 свободного места слева и справа
-                    width: Math.min(835, mainArea.availableWidth - 120)
+                    width: Math.min(1100, mainArea.availableWidth - 120)
                     spacing: 0
 
                     Text {

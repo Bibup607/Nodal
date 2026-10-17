@@ -14,7 +14,6 @@ Rectangle {
     property int recentCount: 0
     // код текущего языка ru или en
     property string language: "en"
-    property url docsUrl: "https://github.com/"
     property string versionText: "Qt 6.11.1 · local workspace · v1.0.0"
 
     signal recentRequested()
@@ -102,15 +101,6 @@ Rectangle {
 
         GroupTitle {
             text: qsTr("RESOURCES")
-        }
-
-        LauncherNavItem {
-            Layout.fillWidth: true
-            text: qsTr("Documentation")
-            ButtonGroup.group: navGroup
-            imageSource: "qrc:/Images/book.svg"
-            imageSourceActive: "qrc:/Images/book-icon-active.svg"
-            onClicked: Qt.openUrlExternally(sidebar.docsUrl)
         }
 
         LauncherNavItem {
