@@ -55,10 +55,13 @@ Item {
         }
     }
 
+    signal projectSaved(string fileName)
+
     function writeProject(path) {
-        if (projectStorage.saveProject(path, projectData()))
+        if (projectStorage.saveProject(path, projectData())) {
             projectPath = path
-        else
+            projectSaved(path.toString().split("/").pop())
+        } else
             console.warn("save failed:", projectStorage.lastError)
     }
 

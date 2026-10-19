@@ -4,6 +4,7 @@ import QtCore
 import NodalDB
 import "Pages/SchemaWorkspace"
 import "Pages/ProjectLauncher"
+import "Components"
 
 Window {
     id: appWindow
@@ -67,7 +68,12 @@ Window {
             dbEngine: appWindow.projectEngine
             projectPath: appWindow.projectPath
             initialData: appWindow.projectData
+            onProjectSaved: (fileName) => saveNotification.show(fileName)
         }
+    }
+
+    SaveNotification {
+        id: saveNotification
     }
 
     // язык хранится в реестре между запусками

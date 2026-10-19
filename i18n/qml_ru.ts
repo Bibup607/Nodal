@@ -297,6 +297,14 @@
     </message>
 </context>
 <context>
+    <name>SaveNotification</name>
+    <message>
+        <location filename="../Components/SaveNotification.qml" line="80"/>
+        <source>Project saved</source>
+        <translation>Проект сохранён</translation>
+    </message>
+</context>
+<context>
     <name>SchemaWorkspacePage</name>
     <message>
         <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="75"/>

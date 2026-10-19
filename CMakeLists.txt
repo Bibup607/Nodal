@@ -37,6 +37,7 @@ qt_add_qml_module(appNodalDB
         Main.qml
         Fonts.qml
         LineIcon.qml
+        Components/SaveNotification.qml
         Pages/ProjectLauncher/ProjectLauncherPage.qml
         Pages/ProjectLauncher/NewProjectPopup.qml
         Pages/ProjectLauncher/LauncherButtons/LauncherNavItem.qml
