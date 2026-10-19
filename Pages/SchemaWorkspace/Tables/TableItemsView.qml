@@ -168,4 +168,43 @@ ListModel {
             setProperty(tableIndex, "hasComment", text.trim() !== "")
         }
     }
+
+    // заменяет все таблицы данными из файла
+    function load(tables) {
+        clear()
+        for (let t of tables) {
+            append({
+                tableName: t.tableName,
+                posX: t.posX,
+                posY: t.posY,
+                tableColor: t.tableColor,
+                comment: t.comment,
+                hasComment: t.hasComment,
+                fields: t.fields
+            })
+        }
+    }
+
+    // все таблицы обычными объектами для сохранения в файл
+    function serialize() {
+        let result = []
+        for (let t = 0; t < count; ++t) {
+            let src = get(t)
+            let fields = []
+            for (let i = 0; i < src.fields.count; ++i) {
+                let f = src.fields.get(i)
+                fields.push({ name: f.name, type: f.type, isPk: f.isPk, isFk: f.isFk })
+            }
+            result.push({
+                tableName: src.tableName,
+                posX: src.posX,
+                posY: src.posY,
+                tableColor: String(src.tableColor),
+                comment: src.comment,
+                hasComment: src.hasComment,
+                fields: fields
+            })
+        }
+        return result
+    }
 }

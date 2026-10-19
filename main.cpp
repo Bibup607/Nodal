@@ -4,7 +4,6 @@
 #include <QImageReader>
 #include <QPixmap>
 #include <QQuickStyle>
-#include "models/tablesfilterproxymodel.h"
 
 
 int main(int argc, char *argv[])
@@ -32,7 +31,6 @@ int main(int argc, char *argv[])
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
-    qmlRegisterType<TablesFilterProxyModel>("NodalDB", 1, 0, "TablesFilterProxyModel");
     engine.loadFromModule("NodalDB", "Main");
 
     return QGuiApplication::exec();

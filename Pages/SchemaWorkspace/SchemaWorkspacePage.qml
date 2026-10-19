@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
+import QtQuick.Dialogs
 
 import NodalDB
 import "../../"
@@ -33,6 +34,49 @@ Item {
 
     RelationsModel {
         id: globalRelationsModel
+    }
+
+    ProjectStorage {
+        id: projectStorage
+    }
+
+    // пустой пока проект ни разу не сохраняли
+    property url projectPath: ""
+
+    // все данные проекта одним объектом
+    function projectData() {
+        return {
+            version: 1,
+            name: projectName,
+            engine: dbEngine,
+            tables: globalTablesModel.serialize(),
+            relations: globalRelationsModel.serialize(),
+            customColors: customColorStore.colors
+        }
+    }
+
+    function writeProject(path) {
+        if (projectStorage.saveProject(path, projectData()))
+            projectPath = path
+        else
+            console.warn("save failed:", projectStorage.lastError)
+    }
+
+    // первый раз спрашиваем куда потом сохраняем молча
+    function saveProject() {
+        if (projectPath.toString() === "")
+            saveDialog.open()
+        else
+            writeProject(projectPath)
+    }
+
+    FileDialog {
+        id: saveDialog
+        title: qsTr("Save project")
+        fileMode: FileDialog.SaveFile
+        nameFilters: [qsTr("NodalDB schema (*.schema)")]
+        defaultSuffix: "schema"
+        onAccepted: workspaceRoot.writeProject(selectedFile)
     }
 
     // общая палитра для таблиц и связей: базовые цвета и созданные пользователем
@@ -79,8 +123,22 @@ Item {
         filterPattern: searchField.text     // привязываем к тексту из строки поиска
     }
 
+    // данные открытого файла null значит новый проект
+    property var initialData: null
+
+    // сначала связи потом таблицы иначе удаление таблиц начнет чистить связи
+    function loadProjectData(data) {
+        globalRelationsModel.clear()
+        globalTablesModel.load(data.tables)
+        globalRelationsModel.load(data.relations || [])
+        customColorStore.colors = data.customColors || []
+    }
+
     Component.onCompleted: {
-        globalTablesModel.addNewTable(150, 150)
+        if (initialData)
+            loadProjectData(initialData)
+        else
+            globalTablesModel.addNewTable(150, 150)
     }
 
     property var tableClipboard: null
@@ -165,6 +223,11 @@ Item {
         sequence: "Ctrl+D"
         enabled: workspaceRoot.hasSelection
         onActivated: workspaceCanvas.selectedTableIndex = globalTablesModel.duplicateTable(workspaceCanvas.selectedTableIndex)
+    }
+
+    Shortcut {
+        sequence: StandardKey.Save
+        onActivated: workspaceRoot.saveProject()
     }
 
     Shortcut {
@@ -385,6 +448,7 @@ Item {
                     ImportButton {
                         text: qsTr("Save")
                         font.bold: true
+                        onClicked: workspaceRoot.saveProject()
                         // ширина по тексту но не уже прежней
                         Layout.minimumWidth: 60
                         Layout.preferredHeight: 30

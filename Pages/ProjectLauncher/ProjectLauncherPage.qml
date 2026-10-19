@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
+import QtQuick.Dialogs
 
 import NodalDB
 import "../../"
@@ -13,12 +14,19 @@ Item {
     anchors.fill: parent
 
     signal createProjectRequested(string name, string engine)
-    signal openFileRequested()
     signal openProjectRequested(string path)
 
     // горячие клавиши работают пока страница видна
     Shortcut { sequence: StandardKey.New;  enabled: page.visible; onActivated: newProjectPopup.open() }
-    Shortcut { sequence: StandardKey.Open; enabled: page.visible; onActivated: page.openFileRequested() }
+    Shortcut { sequence: StandardKey.Open; enabled: page.visible; onActivated: openDialog.open() }
+
+    FileDialog {
+        id: openDialog
+        title: qsTr("Open project")
+        fileMode: FileDialog.OpenFile
+        nameFilters: [qsTr("NodalDB schema (*.schema)")]
+        onAccepted: page.openProjectRequested(selectedFile)
+    }
     Shortcut { sequence: StandardKey.Find; enabled: page.visible; onActivated: searchField.forceActiveFocus() }
 
     // недавние проекты пока демо данные
@@ -136,7 +144,7 @@ Item {
 
                 // поле поиска проектов еще не сделано
                 onRecentRequested: console.log("recent")
-                onOpenFileRequested: page.openFileRequested()
+                onOpenFileRequested: openDialog.open()
                 onCreateProjectRequested: newProjectPopup.open()
                 onLanguageSelected: (code) => Qt.uiLanguage = code
             }
@@ -211,7 +219,7 @@ Item {
                             description: qsTr("Choose a .schema file on disk or in a network folder.")
                             iconSource: "qrc:/Images/card-folder.svg"
                             shortcutText: "Ctrl+O"
-                            onClicked: page.openFileRequested()
+                            onClicked: openDialog.open()
                         }
                     }
 

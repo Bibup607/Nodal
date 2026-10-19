@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Window
 import QtCore
+import NodalDB
 import "Pages/SchemaWorkspace"
 import "Pages/ProjectLauncher"
 
@@ -14,6 +15,27 @@ Window {
 
     property string projectName: ""
     property string projectEngine: ""
+    // путь и содержимое открытого файла пустые у нового проекта
+    property url projectPath: ""
+    property var projectData: null
+
+    ProjectStorage {
+        id: projectStorage
+    }
+
+    // читаем файл до перехода чтобы при ошибке остаться в лаунчере
+    function openProject(path) {
+        let data = projectStorage.loadProject(path)
+        if (!data.tables) {
+            console.warn("open failed:", path, projectStorage.lastError)
+            return
+        }
+        projectName = data.name || "untitled"
+        projectEngine = data.engine || "PostgreSQL"
+        projectPath = path
+        projectData = data
+        pageLoader.sourceComponent = workspacePage
+    }
 
     // временно: лаунчер -> новый проект открывает пустой workspace
     Loader {
@@ -29,10 +51,11 @@ Window {
             onCreateProjectRequested: (name, engine) => {
                 appWindow.projectName = name
                 appWindow.projectEngine = engine
+                appWindow.projectPath = ""
+                appWindow.projectData = null
                 pageLoader.sourceComponent = workspacePage
             }
-            onOpenFileRequested: console.log("open project")
-            onOpenProjectRequested: (path) => console.log("open recent", path)
+            onOpenProjectRequested: (path) => appWindow.openProject(path)
         }
     }
 
@@ -42,6 +65,8 @@ Window {
         SchemaWorkspacePage {
             projectName: appWindow.projectName
             dbEngine: appWindow.projectEngine
+            projectPath: appWindow.projectPath
+            initialData: appWindow.projectData
         }
     }
 

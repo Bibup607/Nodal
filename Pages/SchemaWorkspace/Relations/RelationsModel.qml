@@ -71,4 +71,36 @@ ListModel {
         }
         return freed
     }
+
+    // заменяет все связи данными из файла
+    function load(relations) {
+        clear()
+        for (let r of relations) {
+            append({
+                fromTable: r.fromTable,
+                fromField: r.fromField,
+                toTable: r.toTable,
+                toField: r.toField,
+                relType: r.relType,
+                relColor: r.relColor
+            })
+        }
+    }
+
+    // все связи обычными объектами для сохранения в файл
+    function serialize() {
+        let result = []
+        for (let i = 0; i < count; ++i) {
+            let r = get(i)
+            result.push({
+                fromTable: r.fromTable,
+                fromField: r.fromField,
+                toTable: r.toTable,
+                toField: r.toField,
+                relType: r.relType,
+                relColor: String(r.relColor)
+            })
+        }
+        return result
+    }
 }
