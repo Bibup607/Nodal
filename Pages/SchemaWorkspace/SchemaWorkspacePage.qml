@@ -15,6 +15,9 @@ Item {
     id: workspaceRoot
     anchors.fill: parent
 
+    property string projectName: "untitled"
+    property string dbEngine: "PostgreSQL"
+
     Rectangle {
         anchors.fill: parent
         color: "#0D1117"
@@ -567,7 +570,9 @@ Item {
                                     }
 
                                     Text {
-                                        text: "commerce_db"
+                                        text: workspaceRoot.projectName
+                                        width: Math.min(implicitWidth, 178 - 43 - tablesCountText.width - 12 - 8)
+                                        elide: Text.ElideRight
                                         color: "white"
                                         font.family: fonts.jetBrainsMB.family
                                         font.pointSize: 9
@@ -576,6 +581,7 @@ Item {
                                 }
 
                                 Text {
+                                    id: tablesCountText
                                     text: filteredTablesModel.count
                                     color: "#64748b"
                                     font.family: fonts.jetBrainsMB.family

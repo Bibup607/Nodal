@@ -26,7 +26,6 @@ qt_add_executable(appNodalDB
     main.cpp
 )
 
-# Иконка exe для проводника, ярлыков и закрепления в панели задач
 if(WIN32)
     target_sources(appNodalDB PRIVATE app.rc)
 endif()
@@ -39,6 +38,7 @@ qt_add_qml_module(appNodalDB
         Fonts.qml
         LineIcon.qml
         Pages/ProjectLauncher/ProjectLauncherPage.qml
+        Pages/ProjectLauncher/NewProjectPopup.qml
         Pages/ProjectLauncher/LauncherButtons/LauncherNavItem.qml
         Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml
         Pages/ProjectLauncher/LauncherButtons/LanguagePopup.qml

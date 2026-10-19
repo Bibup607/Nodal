@@ -32,5 +32,6 @@
         <file>Pages/SchemaWorkspace/Tables/TableCard.qml</file>
         <file>Images/card-folder.svg</file>
         <file>Images/card-plus.svg</file>
+        <file>Pages/NewProjectPopup.qml</file>
     </qresource>
 </RCC>

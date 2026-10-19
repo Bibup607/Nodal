@@ -12,12 +12,12 @@ Item {
     id: page
     anchors.fill: parent
 
-    signal createProjectRequested()
+    signal createProjectRequested(string name, string engine)
     signal openFileRequested()
     signal openProjectRequested(string path)
 
     // горячие клавиши работают пока страница видна
-    Shortcut { sequence: StandardKey.New;  enabled: page.visible; onActivated: page.createProjectRequested() }
+    Shortcut { sequence: StandardKey.New;  enabled: page.visible; onActivated: newProjectPopup.open() }
     Shortcut { sequence: StandardKey.Open; enabled: page.visible; onActivated: page.openFileRequested() }
     Shortcut { sequence: StandardKey.Find; enabled: page.visible; onActivated: searchField.forceActiveFocus() }
 
@@ -47,6 +47,14 @@ Item {
 
     Fonts {
         id: fonts
+    }
+
+    // проект создается только после подтверждения в окне
+    NewProjectPopup {
+        id: newProjectPopup
+        titleFont: fonts.interBold.family
+        monoFont: fonts.jetBrainsMB.family
+        onCreateRequested: (name, engine) => page.createProjectRequested(name, engine)
     }
 
     Rectangle {
@@ -129,7 +137,7 @@ Item {
                 // поле поиска проектов еще не сделано
                 onRecentRequested: console.log("recent")
                 onOpenFileRequested: page.openFileRequested()
-                onCreateProjectRequested: page.createProjectRequested()
+                onCreateProjectRequested: newProjectPopup.open()
                 onLanguageSelected: (code) => Qt.uiLanguage = code
             }
 
@@ -192,7 +200,7 @@ Item {
                             description: qsTr("Empty schema, connection settings and a save file.")
                             iconSource: "qrc:/Images/card-plus.svg"
                             shortcutText: "Ctrl+N"
-                            onClicked: page.createProjectRequested()
+                            onClicked: newProjectPopup.open()
                         }
 
                         ActionCard {

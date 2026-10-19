@@ -139,64 +139,97 @@
     </message>
 </context>
 <context>
+    <name>NewProjectPopup</name>
+    <message>
+        <location filename="../Pages/ProjectLauncher/NewProjectPopup.qml" line="67"/>
+        <source>New project</source>
+        <translation>Новый проект</translation>
+    </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/NewProjectPopup.qml" line="76"/>
+        <source>Name the schema and choose a database.</source>
+        <translation>Назовите схему и выберите базу данных.</translation>
+    </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/NewProjectPopup.qml" line="84"/>
+        <source>PROJECT NAME</source>
+        <translation>НАЗВАНИЕ ПРОЕКТА</translation>
+    </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/NewProjectPopup.qml" line="118"/>
+        <source>DATABASE</source>
+        <translation>БАЗА ДАННЫХ</translation>
+    </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/NewProjectPopup.qml" line="189"/>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/NewProjectPopup.qml" line="216"/>
+        <source>Create</source>
+        <translation>Создать</translation>
+    </message>
+</context>
+<context>
     <name>ProjectLauncherPage</name>
     <message>
-        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="153"/>
+        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="161"/>
         <source>WORKSPACE</source>
         <translation>РАБОЧЕЕ ПРОСТРАНСТВО</translation>
     </message>
     <message>
-        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="163"/>
+        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="171"/>
         <source>Open a schema or start a new one</source>
         <translation>Откройте схему или создайте новую</translation>
     </message>
     <message>
-        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="173"/>
+        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="181"/>
         <source>Continue working on a saved database project or create a clean schema for a new service.</source>
         <translation>Продолжите работу над сохранённым проектом базы данных или создайте чистую схему для нового сервиса.</translation>
     </message>
     <message>
-        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="191"/>
+        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="199"/>
         <source>Create new project</source>
         <translation>Создать проект</translation>
     </message>
     <message>
-        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="192"/>
+        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="200"/>
         <source>Empty schema, connection settings and a save file.</source>
         <translation>Пустая схема, настройки подключения и файл сохранения.</translation>
     </message>
     <message>
-        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="202"/>
+        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="210"/>
         <source>Open saved project</source>
         <translation>Открыть сохранённый проект</translation>
     </message>
     <message>
-        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="203"/>
+        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="211"/>
         <source>Choose a .schema file on disk or in a network folder.</source>
         <translation>Выберите файл .schema на диске или в сетевой папке.</translation>
     </message>
     <message>
-        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="217"/>
+        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="225"/>
         <source>RECENT PROJECTS</source>
         <translation>НЕДАВНИЕ ПРОЕКТЫ</translation>
     </message>
     <message>
-        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="226"/>
+        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="234"/>
         <source>Clear list</source>
         <translation>Очистить список</translation>
     </message>
     <message>
-        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="248"/>
+        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="256"/>
         <source>Search by name...</source>
         <translation>Поиск по имени...</translation>
     </message>
     <message>
-        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="310"/>
+        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="318"/>
         <source>Projects you open will appear here.</source>
         <translation>Здесь появятся открытые вами проекты.</translation>
     </message>
     <message>
-        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="311"/>
+        <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="319"/>
         <source>Nothing found for &quot;%1&quot;</source>
         <translation>Ничего не найдено по запросу &quot;%1&quot;</translation>
     </message>
@@ -248,67 +281,67 @@
 <context>
     <name>SchemaWorkspacePage</name>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="294"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="287"/>
         <source>Select</source>
         <translation>Курсор</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="307"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="300"/>
         <source>Pan</source>
         <translation>Рука</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="360"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="353"/>
         <source>Table</source>
         <translation>Таблица</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="390"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="383"/>
         <source>Save</source>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="398"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="391"/>
         <source>Export SQL</source>
         <translation>Экспорт SQL</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="454"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="447"/>
         <source>SCHEMA EXPLORER</source>
         <translation>ОБЗОР СХЕМЫ</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="478"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="471"/>
         <source>Filter tables...</source>
         <translation>Фильтр таблиц...</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="944"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="937"/>
         <source>Rename table</source>
         <translation>Переименовать таблицу</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="950"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="943"/>
         <source>Add column</source>
         <translation>Добавить колонку</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="956"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="949"/>
         <source>Add comment</source>
         <translation>Добавить комментарий</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="962"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="955"/>
         <source>Duplicate table</source>
         <translation>Дублировать таблицу</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="968"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="961"/>
         <source>Delete table</source>
         <translation>Удалить таблицу</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="986"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="979"/>
         <source>Comment...</source>
         <translation>Комментарий...</translation>
     </message>

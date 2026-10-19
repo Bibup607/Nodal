@@ -12,6 +12,9 @@ Window {
     title: "NodalDB"
     flags: Qt.Window | Qt.FramelessWindowHint
 
+    property string projectName: ""
+    property string projectEngine: ""
+
     // временно: лаунчер -> новый проект открывает пустой workspace
     Loader {
         id: pageLoader
@@ -23,7 +26,11 @@ Window {
         id: launcherPage
 
         ProjectLauncherPage {
-            onCreateProjectRequested: pageLoader.sourceComponent = workspacePage
+            onCreateProjectRequested: (name, engine) => {
+                appWindow.projectName = name
+                appWindow.projectEngine = engine
+                pageLoader.sourceComponent = workspacePage
+            }
             onOpenFileRequested: console.log("open project")
             onOpenProjectRequested: (path) => console.log("open recent", path)
         }
@@ -32,7 +39,10 @@ Window {
     Component {
         id: workspacePage
 
-        SchemaWorkspacePage {}
+        SchemaWorkspacePage {
+            projectName: appWindow.projectName
+            dbEngine: appWindow.projectEngine
+        }
     }
 
     // язык хранится в реестре между запусками
