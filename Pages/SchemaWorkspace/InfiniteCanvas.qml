@@ -62,6 +62,21 @@ Item {
     readonly property real minZoom: 0.15
     readonly property real maxZoom: 3.0
 
+    // зум к точке px py на экране точка под ней остается на месте
+    function zoomAt(factor, px, py) {
+        let nextZoom = Math.min(Math.max(zoom * factor, minZoom), maxZoom)
+        if (nextZoom === zoom) return
+
+        panX = px - (px - panX) * (nextZoom / zoom)
+        panY = py - (py - panY) * (nextZoom / zoom)
+        zoom = nextZoom
+    }
+
+    // точка мира в центре видимой области
+    function viewCenter() {
+        return Qt.point((width / 2 - panX) / zoom, (height / 2 - panY) / zoom)
+    }
+
     default property alias content: worldContainer.data
 
     Canvas {
@@ -221,6 +236,11 @@ Item {
         onTapped: canvasRoot.cancelRelation()
     }
 
+    // клик по пустому холсту забирает фокус у полей ввода чтобы снова работали горячие клавиши
+    TapHandler {
+        onTapped: canvasRoot.forceActiveFocus()
+    }
+
     Shortcut {
         sequence: "Esc"
         enabled: canvasRoot.isConnecting
@@ -266,22 +286,6 @@ Item {
         id: zoomWheelHandler
         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
 
-        onWheel: (event) => {
-
-            let factor = event.angleDelta.y > 0 ? 1.1 : 0.9
-
-            let nextZoom = Math.min(Math.max(canvasRoot.zoom * factor, canvasRoot.minZoom), canvasRoot.maxZoom)
-
-            if (nextZoom !== canvasRoot.zoom) {
-
-                let mouseX = event.x
-                let mouseY = event.y
-
-                canvasRoot.panX = mouseX - (mouseX - canvasRoot.panX) * (nextZoom / canvasRoot.zoom)
-                canvasRoot.panY = mouseY - (mouseY - canvasRoot.panY) * (nextZoom / canvasRoot.zoom)
-
-                canvasRoot.zoom = nextZoom
-            }
-        }
+        onWheel: (event) => canvasRoot.zoomAt(event.angleDelta.y > 0 ? 1.1 : 0.9, event.x, event.y)
     }
 }

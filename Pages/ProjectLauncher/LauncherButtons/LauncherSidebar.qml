@@ -201,7 +201,18 @@ Rectangle {
 
             Repeater {
                 model: [
-                    { keys: "Esc", action: qsTr("Cancel relation") },
+                    { keys: "Ctrl+Shift+Enter", action: qsTr("Add table") },
+                    { keys: "Ctrl+Enter", action: qsTr("Add column") },
+                    { keys: "F2", action: qsTr("Rename table") },
+                    { keys: "Ctrl+Alt+M", action: qsTr("Add comment") },
+                    { keys: "Ctrl+D", action: qsTr("Duplicate table") },
+                    { keys: "Ctrl+C / Ctrl+V", action: qsTr("Copy / paste table") },
+                    { keys: "Ctrl+X", action: qsTr("Cut table") },
+                    { keys: "Delete", action: qsTr("Delete table") },
+                    { keys: "Esc", action: qsTr("Deselect / cancel relation") },
+                    { keys: "Ctrl+/", action: qsTr("Search tables") },
+                    { keys: "Ctrl+B", action: qsTr("Toggle left panel") },
+                    { keys: "= / -", action: qsTr("Zoom in / out") },
                     { keys: qsTr("Wheel"), action: qsTr("Zoom canvas") },
                     { keys: qsTr("Middle button"), action: qsTr("Pan canvas") },
                     { keys: "Enter", action: qsTr("Save field") }

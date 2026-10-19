@@ -37,6 +37,8 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         onClicked: {
+            // фокус на карточку чтобы Delete и Ctrl+C работали с таблицей а не с полем ввода
+            root.forceActiveFocus()
             workspaceCanvas.selectedTableIndex = (workspaceCanvas.selectedTableIndex === index ? -1 : index)
             root.selected()
         }
@@ -158,18 +160,24 @@ Rectangle {
                 Menu {
                     id: menuAction
 
-                    // ширина по самому длинному пункту чтобы перевод не вылезал
+                    // ширина по самому длинному пункту вместе с подсказкой клавиш чтобы перевод не вылезал
                     width: {
-                        let textWidth = 0
-                        for (let i = 0; i < count; ++i)
-                            textWidth = Math.max(textWidth, menuActionFont.advanceWidth(itemAt(i).text))
-                        return Math.max(95, Math.ceil(textWidth) + 24 + leftPadding + rightPadding)
+                        let rowWidth = 0
+                        for (let i = 0; i < count; ++i) {
+                            let item = itemAt(i)
+                            let w = menuActionFont.advanceWidth(item.text)
+                            if (item.hint) w += 16 + menuActionFont.advanceWidth(item.hint)
+                            rowWidth = Math.max(rowWidth, w)
+                        }
+                        return Math.max(95, Math.ceil(rowWidth) + 24 + leftPadding + rightPadding)
                     }
 
                     MenuItem {
                         id: addColumnItem
                         text: qsTr("Add Column")
                         height: 28
+                        // подсказка клавиш справа
+                        property string hint: "Ctrl+Enter"
 
                         onTriggered: {
                             root.requestAddColumn()
@@ -194,6 +202,16 @@ Rectangle {
                             verticalAlignment: Text.AlignVCenter
                             leftPadding: 8
 
+                            Text {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                rightPadding: 4
+                                text: addColumnItem.hint
+                                color: "#64748b"
+                                font.pixelSize: 10
+                                font.family: "Monospace"
+                            }
+
                             Behavior on color {
                                 ColorAnimation { duration: 120 }
                             }
@@ -204,6 +222,7 @@ Rectangle {
                         id: delTable
                         text: qsTr("Del Table")
                         height: 28
+                        property string hint: "Del"
 
                         onTriggered: {
                             root.removeTable()
@@ -227,6 +246,16 @@ Rectangle {
                             font.family: "Monospace"
                             verticalAlignment: Text.AlignVCenter
                             leftPadding: 8
+
+                            Text {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                rightPadding: 4
+                                text: delTable.hint
+                                color: "#64748b"
+                                font.pixelSize: 10
+                                font.family: "Monospace"
+                            }
 
                             Behavior on color {
                                 ColorAnimation { duration: 120 }

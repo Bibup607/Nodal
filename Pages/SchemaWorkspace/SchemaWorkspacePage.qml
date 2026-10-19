@@ -80,6 +80,163 @@ Item {
         globalTablesModel.addNewTable(150, 150)
     }
 
+    property var tableClipboard: null
+
+    readonly property int targetTableIndex: workspaceCanvas.selectedTableIndex >= 0
+                                            ? workspaceCanvas.selectedTableIndex
+                                            : globalTablesModel.count - 1
+
+    function addTableAtView() {
+        let c = workspaceCanvas.viewCenter()
+        globalTablesModel.addNewTable(c.x - 125, c.y - 40)
+        workspaceCanvas.selectedTableIndex = globalTablesModel.count - 1
+    }
+
+    // удаление со сдвигом выделения потому что индексы после удаленной уменьшаются
+    function deleteTable(tableIndex) {
+        const sel = workspaceCanvas.selectedTableIndex
+        if (tableIndex === sel)
+            workspaceCanvas.selectedTableIndex = -1
+        else if (sel > tableIndex)
+            workspaceCanvas.selectedTableIndex = sel - 1
+        globalTablesModel.removeTable(tableIndex)
+    }
+
+    function copySelected() {
+        let data = globalTablesModel.tableData(workspaceCanvas.selectedTableIndex)
+        if (data) tableClipboard = data
+    }
+
+    // строка в сайдбаре ловит эти сигналы по своему realIndex
+    signal renameTableRequested(int tableIndex)
+    signal commentTableRequested(int tableIndex)
+
+    // показывает строку таблицы в сайдбаре чтобы было куда поставить курсор
+    function revealInSidebar(tableIndex) {
+        sidebarPanel.visible = true
+        dbSection.isExpanded = true
+        let shown = false
+        for (let i = 0; i < filteredTablesModel.count; ++i) {
+            if (filteredTablesModel.mapToSourceRow(i) === tableIndex) shown = true
+        }
+        // таблица скрыта фильтром сбрасываем поиск
+        if (!shown) searchField.text = ""
+    }
+
+
+    function renameTable(tableIndex) {
+        revealInSidebar(tableIndex)
+        Qt.callLater(workspaceRoot.renameTableRequested, tableIndex)
+    }
+
+    function commentTable(tableIndex) {
+        revealInSidebar(tableIndex)
+        Qt.callLater(workspaceRoot.commentTableRequested, tableIndex)
+    }
+
+    function pasteTable() {
+        if (!tableClipboard) return
+        workspaceCanvas.selectedTableIndex = globalTablesModel.appendTable(tableClipboard, 40)
+        // следующая вставка встанет еще ниже а не поверх
+        tableClipboard.posX += 40
+        tableClipboard.posY += 40
+    }
+
+
+    readonly property bool isTyping: Window.activeFocusItem !== null
+                                     && Window.activeFocusItem.cursorPosition !== undefined
+    readonly property bool hasSelection: workspaceCanvas.selectedTableIndex >= 0
+
+    Shortcut {
+        sequences: ["Ctrl+Shift+Return", "Ctrl+Shift+Enter"]
+        onActivated: workspaceRoot.addTableAtView()
+    }
+
+    Shortcut {
+        sequences: ["Ctrl+Return", "Ctrl+Enter"]
+        enabled: workspaceRoot.targetTableIndex >= 0
+        onActivated: globalTablesModel.addColumnToTable(workspaceRoot.targetTableIndex)
+    }
+
+    Shortcut {
+        sequence: "Ctrl+D"
+        enabled: workspaceRoot.hasSelection
+        onActivated: workspaceCanvas.selectedTableIndex = globalTablesModel.duplicateTable(workspaceCanvas.selectedTableIndex)
+    }
+
+    Shortcut {
+        sequence: "F2"
+        enabled: workspaceRoot.hasSelection && !workspaceRoot.isTyping
+        onActivated: workspaceRoot.renameTable(workspaceCanvas.selectedTableIndex)
+    }
+
+    Shortcut {
+        sequence: "Ctrl+Alt+M"
+        enabled: workspaceRoot.hasSelection && !workspaceRoot.isTyping
+        onActivated: workspaceRoot.commentTable(workspaceCanvas.selectedTableIndex)
+    }
+
+    Shortcut {
+        sequences: [StandardKey.Delete, "Backspace"]
+        enabled: workspaceRoot.hasSelection && !workspaceRoot.isTyping
+        onActivated: workspaceRoot.deleteTable(workspaceCanvas.selectedTableIndex)
+    }
+
+    Shortcut {
+        sequence: StandardKey.Copy
+        enabled: workspaceRoot.hasSelection && !workspaceRoot.isTyping
+        onActivated: workspaceRoot.copySelected()
+    }
+
+    Shortcut {
+        sequence: StandardKey.Cut
+        enabled: workspaceRoot.hasSelection && !workspaceRoot.isTyping
+        onActivated: {
+            workspaceRoot.copySelected()
+            workspaceRoot.deleteTable(workspaceCanvas.selectedTableIndex)
+        }
+    }
+
+    Shortcut {
+        sequence: StandardKey.Paste
+        enabled: workspaceRoot.tableClipboard !== null && !workspaceRoot.isTyping
+        onActivated: workspaceRoot.pasteTable()
+    }
+
+
+    Shortcut {
+        sequence: "Esc"
+        enabled: workspaceRoot.hasSelection && !workspaceRoot.isTyping && !workspaceCanvas.isConnecting
+        onActivated: workspaceCanvas.selectedTableIndex = -1
+    }
+
+    Shortcut {
+        sequence: "Ctrl+B"
+        onActivated: sidebarPanel.visible = !sidebarPanel.visible
+    }
+
+
+    Shortcut {
+        sequences: ["Ctrl+/", StandardKey.Find]
+        onActivated: {
+            sidebarPanel.visible = true
+            searchField.forceActiveFocus()
+            searchField.selectAll()
+        }
+    }
+
+    Shortcut {
+        sequences: ["=", "+", StandardKey.ZoomIn]
+        enabled: !workspaceRoot.isTyping
+        onActivated: workspaceCanvas.zoomAt(1.2, workspaceCanvas.width / 2, workspaceCanvas.height / 2)
+    }
+
+    Shortcut {
+        sequences: ["-", StandardKey.ZoomOut]
+        enabled: !workspaceRoot.isTyping
+        onActivated: workspaceCanvas.zoomAt(1 / 1.2, workspaceCanvas.width / 2, workspaceCanvas.height / 2)
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
@@ -211,11 +368,7 @@ Item {
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
 
-                            onClicked: {
-                                let spawnX = (-workspaceCanvas.panX + 200) / workspaceCanvas.zoom
-                                let spawnY = (-workspaceCanvas.panY + 150) / workspaceCanvas.zoom
-                                globalTablesModel.addNewTable(spawnX, spawnY)
-                            }
+                            onClicked: workspaceRoot.addTableAtView()
                         }
                     }
                 }
@@ -272,6 +425,7 @@ Item {
 
             // Левый сайдбар (SCHEMA EXPLORER)
             Rectangle {
+                id: sidebarPanel
                 Layout.preferredWidth: 206
                 Layout.fillHeight: true
                 color: "#11151c"
@@ -310,6 +464,9 @@ Item {
                             anchors.leftMargin: 10
                             anchors.verticalCenter: parent.verticalCenter
                         }
+
+                        // Esc возвращает фокус холсту чтобы снова работали горячие клавиши
+                        Keys.onEscapePressed: workspaceCanvas.forceActiveFocus()
 
                         placeholderText: qsTr("Filter tables...")
                         placeholderTextColor: "#a1a9b7"
@@ -476,6 +633,16 @@ Item {
                                         })
                                     }
 
+                                    Connections {
+                                        target: workspaceRoot
+                                        function onRenameTableRequested(tableIndex) {
+                                            if (tableIndex === rowDelegate.realIndex) rowDelegate.isEditing = true
+                                        }
+                                        function onCommentTableRequested(tableIndex) {
+                                            if (tableIndex === rowDelegate.realIndex) rowDelegate.startComment()
+                                        }
+                                    }
+
                                     Rectangle {
                                         id: rowBg
                                         anchors.top: parent.top
@@ -501,6 +668,7 @@ Item {
                                             hoverEnabled: true
                                             cursorShape: Qt.PointingHandCursor
                                             onClicked: {
+                                                rowDelegate.forceActiveFocus()
                                                 workspaceCanvas.selectedTableIndex = (workspaceCanvas.selectedTableIndex === realIndex ? -1 : realIndex)
                                             }
                                         }
@@ -668,17 +836,28 @@ Item {
                                                 font.bold: true
                                             }
 
+                                            FontMetrics {
+                                                id: tableHintFont
+                                                font.family: "Monospace"
+                                                font.pixelSize: 10
+                                            }
+
                                             Menu {
                                                 id: tableAction
                                                 y: dotsBtn.height + 4
                                                 padding: 4
 
-                                                // ширина по самому длинному пункту чтобы перевод не вылезал
+                                                // ширина по самому длинному пункту вместе с подсказкой клавиш чтобы перевод не вылезал
                                                 width: {
-                                                    let textWidth = 0
-                                                    for (let i = 0; i < count; ++i)
-                                                        textWidth = Math.max(textWidth, tableActionFont.advanceWidth(itemAt(i).text))
-                                                    return Math.max(140, Math.ceil(textWidth) + 24 + leftPadding + rightPadding)
+                                                    let rowWidth = 0
+                                                    for (let i = 0; i < count; ++i) {
+                                                        let item = itemAt(i)
+                                                        let hint = item.action && item.action.hint ? item.action.hint : ""
+                                                        let w = tableActionFont.advanceWidth(item.text)
+                                                        if (hint !== "") w += 16 + tableHintFont.advanceWidth(hint)
+                                                        rowWidth = Math.max(rowWidth, w)
+                                                    }
+                                                    return Math.max(140, Math.ceil(rowWidth) + 24 + leftPadding + rightPadding)
                                                 }
 
                                                 background: Rectangle {
@@ -693,22 +872,37 @@ Item {
                                                     implicitHeight: 28
 
                                                     readonly property bool isDestructive: menuItem.action && menuItem.action.isDestructive === true
+                                                    // подсказка клавиш справа берется из property hint у Action
+                                                    readonly property string hint: menuItem.action && menuItem.action.hint ? menuItem.action.hint : ""
 
-                                                    contentItem: Text {
-                                                        text: menuItem.text
-                                                        font.family: "Monospace"
-                                                        font.pixelSize: 11
-                                                        font.bold: menuItem.highlighted
+                                                    contentItem: Item {
+                                                        Text {
+                                                            anchors.left: parent.left
+                                                            anchors.verticalCenter: parent.verticalCenter
+                                                            text: menuItem.text
+                                                            font.family: "Monospace"
+                                                            font.pixelSize: 11
+                                                            font.bold: menuItem.highlighted
 
-                                                        color: menuItem.highlighted
-                                                               ? (menuItem.isDestructive ? "#ef4444" : "#52d6a6")
-                                                               : "#cbd5e1"
+                                                            color: menuItem.highlighted
+                                                                   ? (menuItem.isDestructive ? "#ef4444" : "#52d6a6")
+                                                                   : "#cbd5e1"
 
-                                                        verticalAlignment: Text.AlignVCenter
-                                                        leftPadding: 8
+                                                            leftPadding: 8
 
-                                                        Behavior on color {
-                                                            ColorAnimation { duration: 150 }
+                                                            Behavior on color {
+                                                                ColorAnimation { duration: 150 }
+                                                            }
+                                                        }
+
+                                                        Text {
+                                                            anchors.right: parent.right
+                                                            anchors.verticalCenter: parent.verticalCenter
+                                                            text: menuItem.hint
+                                                            font.family: "Monospace"
+                                                            font.pixelSize: 10
+                                                            color: "#64748b"
+                                                            rightPadding: 4
                                                         }
                                                     }
 
@@ -741,37 +935,33 @@ Item {
 
                                                 Action {
                                                     text: qsTr("Rename table")
+                                                    property string hint: "F2"
                                                     onTriggered: tableAction.renameRequested = true
                                                 }
 
                                                 Action {
                                                     text: qsTr("Add column")
+                                                    property string hint: "Ctrl+Enter"
                                                     onTriggered: globalTablesModel.addColumnToTable(realIndex)
                                                 }
 
                                                 Action {
                                                     text: qsTr("Add comment")
+                                                    property string hint: "Ctrl+Alt+M"
                                                     onTriggered: tableAction.commentRequested = true
                                                 }
 
                                                 Action {
                                                     text: qsTr("Duplicate table")
+                                                    property string hint: "Ctrl+D"
                                                     onTriggered: globalTablesModel.duplicateTable(realIndex)
                                                 }
 
                                                 Action {
                                                     text: qsTr("Delete table")
+                                                    property string hint: "Del"
                                                     property bool isDestructive: true
-                                                    onTriggered: {
-                                                        const sel = workspaceCanvas.selectedTableIndex
-                                                        if (realIndex === sel) {
-                                                            workspaceCanvas.selectedTableIndex = -1
-                                                        }
-                                                        else if (sel > realIndex) {
-                                                            workspaceCanvas.selectedTableIndex = sel -1
-                                                        }
-                                                        globalTablesModel.removeTable(realIndex)
-                                                    }
+                                                    onTriggered: workspaceRoot.deleteTable(realIndex)
                                                 }
                                             }
                                         }

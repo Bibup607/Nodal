@@ -17,11 +17,12 @@ ListModel {
         ]
     }
 
-    function addNewTable() {
+    // x y необязательные без них таблицы встают лесенкой
+    function addNewTable(x, y) {
             append({
                 tableName: "table_" + (count + 1),
-                posX: 120 + (count * 40),
-                posY: 120 + (count * 40),
+                posX: x !== undefined ? Math.round(x) : 120 + (count * 40),
+                posY: y !== undefined ? Math.round(y) : 120 + (count * 40),
                 tableColor: "#60a5fa",
                 comment: "",
                 hasComment: false,
@@ -103,26 +104,47 @@ ListModel {
         }
     }
 
-    // функция лублирования таблицы
-    function duplicateTable(tableIndex) {
-        if (tableIndex < 0 || tableIndex >= count) return
+    // снимок таблицы обычным объектом для буфера обмена (null если индекса нет)
+    function tableData(tableIndex) {
+        if (tableIndex < 0 || tableIndex >= count) return null
         let src = get(tableIndex)
 
         let fieldsCopy = []
         for (let i = 0; i < src.fields.count; ++i) {
             let f = src.fields.get(i)
-            fieldsCopy.push({ name: f.name, type: f.type, isPk: f.isPk, isFk: f.isFk })
+            // fk не копируем потому что связи у копии нет
+            fieldsCopy.push({ name: f.name, type: f.type, isPk: f.isPk, isFk: false })
         }
 
-        append({
-            tableName: src.tableName + "_copy",
-            posX: src.posX + 40,
-            posY: src.posY + 40,
+        return {
+            tableName: src.tableName,
+            posX: src.posX,
+            posY: src.posY,
             tableColor: src.tableColor,
             comment: src.comment,
             hasComment: src.hasComment,
             fields: fieldsCopy
+        }
+    }
+
+    // вставка снимка копией со сдвигом возвращает индекс новой таблицы
+    function appendTable(data, offset) {
+        if (!data) return -1
+        append({
+            tableName: data.tableName + "_copy",
+            posX: data.posX + offset,
+            posY: data.posY + offset,
+            tableColor: data.tableColor,
+            comment: data.comment,
+            hasComment: data.hasComment,
+            fields: data.fields
         })
+        return count - 1
+    }
+
+    // функция лублирования таблицы
+    function duplicateTable(tableIndex) {
+        return appendTable(tableData(tableIndex), 40)
     }
 
     // смена цвета таблицы синхронно с сайдбаром и карточкой
