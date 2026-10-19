@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Window
-// import "Pages/SchemaWorkspace"
+import QtCore
+import "Pages/SchemaWorkspace"
 import "Pages/ProjectLauncher"
 
 Window {
@@ -11,11 +12,36 @@ Window {
     title: "NodalDB"
     flags: Qt.Window | Qt.FramelessWindowHint
 
-    ProjectLauncherPage {
+    // временно: лаунчер -> новый проект открывает пустой workspace
+    Loader {
+        id: pageLoader
         anchors.fill: parent
-
-        onCreateProjectRequested: console.log("new project")
-        onOpenFileRequested: console.log("open project")
-        onOpenProjectRequested: (path) => console.log("open recent", path)
+        sourceComponent: launcherPage
     }
+
+    Component {
+        id: launcherPage
+
+        ProjectLauncherPage {
+            onCreateProjectRequested: pageLoader.sourceComponent = workspacePage
+            onOpenFileRequested: console.log("open project")
+            onOpenProjectRequested: (path) => console.log("open recent", path)
+        }
+    }
+
+    Component {
+        id: workspacePage
+
+        SchemaWorkspacePage {}
+    }
+
+    // язык хранится в реестре между запусками
+    Settings {
+        id: appSettings
+        property string language: "en"
+    }
+
+    Component.onCompleted: Qt.uiLanguage = appSettings.language
+    // запоминаем выбранный язык при закрытии окна
+    onClosing: appSettings.language = Qt.uiLanguage
 }

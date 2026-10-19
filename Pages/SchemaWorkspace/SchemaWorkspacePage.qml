@@ -127,12 +127,10 @@ Item {
                         id: selectBtn
                         imageSource: "qrc:/Images/select.svg"
                         imageSourceActive: "qrc:/Images/select-icon-active.svg"
-                        text: "Select"
-                        leftPadding: 10
+                        text: qsTr("Select")
                         // состояние берем из холста чтобы клик не сбивал привязку
                         checkable: false
                         checked: workspaceCanvas.tool === "select"
-                        Layout.preferredWidth: 70
                         Layout.preferredHeight: 35
 
                         onClicked: workspaceCanvas.tool = "select"
@@ -142,11 +140,9 @@ Item {
                         id: panBtn
                         imageSource: "qrc:/Images/pan.svg"
                         imageSourceActive: "qrc:/Images/pan-icon-active.svg"
-                        text: "Pan"
-                        leftPadding: 15
+                        text: qsTr("Pan")
                         checkable: false
                         checked: workspaceCanvas.tool === "pan"
-                        Layout.preferredWidth: 60
                         Layout.preferredHeight: 35
 
                         onClicked: workspaceCanvas.tool = "pan"
@@ -154,7 +150,8 @@ Item {
 
                     Rectangle {
                         id: addTableBtn
-                        Layout.preferredWidth: 65
+                        // ширина по содержимому + отступы слева 10 и справа 8
+                        Layout.preferredWidth: btnRow.implicitWidth + 18
                         Layout.preferredHeight: 35
                         radius: 6
 
@@ -180,6 +177,7 @@ Item {
                         }
 
                         RowLayout {
+                            id: btnRow
                             anchors.fill: parent
                             anchors.leftMargin: 10
                             anchors.rightMargin: 8
@@ -195,7 +193,7 @@ Item {
 
                             Text {
                                 id: btnText
-                                text: "Table"
+                                text: qsTr("Table")
                                 color: (mouseArea.pressed || mouseArea.containsMouse) ? addTableBtn.activeText : addTableBtn.normalText
                                 font.pixelSize: 12
                                 font.family: "Monospace"
@@ -229,16 +227,17 @@ Item {
                     spacing: 8
 
                     ImportButton {
-                        text: "Save"
+                        text: qsTr("Save")
                         font.bold: true
-                        Layout.preferredWidth: 60
+                        // ширина по тексту но не уже прежней
+                        Layout.minimumWidth: 60
                         Layout.preferredHeight: 30
                     }
 
                     ImportButton {
-                        text: "Export SQL"
+                        text: qsTr("Export SQL")
                         font.bold: true
-                        Layout.preferredWidth: 90
+                        Layout.minimumWidth: 90
                         Layout.preferredHeight: 30
                     }
                 }
@@ -291,7 +290,7 @@ Item {
                     spacing: 8
 
                     Text {
-                        text: "SCHEMA EXPLORER"
+                        text: qsTr("SCHEMA EXPLORER")
                         color: "#a1a9b7"
                         font.bold: true
                         Layout.alignment: Qt.AlignLeft
@@ -312,7 +311,7 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                         }
 
-                        placeholderText: "Filter tables..."
+                        placeholderText: qsTr("Filter tables...")
                         placeholderTextColor: "#a1a9b7"
                         color: "#a1a9b7"
                         font.pointSize: 10
@@ -661,11 +660,26 @@ Item {
                                                 onClicked: tableAction.open()
                                             }
 
+                                            // шрифт пунктов меню жирный потому что при наведении текст становится шире
+                                            FontMetrics {
+                                                id: tableActionFont
+                                                font.family: "Monospace"
+                                                font.pixelSize: 11
+                                                font.bold: true
+                                            }
+
                                             Menu {
                                                 id: tableAction
                                                 y: dotsBtn.height + 4
-                                                width: 140
                                                 padding: 4
+
+                                                // ширина по самому длинному пункту чтобы перевод не вылезал
+                                                width: {
+                                                    let textWidth = 0
+                                                    for (let i = 0; i < count; ++i)
+                                                        textWidth = Math.max(textWidth, tableActionFont.advanceWidth(itemAt(i).text))
+                                                    return Math.max(140, Math.ceil(textWidth) + 24 + leftPadding + rightPadding)
+                                                }
 
                                                 background: Rectangle {
                                                     color: "#11151c"
@@ -726,27 +740,27 @@ Item {
                                                 }
 
                                                 Action {
-                                                    text: "Rename table"
+                                                    text: qsTr("Rename table")
                                                     onTriggered: tableAction.renameRequested = true
                                                 }
 
                                                 Action {
-                                                    text: "Add column"
+                                                    text: qsTr("Add column")
                                                     onTriggered: globalTablesModel.addColumnToTable(realIndex)
                                                 }
 
                                                 Action {
-                                                    text: "Add comment"
+                                                    text: qsTr("Add comment")
                                                     onTriggered: tableAction.commentRequested = true
                                                 }
 
                                                 Action {
-                                                    text: "Duplicate table"
+                                                    text: qsTr("Duplicate table")
                                                     onTriggered: globalTablesModel.duplicateTable(realIndex)
                                                 }
 
                                                 Action {
-                                                    text: "Delete table"
+                                                    text: qsTr("Delete table")
                                                     property bool isDestructive: true
                                                     onTriggered: {
                                                         const sel = workspaceCanvas.selectedTableIndex
@@ -772,7 +786,7 @@ Item {
                                         anchors.left: parent.left
                                         anchors.right: parent.right
                                         text: model.comment
-                                        placeholderText: "Comment..."
+                                        placeholderText: qsTr("Comment...")
                                         placeholderTextColor: "#64748b"
                                         wrapMode: TextEdit.Wrap
                                         selectByMouse: true

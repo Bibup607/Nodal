@@ -80,8 +80,9 @@ T.ItemDelegate {
 
             // "PostgreSQL · 12 tables · 18 relations" или "ClickHouse · 24 tables · read-only"
             Text {
-                text: row.engine + " · " + row.tables + " tables · "
-                      + (row.readOnly ? "read-only" : row.relations + " relations")
+                // %n нужен для падежей в русском: 1 таблица 2 таблицы 5 таблиц
+                text: row.engine + " · " + qsTr("%n table(s)", "", row.tables) + " · "
+                      + (row.readOnly ? qsTr("read-only") : qsTr("%n relation(s)", "", row.relations))
                 color: "#a1a9b7"
                 font.pixelSize: 10
             }
@@ -121,7 +122,7 @@ T.ItemDelegate {
 
         ToolTip.visible: hovered
         ToolTip.delay: 500
-        ToolTip.text: "Remove from list"
+        ToolTip.text: qsTr("Remove from list")
 
         contentItem: LineIcon {
             viewBox: 10

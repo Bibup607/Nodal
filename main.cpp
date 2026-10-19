@@ -12,6 +12,10 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     QQuickStyle::setStyle("Basic");
 
+    // имя раздела в реестре куда Settings из QML сохраняет настройки
+    app.setOrganizationName("NodalDB");
+    app.setApplicationName("NodalDB");
+
     // иконка окна в панели задач и альт+таб свг рендерим в нескольких размерах чтобы не было мыла
     QIcon appIcon;
     for (int size : {16, 24, 32, 48, 64, 128, 256}) {

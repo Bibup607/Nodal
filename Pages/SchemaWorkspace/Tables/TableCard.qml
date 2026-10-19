@@ -149,13 +149,26 @@ Rectangle {
                     onClicked: menuAction.open()
                 }
 
+                FontMetrics {
+                    id: menuActionFont
+                    font.family: "Monospace"
+                    font.pixelSize: 10
+                }
+
                 Menu {
                     id: menuAction
-                    width: 95
+
+                    // ширина по самому длинному пункту чтобы перевод не вылезал
+                    width: {
+                        let textWidth = 0
+                        for (let i = 0; i < count; ++i)
+                            textWidth = Math.max(textWidth, menuActionFont.advanceWidth(itemAt(i).text))
+                        return Math.max(95, Math.ceil(textWidth) + 24 + leftPadding + rightPadding)
+                    }
 
                     MenuItem {
                         id: addColumnItem
-                        text: "Add Column"
+                        text: qsTr("Add Column")
                         height: 28
 
                         onTriggered: {
@@ -189,7 +202,7 @@ Rectangle {
 
                     MenuItem {
                         id: delTable
-                        text: "Del Table"
+                        text: qsTr("Del Table")
                         height: 28
 
                         onTriggered: {

@@ -8,6 +8,12 @@ T.Button {
     checkable: true
     hoverEnabled: true
 
+    // ширина по тексту: слева место под иконку 10 + 13 + 6
+    implicitWidth: implicitContentWidth + leftPadding + rightPadding
+    implicitHeight: Math.max(implicitBackgroundHeight, implicitContentHeight + topPadding + bottomPadding)
+    leftPadding: 29
+    rightPadding: 10
+
     // background
     property color normalColorbg: "#11151c"
     property color activeColorbg: "#183c35"

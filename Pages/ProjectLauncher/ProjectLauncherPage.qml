@@ -120,6 +120,8 @@ Item {
 
 
             LauncherSidebar {
+                language: Qt.uiLanguage
+
                 Layout.preferredWidth: 206
                 Layout.fillHeight: true
                 recentCount: recentModel.count
@@ -128,7 +130,7 @@ Item {
                 onRecentRequested: console.log("recent")
                 onOpenFileRequested: page.openFileRequested()
                 onCreateProjectRequested: page.createProjectRequested()
-                onLanguageSelected: (code) => language = code
+                onLanguageSelected: (code) => Qt.uiLanguage = code
             }
 
             ScrollView {
@@ -148,7 +150,7 @@ Item {
                     spacing: 0
 
                     Text {
-                        text: "WORKSPACE"
+                        text: qsTr("WORKSPACE")
                         color: "#52d6a6"
                         font.family: fonts.jetBrainsMB.family
                         font.pixelSize: 9
@@ -158,7 +160,7 @@ Item {
                     Text {
                         Layout.topMargin: 10
                         Layout.fillWidth: true
-                        text: "Open a schema or start a new one"
+                        text: qsTr("Open a schema or start a new one")
                         color: "#ffffff"
                         font.family: fonts.interBold.family
                         font.pixelSize: 26
@@ -168,7 +170,7 @@ Item {
                     Text {
                         Layout.topMargin: 10
                         Layout.preferredWidth: Math.min(520, content.width)
-                        text: "Continue working on a saved database project or create a clean schema for a new service."
+                        text: qsTr("Continue working on a saved database project or create a clean schema for a new service.")
                         color: "#a1a9b7"
                         font.pixelSize: 12
                         wrapMode: Text.WordWrap
@@ -186,8 +188,8 @@ Item {
                             Layout.preferredWidth: 1
                             Layout.fillHeight: true
                             primary: true
-                            text: "Create new project"
-                            description: "Empty schema, connection settings and a save file."
+                            text: qsTr("Create new project")
+                            description: qsTr("Empty schema, connection settings and a save file.")
                             iconSource: "qrc:/Images/card-plus.svg"
                             shortcutText: "Ctrl+N"
                             onClicked: page.createProjectRequested()
@@ -197,8 +199,8 @@ Item {
                             Layout.fillWidth: true
                             Layout.preferredWidth: 1
                             Layout.fillHeight: true
-                            text: "Open saved project"
-                            description: "Choose a .schema file on disk or in a network folder."
+                            text: qsTr("Open saved project")
+                            description: qsTr("Choose a .schema file on disk or in a network folder.")
                             iconSource: "qrc:/Images/card-folder.svg"
                             shortcutText: "Ctrl+O"
                             onClicked: page.openFileRequested()
@@ -212,7 +214,7 @@ Item {
 
                         Text {
                             Layout.fillWidth: true
-                            text: "RECENT PROJECTS"
+                            text: qsTr("RECENT PROJECTS")
                             color: "#a1a9b7"
                             font.pixelSize: 9
                             font.bold: true
@@ -221,7 +223,7 @@ Item {
 
                         Text {
                             visible: recentModel.count > 0
-                            text: "Clear list"
+                            text: qsTr("Clear list")
                             color: clearHover.hovered ? "#52d6a6" : "#7d8796"
                             font.pixelSize: 10
 
@@ -243,7 +245,7 @@ Item {
                         Layout.preferredHeight: 32
                         leftPadding: 30
                         rightPadding: 60
-                        placeholderText: "Search by name..."
+                        placeholderText: qsTr("Search by name...")
                         placeholderTextColor: "#7d8796"
                         color: "#e6edf3"
                         font.pixelSize: 11
@@ -305,8 +307,8 @@ Item {
                         Layout.fillWidth: true
                         visible: filteredRecent.count === 0
                         text: recentModel.count === 0
-                              ? "Projects you open will appear here."
-                              : "Nothing found for \"" + searchField.text.trim() + "\""
+                              ? qsTr("Projects you open will appear here.")
+                              : qsTr("Nothing found for \"%1\"").arg(searchField.text.trim())
                         color: "#7d8796"
                         font.pixelSize: 11
                         horizontalAlignment: Text.AlignHCenter

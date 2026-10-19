@@ -6,12 +6,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(QT_QML_GENERATE_QMLLS_INI ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Qml)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Qml LinguistTools)
 
 # Отключает предупреждение QTP0004 для вложенных папок QML
 qt_policy(SET QTP0004 NEW)
 
-qt_standard_project_setup(REQUIRES 6.5)
+# Исходный язык строк в qsTr() и языки на которые переводим
+qt_standard_project_setup(REQUIRES 6.5
+    I18N_SOURCE_LANGUAGE en
+    I18N_TRANSLATED_LANGUAGES ru
+)
 
 # Content of downloaded design from Figma to Qt or similar
 if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/importedcontent/CMakeLists.txt")
@@ -58,12 +62,23 @@ qt_add_qml_module(appNodalDB
         models/tablesmodel.cpp
         models/tablesfilterproxymodel.h
         models/tablesfilterproxymodel.cpp
+        storage/projectstorage.h
+        storage/projectstorage.cpp
+)
+
+# Переводы: i18n/qml_ru.ts -> .qm в ресурсах рядом с Main.qml
+# движок сам подхватывает их и перезагружает при смене Qt.uiLanguage
+qt_add_translations(appNodalDB
+    RESOURCE_PREFIX /qt/qml/NodalDB/i18n
+    TS_FILE_BASE qml
+    TS_FILE_DIR i18n
 )
 
 # Подключение путей к заголовкам для корректной генерации метатипов
 target_include_directories(appNodalDB PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/models
+    ${CMAKE_CURRENT_SOURCE_DIR}/storage
 )
 
 set_target_properties(appNodalDB PROPERTIES

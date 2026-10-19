@@ -215,7 +215,7 @@ Popup {
 
                 Text {
                     anchors.centerIn: parent
-                    text: "Add"
+                    text: qsTr("Add")
                     color: addMouse.containsMouse ? "#52d6a6" : "#a1a9b7"
                     font.family: "Monospace"
                     font.pixelSize: 10

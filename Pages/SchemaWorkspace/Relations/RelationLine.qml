@@ -190,7 +190,7 @@ Item {
 
             MenuItem {
                 id: resetColor
-                text: "Reset color"
+                text: qsTr("Reset color")
                 visible: root.hasCustomColor
                 height: visible ? implicitHeight : 0
                 implicitHeight: 28
@@ -213,7 +213,7 @@ Item {
 
             MenuItem {
                 id: delRelation
-                text: "Del Relation"
+                text: qsTr("Del Relation")
                 implicitHeight: 28
                 onTriggered: root.removeRequested()
 
