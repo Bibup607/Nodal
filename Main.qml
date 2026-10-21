@@ -69,6 +69,7 @@ Window {
             projectPath: appWindow.projectPath
             initialData: appWindow.projectData
             onProjectSaved: (fileName) => saveNotification.show(fileName)
+            onBackRequested: pageLoader.sourceComponent = launcherPage
         }
     }
 

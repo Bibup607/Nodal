@@ -56,13 +56,27 @@ Item {
     }
 
     signal projectSaved(string fileName)
+    signal backRequested()
 
     function writeProject(path) {
         if (projectStorage.saveProject(path, projectData())) {
             projectPath = path
             projectSaved(path.toString().split("/").pop())
-        } else
-            console.warn("save failed:", projectStorage.lastError)
+            return true
+        }
+        console.warn("save failed:", projectStorage.lastError)
+        return false
+    }
+
+    // сохраняем проект и возвращаемся в меню
+    property bool leaveAfterSave: false
+
+    function leaveProject() {
+        if (projectPath.toString() === "") {
+            leaveAfterSave = true
+            saveDialog.open()
+        } else if (writeProject(projectPath))
+            backRequested()
     }
 
     // первый раз спрашиваем куда потом сохраняем молча
@@ -79,7 +93,12 @@ Item {
         fileMode: FileDialog.SaveFile
         nameFilters: [qsTr("NodalDB schema (*.schema)")]
         defaultSuffix: "schema"
-        onAccepted: workspaceRoot.writeProject(selectedFile)
+        onAccepted: {
+            if (workspaceRoot.writeProject(selectedFile) && workspaceRoot.leaveAfterSave)
+                workspaceRoot.backRequested()
+            workspaceRoot.leaveAfterSave = false
+        }
+        onRejected: workspaceRoot.leaveAfterSave = false
     }
 
     // общая палитра для таблиц и связей: базовые цвета и созданные пользователем
@@ -326,20 +345,37 @@ Item {
                 anchors.rightMargin: 12
 
                 // Логотип
-                RowLayout {
-                    spacing: 8
-                    Image {
-                        width: 28
-                        height: 28
-                        source: "qrc:/Images/logo.svg"
+                Item {
+                    implicitWidth: logoRow.implicitWidth
+                    implicitHeight: logoRow.implicitHeight
+                    opacity: logoMouse.containsMouse ? 0.75 : 1
+
+                    RowLayout {
+                        id: logoRow
+                        anchors.fill: parent
+                        spacing: 8
+
+                        Image {
+                            width: 28
+                            height: 28
+                            source: "qrc:/Images/logo.svg"
+                        }
+
+                        Text {
+                            text: "Nodal"
+                            font.family: fonts.interBold.family
+                            font.pixelSize: 16
+                            font.bold: true
+                            color: "white"
+                        }
                     }
 
-                    Text {
-                        text: "Nodal"
-                        font.family: fonts.interBold.family
-                        font.pixelSize: 16
-                        font.bold: true
-                        color: "white"
+                    MouseArea {
+                        id: logoMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: workspaceRoot.leaveProject()
                     }
                 }
 
