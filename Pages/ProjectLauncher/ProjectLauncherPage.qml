@@ -29,21 +29,42 @@ Item {
     }
     Shortcut { sequence: StandardKey.Find; enabled: page.visible; onActivated: searchField.forceActiveFocus() }
 
-    // недавние проекты пока демо данные
+    // недавние проекты из папки проектов
+    ProjectStorage {
+        id: projectStorage
+    }
+
     ListModel {
         id: recentModel
-        ListElement { name: "commerce.schema"; path: "~/Projects/acme-cloud/db/commerce.schema"
-                      engine: "PostgreSQL"; tables: 12; relations: 18; readOnly: false
-                      lastOpened: "2 min ago"; accent: "#52d6a6" }
-        ListElement { name: "billing-core.schema"; path: "~/Work/nodal/billing/billing-core.schema"
-                      engine: "PostgreSQL"; tables: 9; relations: 11; readOnly: false
-                      lastOpened: "yesterday"; accent: "#60a5fa" }
-        ListElement { name: "analytics-warehouse.schema"; path: "/Volumes/Data/schemas/analytics-warehouse.schema"
-                      engine: "ClickHouse"; tables: 24; relations: 0; readOnly: true
-                      lastOpened: "Sep 12"; accent: "#a78bfa" }
-        ListElement { name: "identity-service.schema"; path: "~/Projects/platform/identity-service.schema"
-                      engine: "MySQL"; tables: 7; relations: 6; readOnly: false
-                      lastOpened: "Sep 8"; accent: "#f59e0b" }
+    }
+
+    function reloadProjects() {
+        recentModel.clear()
+        for (let p of projectStorage.listProjects()) {
+            recentModel.append({
+                name: p.name,
+                path: p.path,
+                engine: "",
+                tables: 0,
+                relations: 0,
+                readOnly: false,
+                lastOpened: Qt.formatDateTime(p.modified, "MMM d yyyy, hh:mm"),
+                accent: "#52d6a6"
+            })
+        }
+    }
+
+    Component.onCompleted: reloadProjects()
+
+    // выбор другой папки проектов
+    FolderDialog {
+        id: folderDialog
+        title: qsTr("Choose projects folder")
+        currentFolder: "file:///" + projectStorage.projectsFolder
+        onAccepted: {
+            projectStorage.setProjectsFolder(selectedFolder)
+            page.reloadProjects()
+        }
     }
 
     // тот же фильтр что и поиск таблиц ищет по роли name
@@ -311,7 +332,7 @@ Item {
 
                             delegate: RecentProjectRow {
                                 width: parent.width
-                                onClicked: page.openProjectRequested(path)
+                                onClicked: page.openProjectRequested("file:///" + path)
                                 // index тут номер в отфильтрованном списке
                                 onRemoveRequested: recentModel.remove(filteredRecent.mapToSourceRow(index))
                             }
@@ -328,6 +349,44 @@ Item {
                         color: "#7d8796"
                         font.pixelSize: 11
                         horizontalAlignment: Text.AlignHCenter
+                    }
+                }
+            }
+        }
+
+        // подвал путь к папке проектов и кнопка смены
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 28
+            color: "#11151C"
+            border.color: "#252c37"
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
+                spacing: 8
+
+                Text {
+                    Layout.fillWidth: true
+                    text: qsTr("Projects folder: %1").arg(projectStorage.projectsFolder)
+                    color: "#7d8796"
+                    font.family: fonts.jetBrainsMB.family
+                    font.pixelSize: 9
+                    elide: Text.ElideMiddle
+                }
+
+                Text {
+                    text: qsTr("Change")
+                    color: changeHover.hovered ? "#52d6a6" : "#a1a9b7"
+                    font.pixelSize: 10
+
+                    HoverHandler {
+                        id: changeHover
+                        cursorShape: Qt.PointingHandCursor
+                    }
+                    TapHandler {
+                        onTapped: folderDialog.open()
                     }
                 }
             }

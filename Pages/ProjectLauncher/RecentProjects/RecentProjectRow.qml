@@ -80,6 +80,7 @@ T.ItemDelegate {
 
             // "PostgreSQL · 12 tables · 18 relations" или "ClickHouse · 24 tables · read-only"
             Text {
+                visible: row.engine !== ""
                 // %n нужен для падежей в русском: 1 таблица 2 таблицы 5 таблиц
                 text: row.engine + " · " + qsTr("%n table(s)", "", row.tables) + " · "
                       + (row.readOnly ? qsTr("read-only") : qsTr("%n relation(s)", "", row.relations))

@@ -50,9 +50,15 @@ Window {
 
         ProjectLauncherPage {
             onCreateProjectRequested: (name, engine) => {
+                // сразу создаем файл в папке проектов
+                let path = projectStorage.newProjectFile(name)
+                if (!projectStorage.saveProject(path, { name: name, engine: engine, tables: [] })) {
+                    console.warn("create failed:", path, projectStorage.lastError)
+                    return
+                }
                 appWindow.projectName = name
                 appWindow.projectEngine = engine
-                appWindow.projectPath = ""
+                appWindow.projectPath = path
                 appWindow.projectData = null
                 pageLoader.sourceComponent = workspacePage
             }
