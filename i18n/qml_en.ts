@@ -4,7 +4,7 @@
 <context>
     <name>RecentProjectRow</name>
     <message numerus="yes">
-        <location filename="../Pages/ProjectLauncher/RecentProjects/RecentProjectRow.qml" line="84"/>
+        <location filename="../Pages/ProjectLauncher/RecentProjects/RecentProjectRow.qml" line="85"/>
         <source>%n table(s)</source>
         <translation>
             <numerusform>%n table</numerusform>
@@ -12,7 +12,26 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../Pages/ProjectLauncher/RecentProjects/RecentProjectRow.qml" line="85"/>
+        <location filename="../Pages/ProjectLauncher/RecentProjects/RecentProjectRow.qml" line="86"/>
+        <source>%n relation(s)</source>
+        <translation>
+            <numerusform>%n relation</numerusform>
+            <numerusform>%n relations</numerusform>
+        </translation>
+    </message>
+</context>
+<context>
+    <name>SchemaWorkspacePage</name>
+    <message numerus="yes">
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="1210"/>
+        <source>%n table(s)</source>
+        <translation>
+            <numerusform>%n table</numerusform>
+            <numerusform>%n tables</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="1211"/>
         <source>%n relation(s)</source>
         <translation>
             <numerusform>%n relation</numerusform>
