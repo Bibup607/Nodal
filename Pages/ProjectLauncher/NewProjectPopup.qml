@@ -24,14 +24,14 @@ Popup {
     // при каждом открытии поля начинаются заново
     onOpened: {
         nameField.text = ""
-        engineGroup.current = "PostgreSQL"
+        engineBox.currentIndex = 0
         nameField.forceActiveFocus()
     }
 
     function accept() {
         if (!canCreate) return
         close()
-        createRequested(nameField.text.trim(), engineGroup.current)
+        createRequested(nameField.text.trim(), engineBox.currentText)
     }
 
     Overlay.modal: Rectangle {
@@ -116,53 +116,75 @@ Popup {
         Text {
             Layout.topMargin: 16
             text: qsTr("DATABASE")
-            color: "#7d8796"
+            color: "#A1A9B7"
             font.pixelSize: 9
             font.bold: true
             font.letterSpacing: 0.6
         }
 
-        // выбор движка базы одна кнопка активна
-        RowLayout {
-            id: engineGroup
+        // выбор базы данных нового проекта
+        ComboBox {
+            id: engineBox
             Layout.topMargin: 6
             Layout.fillWidth: true
-            spacing: 6
+            Layout.preferredHeight: 34
+            model: ["PostgreSQL", "MySQL", "SQLite"]
+            font.pixelSize: 12
 
-            property string current: "PostgreSQL"
+            contentItem: Text {
+                leftPadding: 10
+                text: engineBox.displayText
+                color: "#E6EDF3"
+                font: engineBox.font
+                verticalAlignment: Text.AlignVCenter
+                elide: Text.ElideRight
+            }
 
-            Repeater {
-                model: ["PostgreSQL", "MySQL", "SQLite"]
+            background: Rectangle {
+                color: "#0D1117"
+                radius: 6
+                border.width: 1
+                border.color: engineBox.activeFocus || engineBox.popup.visible ? "#52D6A6" : "#252C37"
+            }
 
-                delegate: Rectangle {
-                    id: chip
-                    required property string modelData
-                    readonly property bool selected: engineGroup.current === modelData
+            delegate: ItemDelegate {
+                id: engineItem
+                required property string modelData
+                required property int index
+                width: ListView.view.width
+                height: 28
+                highlighted: engineBox.highlightedIndex === index
 
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 30
-                    radius: 6
-                    color: selected ? "#183c35" : (chipMouse.containsMouse ? "#1b222c" : "#0d1117")
+                contentItem: Text {
+                    text: engineItem.modelData
+                    color: "#E6EDF3"
+                    font.pixelSize: 12
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                background: Rectangle {
+                    color: engineItem.highlighted ? "#1B222C" : "transparent"
+                }
+            }
+
+            popup: Popup {
+                y: engineBox.height + 4
+                width: engineBox.width
+                padding: 4
+                implicitHeight: contentItem.implicitHeight + topPadding + bottomPadding
+
+                contentItem: ListView {
+                    clip: true
+                    implicitHeight: contentHeight
+                    model: engineBox.popup.visible ? engineBox.delegateModel : null
+                    currentIndex: engineBox.highlightedIndex
+                }
+
+                background: Rectangle {
+                    color: "#161B22"
+                    border.color: "#252C37"
                     border.width: 1
-                    border.color: selected ? "#52d6a6" : "#252c37"
-
-                    Behavior on color { ColorAnimation { duration: 150 } }
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: chip.modelData
-                        color: chip.selected ? "#52d6a6" : "#cbd5e1"
-                        font.family: popup.monoFont
-                        font.pixelSize: 11
-                    }
-
-                    MouseArea {
-                        id: chipMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: engineGroup.current = chip.modelData
-                    }
+                    radius: 6
                 }
             }
         }

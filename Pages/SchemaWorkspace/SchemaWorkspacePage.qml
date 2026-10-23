@@ -58,8 +58,35 @@ Item {
     signal projectSaved(string fileName)
     signal backRequested()
 
+    // снимок последнего сохранения сравниваем с текущим чтобы показать unsaved
+    property string savedSnapshot: ""
+    property bool hasUnsavedChanges: false
+
+    function snapshot() {
+        return JSON.stringify(projectData())
+    }
+
+    Timer {
+        interval: 500
+        running: true
+        repeat: true
+        onTriggered: workspaceRoot.hasUnsavedChanges = workspaceRoot.snapshot() !== workspaceRoot.savedSnapshot
+    }
+
+    function setEngine(engine) {
+        if (engine === dbEngine) return
+        dbEngine = engine
+        hasUnsavedChanges = true
+    }
+
+    readonly property string fileName: projectPath.toString() !== ""
+                                       ? decodeURIComponent(projectPath.toString().split("/").pop())
+                                       : projectName + ".schema"
+
     function writeProject(path) {
         if (projectStorage.saveProject(path, projectData())) {
+            savedSnapshot = snapshot()
+            hasUnsavedChanges = false
             projectPath = path
             projectSaved(path.toString().split("/").pop())
             return true
@@ -157,9 +184,10 @@ Item {
     }
 
     Component.onCompleted: {
-        if (initialData)
+        if (initialData) {
             loadProjectData(initialData)
-        else
+            savedSnapshot = snapshot()
+        } else
             globalTablesModel.addNewTable(150, 150)
     }
 
@@ -1142,6 +1170,132 @@ Item {
                             yAxis.onActiveValueChanged: (delta) => {
                                 tableCard.y += delta / workspaceCanvas.zoom
                             }
+                        }
+                    }
+                }
+            }
+        }
+
+        // строка состояния файл сводка и выбор базы данных
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 26
+            color: "#11151C"
+
+            Rectangle {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: 1
+                color: "#252C37"
+            }
+
+            RowLayout {
+                anchors.fill: parent
+                spacing: 0
+
+                Text {
+                    Layout.leftMargin: 12
+                    Layout.rightMargin: 12
+                    Layout.alignment: Qt.AlignVCenter
+                    text: workspaceRoot.fileName + (workspaceRoot.hasUnsavedChanges ? " · " + qsTr("unsaved") : "")
+                    color: "#7D8796"
+                    font.pixelSize: 11
+                }
+
+                Text {
+                    Layout.leftMargin: 12
+                    Layout.rightMargin: 12
+                    Layout.alignment: Qt.AlignVCenter
+                    text: qsTr("%n table(s)", "", globalTablesModel.count) + " · "
+                          + qsTr("%n relation(s)", "", globalRelationsModel.count)
+                    color: "#7D8796"
+                    font.pixelSize: 11
+                }
+
+                Item { Layout.fillWidth: true }
+
+                Button {
+                    id: engineBtn
+                    Layout.fillHeight: true
+                    leftPadding: 12
+                    rightPadding: 12
+                    topPadding: 0
+                    bottomPadding: 0
+                    hoverEnabled: true
+                    text: workspaceRoot.dbEngine
+
+                    ToolTip.visible: hovered && !engineMenu.visible
+                    ToolTip.delay: 500
+                    ToolTip.text: qsTr("Database: %1").arg(workspaceRoot.dbEngine)
+
+                    contentItem: Text {
+                        text: engineBtn.text
+                        color: engineBtn.hovered ? "#E6EDF3" : "#A1A9B7"
+                        font.pixelSize: 11
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    background: Rectangle {
+                        color: engineBtn.hovered ? "#1B222C" : "transparent"
+                    }
+
+                    HoverHandler {
+                        cursorShape: Qt.PointingHandCursor
+                    }
+
+                    onClicked: engineMenu.open()
+
+                    Menu {
+                        id: engineMenu
+                        y: -height - 4
+                        x: parent.width - width
+                        width: 160
+                        topPadding: 4
+                        bottomPadding: 4
+                        leftPadding: 0
+                        rightPadding: 0
+
+                        background: Rectangle {
+                            color: "#161B22"
+                            border.color: "#252C37"
+                            border.width: 1
+                            radius: 6
+                        }
+
+                        delegate: MenuItem {
+                            id: engineItem
+                            implicitHeight: 28
+                            leftPadding: 12
+                            indicator: null
+                            arrow: null
+
+                            contentItem: Text {
+                                text: engineItem.text
+                                font.pixelSize: 12
+                                verticalAlignment: Text.AlignVCenter
+                                color: engineItem.highlighted ? "#E6EDF3"
+                                                              : (engineItem.text === workspaceRoot.dbEngine ? "#FFFFFF" : "#A1A9B7")
+                            }
+
+                            background: Rectangle {
+                                color: engineItem.highlighted ? "#1B222C" : "transparent"
+                            }
+                        }
+
+                        Action {
+                            text: "PostgreSQL"
+                            onTriggered: workspaceRoot.setEngine(text)
+                        }
+
+                        Action {
+                            text: "MySQL"
+                            onTriggered: workspaceRoot.setEngine(text)
+                        }
+
+                        Action {
+                            text: "SQLite"
+                            onTriggered: workspaceRoot.setEngine(text)
                         }
                     }
                 }
