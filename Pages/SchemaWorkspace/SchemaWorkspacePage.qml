@@ -30,6 +30,7 @@ Item {
 
     TableItemsView {
         id: globalTablesModel
+        dbEngine: workspaceRoot.dbEngine
     }
 
     RelationsModel {
@@ -75,6 +76,7 @@ Item {
 
     function setEngine(engine) {
         if (engine === dbEngine) return
+        globalTablesModel.convertTypes(dbEngine, engine)
         dbEngine = engine
         hasUnsavedChanges = true
     }
@@ -187,8 +189,10 @@ Item {
         if (initialData) {
             loadProjectData(initialData)
             savedSnapshot = snapshot()
-        } else
+        } else {
+            globalTablesModel.convertTypes("PostgreSQL", dbEngine)
             globalTablesModel.addNewTable(150, 150)
+        }
     }
 
     property var tableClipboard: null
@@ -1154,6 +1158,7 @@ Item {
                     tablesModel: globalTablesModel
                     relationsModel: globalRelationsModel
                     colorStore: customColorStore
+                    dbEngine: workspaceRoot.dbEngine
 
                     Rectangle {
                         id: tableCard

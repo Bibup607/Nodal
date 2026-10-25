@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import NodalDB
+
 Rectangle {
     id: root
     width: 250
@@ -12,6 +14,7 @@ Rectangle {
 
     property bool isSelected: workspaceCanvas.selectedTableIndex === index
     readonly property int tableIndex: index
+    property string dbEngine: "PostgreSQL"
     readonly property color tableColor: model.tableColor // чтобы связи брали цвет таблицы
 
     signal removeTable()
@@ -450,6 +453,17 @@ Rectangle {
                             root.forceActiveFocus()
                             typeMenu.open()
                         }
+                    }
+
+                    Instantiator {
+                        model: SqlTypes.typesFor(root.dbEngine)
+                        delegate: Action {
+                            required property string modelData
+                            text: modelData
+                            onTriggered: root.fieldTypeChanged(rowItem.fieldRowIndex, modelData)
+                        }
+                        onObjectAdded: (index, object) => typeMenu.insertAction(index, object)
+                        onObjectRemoved: (index, object) => typeMenu.removeAction(object)
                     }
 
                     Menu {

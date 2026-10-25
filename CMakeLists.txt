@@ -30,6 +30,9 @@ if(WIN32)
     target_sources(appNodalDB PRIVATE app.rc)
 endif()
 
+# SqlTypes.qml — синглтон со списками типов для каждой базы
+set_source_files_properties(SqlTypes.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+
 qt_add_qml_module(appNodalDB
     URI NodalDB
     VERSION 1.0
@@ -37,6 +40,7 @@ qt_add_qml_module(appNodalDB
         Main.qml
         Fonts.qml
         LineIcon.qml
+        SqlTypes.qml
         Components/SaveNotification.qml
         Pages/ProjectLauncher/ProjectLauncherPage.qml
         Pages/ProjectLauncher/NewProjectPopup.qml

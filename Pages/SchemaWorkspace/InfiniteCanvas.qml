@@ -10,6 +10,7 @@ Item {
     property var tablesModel: null
     property var relationsModel: null
     property var colorStore: null
+    property string dbEngine: "PostgreSQL"
     property int selectedTableIndex: -1
 
     property bool isConnecting: false

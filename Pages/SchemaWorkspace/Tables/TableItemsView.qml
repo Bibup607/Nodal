@@ -1,7 +1,10 @@
 import QtQuick
+import NodalDB
 
 ListModel {
     id: tablesModelRoot
+
+    property string dbEngine: "PostgreSQL"
 
     // дефолтная тестовая таблица для старта
     ListElement {
@@ -29,7 +32,7 @@ ListModel {
                 fields: [
                     {
                         name: "id",
-                        type: "uuid",
+                        type: SqlTypes.defaultIdType(dbEngine),
                         isPk: true,
                         isFk: false
                     }
@@ -76,7 +79,7 @@ ListModel {
         if (table && table.fields) {
             table.fields.append({
                 name: "column_" + (table.fields.count + 1),
-                type: "varchar",
+                type: SqlTypes.defaultColumnType(dbEngine),
                 isPk: false,
                 isFk: false
             })
@@ -182,6 +185,17 @@ ListModel {
                 hasComment: t.hasComment,
                 fields: t.fields
             })
+        }
+    }
+
+    // при смене базы переводим типы всех колонок из старой базы в новую
+    function convertTypes(fromEngine, toEngine) {
+        for (let t = 0; t < count; ++t) {
+            let fields = get(t).fields
+            for (let i = 0; i < fields.count; ++i) {
+                let oldType = fields.get(i).type
+                fields.setProperty(i, "type", SqlTypes.convert(oldType, fromEngine, toEngine))
+            }
         }
     }
 
