@@ -1,2 +1,24 @@
 // вшивает иконку в exe чтобы она была видна в проводнике ярлыках и закрепленной панели задач
 IDI_ICON1 ICON "Images/app.ico"
+
+// информация о программе: её показывают диспетчер задач и «Свойства → Подробно» у exe
+1 VERSIONINFO
+FILEVERSION     0,1,0,0
+PRODUCTVERSION  0,1,0,0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"            // язык: английский (США), кодировка Unicode
+        BEGIN
+            VALUE "FileDescription",  "Nodal"        // это имя в диспетчере задач
+            VALUE "ProductName",      "Nodal"
+            VALUE "FileVersion",      "0.1.0.0"
+            VALUE "ProductVersion",   "0.1.0.0"
+            VALUE "OriginalFilename", "Nodal.exe"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1200   // должно совпадать с "040904B0" выше
+    END
+END

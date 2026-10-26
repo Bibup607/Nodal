@@ -1,9 +1,10 @@
 import QtQuick
-import NodalDB
+import NodalDB   // для SqlTypes
 
 ListModel {
     id: tablesModelRoot
 
+    // выбранная база: от неё зависят типы новых колонок
     property string dbEngine: "PostgreSQL"
 
     // дефолтная тестовая таблица для старта
@@ -197,6 +198,42 @@ ListModel {
                 fields.setProperty(i, "type", SqlTypes.convert(oldType, fromEngine, toEngine))
             }
         }
+    }
+
+    // ---------- для импорта из SQL ----------
+
+    // добавить готовую таблицу с колонками (fields — массив объектов {name, type, isPk, isFk})
+    function addImportedTable(name, fields, x, y) {
+        append({
+            tableName: name,
+            posX: Math.round(x),
+            posY: Math.round(y),
+            tableColor: "#60a5fa",
+            comment: "",
+            hasComment: false,
+            fields: fields
+        })
+    }
+
+    // индекс таблицы по имени без учёта регистра, -1 если нет
+    // сначала ищем среди таблиц начиная с from (только что импортированных), потом среди старых
+    function findTable(name, from) {
+        name = name.toLowerCase()
+        for (let t = from; t < count; ++t)
+            if (get(t).tableName.toLowerCase() === name) return t
+        for (let t = 0; t < from; ++t)
+            if (get(t).tableName.toLowerCase() === name) return t
+        return -1
+    }
+
+    // индекс колонки по имени, -1 если нет; пустое имя — колонка первичного ключа
+    function findField(tableIndex, name) {
+        let fields = get(tableIndex).fields
+        for (let i = 0; i < fields.count; ++i) {
+            let f = fields.get(i)
+            if (name === "" ? f.isPk : f.name.toLowerCase() === name.toLowerCase()) return i
+        }
+        return -1
     }
 
     // все таблицы обычными объектами для сохранения в файл

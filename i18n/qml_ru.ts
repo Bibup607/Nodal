@@ -10,6 +10,52 @@
     </message>
 </context>
 <context>
+    <name>ConfirmPopup</name>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/ConfirmPopup.qml" line="21"/>
+        <source>Continue</source>
+        <translation>Продолжить</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/ConfirmPopup.qml" line="90"/>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+</context>
+<context>
+    <name>ExportPopup</name>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/ExportPopup.qml" line="94"/>
+        <source>Export SQL — %1</source>
+        <translation>Экспорт SQL — %1</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/ExportPopup.qml" line="103"/>
+        <source>CREATE TABLE statements for every table and relation on the schema.</source>
+        <translation>Команды CREATE TABLE для всех таблиц и связей схемы.</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/ExportPopup.qml" line="147"/>
+        <source>Close</source>
+        <translation>Закрыть</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/ExportPopup.qml" line="155"/>
+        <source>Copied</source>
+        <translation>Скопировано</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/ExportPopup.qml" line="155"/>
+        <source>Copy</source>
+        <translation>Копировать</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/ExportPopup.qml" line="174"/>
+        <source>Save .sql…</source>
+        <translation>Сохранить .sql…</translation>
+    </message>
+</context>
+<context>
     <name>ImportPopup</name>
     <message>
         <location filename="../Pages/SchemaWorkspace/ImportPopup.qml" line="70"/>
@@ -203,8 +249,8 @@
     </message>
     <message>
         <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="27"/>
-        <source>NodalDB schema (*.schema)</source>
-        <translation>Схема NodalDB (*.schema)</translation>
+        <source>Nodal schema (*.schema)</source>
+        <translation>Схема Nodal (*.schema)</translation>
     </message>
     <message>
         <location filename="../Pages/ProjectLauncher/ProjectLauncherPage.qml" line="62"/>
@@ -286,8 +332,8 @@
     <name>ProjectStorage</name>
     <message>
         <location filename="../storage/projectstorage.cpp" line="102"/>
-        <source>Not a NodalDB project</source>
-        <translation>Это не проект NodalDB</translation>
+        <source>Not a Nodal project</source>
+        <translation>Это не проект Nodal</translation>
     </message>
 </context>
 <context>
@@ -351,8 +397,8 @@
     </message>
     <message>
         <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="121"/>
-        <source>NodalDB schema (*.schema)</source>
-        <translation>Схема NodalDB (*.schema)</translation>
+        <source>Nodal schema (*.schema)</source>
+        <translation>Схема Nodal (*.schema)</translation>
     </message>
     <message>
         <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="420"/>
@@ -446,6 +492,71 @@
         <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="1230"/>
         <source>Database: %1</source>
         <translation>База данных: %1</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="163"/>
+        <source>No CREATE TABLE statements found.</source>
+        <translation>Не найдено ни одной команды CREATE TABLE.</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="91"/>
+        <source>Switch to SQLite?</source>
+        <translation>Перейти на SQLite?</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="92"/>
+        <source>SQLite has only 5 storage types, so uuid, varchar, timestamp and similar columns become text. Switching back to another database will not restore the original types.</source>
+        <translation>В SQLite всего 5 типов хранения, поэтому uuid, varchar, timestamp и похожие колонки станут text. При возврате на другую базу исходные типы не восстановятся.</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="93"/>
+        <source>Switch</source>
+        <translation>Перейти</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="190"/>
+        <source>Save SQL</source>
+        <translation>Сохранить SQL</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="192"/>
+        <source>SQL files (*.sql)</source>
+        <translation>Файлы SQL (*.sql)</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="198"/>
+        <source>SQL exported</source>
+        <translation>SQL экспортирован</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="207"/>
+        <source>Export image</source>
+        <translation>Экспорт изображения</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="209"/>
+        <source>PNG image (*.png)</source>
+        <translation>Изображение PNG (*.png)</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="216"/>
+        <source>Image exported</source>
+        <translation>Изображение экспортировано</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="696"/>
+        <source>Export</source>
+        <translation>Экспорт</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="740"/>
+        <source>SQL code…</source>
+        <translation>SQL-код…</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="745"/>
+        <source>Image (PNG)…</source>
+        <translation>Изображение (PNG)…</translation>
     </message>
 </context>
 <context>

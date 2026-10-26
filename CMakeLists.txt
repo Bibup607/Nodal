@@ -6,21 +6,30 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(QT_QML_GENERATE_QMLLS_INI ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Qml LinguistTools)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickPrivate QuickControls2 Qml LinguistTools)
 
 # Отключает предупреждение QTP0004 для вложенных папок QML
 qt_policy(SET QTP0004 NEW)
 
-# Исходный язык строк в qsTr() и языки на которые переводим
 qt_standard_project_setup(REQUIRES 6.5
     I18N_SOURCE_LANGUAGE en
     I18N_TRANSLATED_LANGUAGES ru
 )
 
+
+set(QWINDOWKIT_BUILD_QUICK ON CACHE BOOL "" FORCE)
+set(QWINDOWKIT_BUILD_WIDGETS OFF CACHE BOOL "" FORCE)
+set(QWINDOWKIT_BUILD_STATIC ON CACHE BOOL "" FORCE)
+set(QWINDOWKIT_INSTALL OFF CACHE BOOL "" FORCE)
+add_subdirectory(3rdparty/qwindowkit)
+
 # Content of downloaded design from Figma to Qt or similar
 if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/importedcontent/CMakeLists.txt")
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/importedcontent)
 endif()
+
+# SqlTypes.qml — синглтон со списками типов для каждой базы
+set_source_files_properties(SqlTypes.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 qt_add_executable(appNodalDB
     main.cpp
@@ -29,9 +38,6 @@ qt_add_executable(appNodalDB
 if(WIN32)
     target_sources(appNodalDB PRIVATE app.rc)
 endif()
-
-# SqlTypes.qml — синглтон со списками типов для каждой базы
-set_source_files_properties(SqlTypes.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 qt_add_qml_module(appNodalDB
     URI NodalDB
@@ -50,8 +56,12 @@ qt_add_qml_module(appNodalDB
         Pages/ProjectLauncher/LauncherButtons/ActionCard.qml
         Pages/ProjectLauncher/RecentProjects/RecentProjectRow.qml
         Pages/SchemaWorkspace/SchemaWorkspacePage.qml
-        Pages/SchemaWorkspace/ImportPopup.qml
         Pages/SchemaWorkspace/InfiniteCanvas.qml
+        Pages/SchemaWorkspace/ImportPopup.qml
+        Pages/SchemaWorkspace/SqlParser.js
+        Pages/SchemaWorkspace/SqlExporter.js
+        Pages/SchemaWorkspace/ExportPopup.qml
+        Pages/SchemaWorkspace/ConfirmPopup.qml
         Pages/SchemaWorkspace/Tables/TableCard.qml
         Pages/SchemaWorkspace/Tables/TableItemsView.qml
         Pages/SchemaWorkspace/Relations/RelationsModel.qml
@@ -72,8 +82,6 @@ qt_add_qml_module(appNodalDB
         storage/projectstorage.cpp
 )
 
-# Переводы: i18n/qml_ru.ts -> .qm в ресурсах рядом с Main.qml
-# движок сам подхватывает их и перезагружает при смене Qt.uiLanguage
 qt_add_translations(appNodalDB
     RESOURCE_PREFIX /qt/qml/NodalDB/i18n
     TS_FILE_BASE qml
@@ -88,11 +96,11 @@ target_include_directories(appNodalDB PRIVATE
 )
 
 set_target_properties(appNodalDB PROPERTIES
+    OUTPUT_NAME "Nodal"   # файл называется Nodal.exe; appNodalDB остаётся внутренним именем для CMake
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
-    OUTPUT_NAME "Nodal"
 )
 
 target_link_libraries(appNodalDB PRIVATE
@@ -100,6 +108,7 @@ target_link_libraries(appNodalDB PRIVATE
     Qt6::Quick
     Qt6::QuickControls2
     Qt6::Qml
+    QWindowKit::Quick
 )
 
 install(TARGETS appNodalDB

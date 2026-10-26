@@ -9,6 +9,11 @@ Row {
     signal minimizeRequested()
     signal maximizeRequested()
 
+    // сами кнопки нужны QWindowKit: так Windows узнаёт, где «развернуть» (меню Snap Layouts при наведении)
+    property alias minimizeButton: minBtn
+    property alias maximizeButton: maxBtn
+    property alias closeButton: closeBtn
+
     readonly property bool isMaximized: Window.window ? Window.window.visibility === Window.Maximized : false
 
     component WinButton: Rectangle {
@@ -39,6 +44,7 @@ Row {
 
     // свернуть
     WinButton {
+        id: minBtn
         onClicked: windowControls.minimizeRequested()
 
         Rectangle {

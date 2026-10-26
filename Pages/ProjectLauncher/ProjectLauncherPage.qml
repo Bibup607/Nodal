@@ -5,7 +5,7 @@ import QtQuick.Window
 import QtQuick.Dialogs
 
 import NodalDB
-import "../../"
+import QWindowKit   // для WindowAgent.Minimize / Maximize / Close
 import "LauncherButtons"
 import "RecentProjects"
 
@@ -24,15 +24,11 @@ Item {
         id: openDialog
         title: qsTr("Open project")
         fileMode: FileDialog.OpenFile
-        nameFilters: [qsTr("NodalDB schema (*.schema)")]
+        nameFilters: [qsTr("Nodal schema (*.schema)")]
         onAccepted: page.openProjectRequested(selectedFile)
     }
     Shortcut { sequence: StandardKey.Find; enabled: page.visible; onActivated: searchField.forceActiveFocus() }
 
-    // недавние проекты из папки проектов
-    ProjectStorage {
-        id: projectStorage
-    }
 
     ListModel {
         id: recentModel
@@ -40,7 +36,7 @@ Item {
 
     function reloadProjects() {
         recentModel.clear()
-        for (let p of projectStorage.listProjects()) {
+        for (let p of ProjectStorage.listProjects()) {
             recentModel.append({
                 name: p.name,
                 path: p.path,
@@ -56,13 +52,22 @@ Item {
 
     Component.onCompleted: reloadProjects()
 
+    // Main.qml вызывает это, когда страница появилась: говорим QWindowKit,
+    // что шапка — это titleBar (за пустые места тянут окно), а где кнопки окна
+    function setupTitleBar(agent) {
+        agent.setTitleBar(titleBar)
+        agent.setSystemButton(WindowAgent.Minimize, windowControls.minimizeButton)
+        agent.setSystemButton(WindowAgent.Maximize, windowControls.maximizeButton)
+        agent.setSystemButton(WindowAgent.Close, windowControls.closeButton)
+    }
+
     // выбор другой папки проектов
     FolderDialog {
         id: folderDialog
         title: qsTr("Choose projects folder")
-        currentFolder: "file:///" + projectStorage.projectsFolder
+        currentFolder: "file:///" + ProjectStorage.projectsFolder
         onAccepted: {
-            projectStorage.setProjectsFolder(selectedFolder)
+            ProjectStorage.setProjectsFolder(selectedFolder)
             page.reloadProjects()
         }
     }
@@ -97,6 +102,7 @@ Item {
 
         // Верхняя шапка (Тулбар)
         Rectangle {
+            id: titleBar
             Layout.fillWidth: true
             Layout.preferredHeight: 52
             border {
@@ -104,26 +110,6 @@ Item {
                 width: 1
             }
             color: "#11151C"
-
-            Item {
-                id: titleDragArea
-                anchors.fill: parent
-
-                DragHandler {
-                    target: null
-                    onActiveChanged: if (active) titleDragArea.Window.window.startSystemMove()
-                }
-
-                TapHandler {
-                    onDoubleTapped: {
-                        let win = titleDragArea.Window.window
-                        if (win.visibility === Window.Maximized)
-                            win.showNormal()
-                        else
-                            win.showMaximized()
-                    }
-                }
-            }
 
             RowLayout {
                 anchors.fill: parent
@@ -152,6 +138,7 @@ Item {
 
                 // Кнопки управления окном
                 WindowControls {
+                    id: windowControls
                     onCloseRequested: {
                         if (Window.window) Window.window.close()
                     }
@@ -389,7 +376,7 @@ Item {
 
                 Text {
                     Layout.fillWidth: true
-                    text: qsTr("Projects folder: %1").arg(projectStorage.projectsFolder)
+                    text: qsTr("Projects folder: %1").arg(ProjectStorage.projectsFolder)
                     color: "#7d8796"
                     font.family: fonts.jetBrainsMB.family
                     font.pixelSize: 9

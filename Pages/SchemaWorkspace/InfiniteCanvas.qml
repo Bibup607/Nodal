@@ -10,7 +10,7 @@ Item {
     property var tablesModel: null
     property var relationsModel: null
     property var colorStore: null
-    property string dbEngine: "PostgreSQL"
+    property string dbEngine: "PostgreSQL"   // нужна карточкам для меню типов
     property int selectedTableIndex: -1
 
     property bool isConnecting: false
@@ -76,6 +76,57 @@ Item {
     // точка мира в центре видимой области
     function viewCenter() {
         return Qt.point((width / 2 - panX) / zoom, (height / 2 - panY) / zoom)
+    }
+
+    // ---------- экспорт всей схемы в PNG ----------
+
+    // прямоугольник, в который помещаются все таблицы (в координатах мира), null если таблиц нет
+    function contentBounds() {
+        if (tablesRepeater.count === 0) return null
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+        for (let i = 0; i < tablesRepeater.count; ++i) {
+            let card = tablesRepeater.itemAt(i)
+            if (!card) continue
+            minX = Math.min(minX, card.x)
+            minY = Math.min(minY, card.y)
+            maxX = Math.max(maxX, card.x + card.width)
+            maxY = Math.max(maxY, card.y + card.height)
+        }
+        return Qt.rect(minX, minY, maxX - minX, maxY - minY)
+    }
+
+    // снимок ВСЕЙ схемы (а не только того, что видно на экране) в файл path
+    // done(ok) вызывается, когда файл записан
+    function exportImage(path, done) {
+        let b = contentBounds()
+        if (!b) {
+            done(false)
+            return
+        }
+
+        const margin = 40
+        let w = Math.ceil(b.width + margin * 2)
+        let h = Math.ceil(b.height + margin * 2)
+        // в 2 раза чётче, чем на экране при 100%, но не больше 8192 пикселей по стороне
+        // (больше видеокарта может не потянуть)
+        let k = Math.min(2, 8192 / Math.max(w, h))
+        let pixelSize = Qt.size(Math.round(w * k), Math.round(h * k))
+
+        cancelRelation()
+        selectedTableIndex = -1   // без зелёной рамки выделения на картинке
+
+        exportSource.sourceRect = Qt.rect(b.x - margin, b.y - margin, w, h)
+        exportSource.textureSize = pixelSize
+        exportFrame.width = w
+        exportFrame.height = h
+        exportFrame.visible = true
+
+        // grabToImage асинхронный: картинка придёт в функцию, когда кадр отрисуется
+        exportFrame.grabToImage(function(result) {
+            let ok = result.saveToFile(path)
+            exportFrame.visible = false
+            done(ok)
+        }, pixelSize)
     }
 
     default property alias content: worldContainer.data
@@ -165,6 +216,7 @@ Item {
 
                 // исправлена опечатка (было seletedTableIndex)
                 isSelected: canvasRoot.selectedTableIndex === index
+                dbEngine: canvasRoot.dbEngine
 
                 onSelected: {
                     canvasRoot.selectedTableIndex = index
@@ -225,6 +277,26 @@ Item {
             fromField: canvasRoot.pendingField
             relType: canvasRoot.pendingType
             previewEnd: Qt.point(canvasRoot.mouseWorldX, canvasRoot.mouseWorldY)
+        }
+    }
+
+    // «камера» для экспорта в PNG. ShaderEffectSource рисует worldContainer в его собственных
+    // координатах — без сдвига и зума экрана, — а sourceRect вырезает из него нужный кусок.
+    // Видима только на время снимка и стоит за левым краем холста (clip: true), так что её не видно
+    Item {
+        id: exportFrame
+        visible: false
+        x: -width - 100
+
+        Rectangle {
+            anchors.fill: parent
+            color: "#0D1117"   // фон как у холста, иначе картинка будет прозрачной
+        }
+
+        ShaderEffectSource {
+            id: exportSource
+            anchors.fill: parent
+            sourceItem: worldContainer
         }
     }
 

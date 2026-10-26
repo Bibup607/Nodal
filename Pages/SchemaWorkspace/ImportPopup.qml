@@ -3,6 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
 
+// окно импорта: вставляем SQL-код с CREATE TABLE
+// само ничего не разбирает — отдаёт текст странице через сигнал importRequested
 Popup {
     id: popup
 
@@ -15,6 +17,7 @@ Popup {
 
     property string titleFont: ""
     property string monoFont: ""
+    // текст ошибки под полем; страница пишет сюда, если импортировать нечего
     property string errorText: ""
 
     signal importRequested(string sql)
@@ -31,7 +34,7 @@ Popup {
     function accept() {
         if (!canImport) return
         errorText = ""
-        importRequested(sqlArea.text)
+        importRequested(sqlArea.text)   // закроет окно страница, если всё получилось
     }
 
     Overlay.modal: Rectangle {
@@ -48,6 +51,7 @@ Popup {
             radius: 10
         }
 
+        // мягкая тень
         MultiEffect {
             source: bg
             anchors.fill: bg
@@ -78,6 +82,7 @@ Popup {
             wrapMode: Text.WordWrap
         }
 
+        // поле для кода с прокруткой
         ScrollView {
             id: sqlScroll
             Layout.topMargin: 16
@@ -102,8 +107,9 @@ Popup {
                 selectByMouse: true
                 placeholderText: "CREATE TABLE users (\n    id SERIAL PRIMARY KEY,\n    email VARCHAR(255) NOT NULL\n);"
                 placeholderTextColor: "#4b5563"
-                background: null
+                background: null   // рамку рисует ScrollView
 
+                // Ctrl+Enter — импорт, не отрывая рук от клавиатуры
                 Keys.onPressed: (event) => {
                     if ((event.modifiers & Qt.ControlModifier)
                             && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter)) {
@@ -161,7 +167,7 @@ Popup {
                 Layout.preferredWidth: importText.implicitWidth + 28
                 Layout.preferredHeight: 30
                 radius: 6
-
+                // пока поле пустое кнопка тусклая и не нажимается
                 opacity: popup.canImport ? 1 : 0.4
                 color: importMouse.containsMouse && popup.canImport ? "#6ee7b7" : "#52d6a6"
 

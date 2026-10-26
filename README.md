@@ -45,7 +45,7 @@ Everything you need to design a schema, from the first table to the final SQL.
 Requires Qt 6.5+, CMake 3.19+, MinGW or MSVC.
 
 ```bash
-git clone --recursive https://github.com/<your-username>/Nodal.git
+git clone --recursive https://github.com/Bibup607/Nodal.git
 cd Nodal
 cmake -S . -B build -DCMAKE_PREFIX_PATH=<path-to-Qt>
 cmake --build build --config Release

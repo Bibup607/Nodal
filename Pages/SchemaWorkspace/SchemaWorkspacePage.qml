@@ -5,11 +5,13 @@ import QtQuick.Window
 import QtQuick.Dialogs
 
 import NodalDB
-import "../../"
+import QWindowKit
 import "Tables"
 import "Relations"
 import "Colors"
 import "CustomButtons"
+import "SqlParser.js" as SqlParser
+import "SqlExporter.js" as SqlExporter
 
 
 Item {
@@ -37,9 +39,6 @@ Item {
         id: globalRelationsModel
     }
 
-    ProjectStorage {
-        id: projectStorage
-    }
 
     // пустой пока проект ни разу не сохраняли
     property url projectPath: ""
@@ -57,6 +56,8 @@ Item {
     }
 
     signal projectSaved(string fileName)
+    // экспорт SQL или PNG записан в файл: Main.qml покажет уведомление
+    signal fileExported(string fileName, string message)
     signal backRequested()
 
     // снимок последнего сохранения сравниваем с текущим чтобы показать unsaved
@@ -74,6 +75,24 @@ Item {
         onTriggered: workspaceRoot.hasUnsavedChanges = workspaceRoot.snapshot() !== workspaceRoot.savedSnapshot
     }
 
+    // смена базы из строки состояния. Переход на SQLite спрашиваем заранее:
+    // там всего 5 типов, и uuid, varchar, timestamp... станут text без возможности вернуть
+    function requestEngine(engine) {
+        if (engine === "SQLite" && dbEngine !== "SQLite" && globalTablesModel.count > 0)
+            sqliteConfirm.open()
+        else
+            setEngine(engine)
+    }
+
+    ConfirmPopup {
+        id: sqliteConfirm
+        titleFont: fonts.interBold.family
+        titleText: qsTr("Switch to SQLite?")
+        message: qsTr("SQLite has only 5 storage types, so uuid, varchar, timestamp and similar columns become text. Switching back to another database will not restore the original types.")
+        confirmText: qsTr("Switch")
+        onConfirmed: workspaceRoot.setEngine("SQLite")
+    }
+
     function setEngine(engine) {
         if (engine === dbEngine) return
         globalTablesModel.convertTypes(dbEngine, engine)
@@ -86,14 +105,14 @@ Item {
                                        : projectName + ".schema"
 
     function writeProject(path) {
-        if (projectStorage.saveProject(path, projectData())) {
+        if (ProjectStorage.saveProject(path, projectData())) {
             savedSnapshot = snapshot()
             hasUnsavedChanges = false
             projectPath = path
             projectSaved(path.toString().split("/").pop())
             return true
         }
-        console.warn("save failed:", projectStorage.lastError)
+        console.warn("save failed:", ProjectStorage.lastError)
         return false
     }
 
@@ -120,7 +139,7 @@ Item {
         id: saveDialog
         title: qsTr("Save project")
         fileMode: FileDialog.SaveFile
-        nameFilters: [qsTr("NodalDB schema (*.schema)")]
+        nameFilters: [qsTr("Nodal schema (*.schema)")]
         defaultSuffix: "schema"
         onAccepted: {
             if (workspaceRoot.writeProject(selectedFile) && workspaceRoot.leaveAfterSave)
@@ -137,8 +156,66 @@ Item {
         monoFont: fonts.jetBrainsMB.family
 
         onImportRequested: (sql) => {
-            console.log("import:", sql)
-            importPopup.close()
+            if (workspaceRoot.importSql(sql) > 0)
+                importPopup.close()
+            else
+                importPopup.errorText = qsTr("No CREATE TABLE statements found.")
+        }
+    }
+
+    // ---------- экспорт ----------
+
+    // имя файла по умолчанию: имя проекта без .schema
+    readonly property string exportBaseName: fileName.replace(/\.schema$/, "")
+
+    // окно с готовым SQL-кодом
+    ExportPopup {
+        id: exportPopup
+        titleFont: fonts.interBold.family
+        monoFont: fonts.jetBrainsMB.family
+        engine: workspaceRoot.dbEngine
+        onSaveRequested: sqlSaveDialog.open()
+    }
+
+    function openSqlExport() {
+        exportPopup.sqlText = SqlExporter.generate(globalTablesModel.serialize(),
+                                                   globalRelationsModel.serialize(),
+                                                   dbEngine)
+        exportPopup.open()
+    }
+
+    FileDialog {
+        id: sqlSaveDialog
+        title: qsTr("Save SQL")
+        fileMode: FileDialog.SaveFile
+        nameFilters: [qsTr("SQL files (*.sql)")]
+        defaultSuffix: "sql"
+        selectedFile: "file:///" + ProjectStorage.projectsFolder + "/" + workspaceRoot.exportBaseName + ".sql"
+        onAccepted: {
+            if (ProjectStorage.saveTextFile(selectedFile, exportPopup.sqlText)) {
+                exportPopup.close()
+                workspaceRoot.fileExported(selectedFile.toString().split("/").pop(), qsTr("SQL exported"))
+            } else {
+                console.warn("export sql failed:", ProjectStorage.lastError)
+            }
+        }
+    }
+
+    FileDialog {
+        id: pngSaveDialog
+        title: qsTr("Export image")
+        fileMode: FileDialog.SaveFile
+        nameFilters: [qsTr("PNG image (*.png)")]
+        defaultSuffix: "png"
+        selectedFile: "file:///" + ProjectStorage.projectsFolder + "/" + workspaceRoot.exportBaseName + ".png"
+        onAccepted: {
+            let fileUrl = selectedFile
+            workspaceCanvas.exportImage(ProjectStorage.toLocalFile(fileUrl), (ok) => {
+                if (ok)
+                    workspaceRoot.fileExported(fileUrl.toString().split("/").pop(), qsTr("Image exported"))
+                else
+                    console.warn("export png failed:", fileUrl)
+            })
         }
     }
 
@@ -207,6 +284,19 @@ Item {
         }
     }
 
+    // Main.qml вызывает это, когда страница появилась: говорим QWindowKit, где шапка и кнопки окна.
+    // Всё, что в шапке НЕ отмечено setHitTestVisible, считается местом, за которое тянут окно,
+    // поэтому кликабельные группы (логотип, инструменты, Save/Import/Export) отмечаем явно
+    function setupTitleBar(agent) {
+        agent.setTitleBar(titleBar)
+        agent.setSystemButton(WindowAgent.Minimize, windowControls.minimizeButton)
+        agent.setSystemButton(WindowAgent.Maximize, windowControls.maximizeButton)
+        agent.setSystemButton(WindowAgent.Close, windowControls.closeButton)
+        agent.setHitTestVisible(logoItem)
+        agent.setHitTestVisible(toolsRow)
+        agent.setHitTestVisible(actionsRow)
+    }
+
     property var tableClipboard: null
 
     readonly property int targetTableIndex: workspaceCanvas.selectedTableIndex >= 0
@@ -217,6 +307,56 @@ Item {
         let c = workspaceCanvas.viewCenter()
         globalTablesModel.addNewTable(c.x - 125, c.y - 40)
         workspaceCanvas.selectedTableIndex = globalTablesModel.count - 1
+    }
+
+    // импорт таблиц из SQL-кода, возвращает сколько таблиц добавлено
+    function importSql(sql) {
+        let parsed = SqlParser.parse(sql)
+        let count = parsed.tables.length
+        if (count === 0) return 0
+
+        let first = globalTablesModel.count   // индекс первой новой таблицы
+
+        // 1. таблицы: раскладываем сеткой вокруг центра экрана
+        let perRow = Math.ceil(Math.sqrt(count))   // 4 таблицы → 2 в ряд, 9 → 3 в ряд
+        let center = workspaceCanvas.viewCenter()
+        let startX = center.x - perRow * 320 / 2
+        let y = center.y - 150
+        let rowHeight = 0
+
+        for (let i = 0; i < count; ++i) {
+            let t = parsed.tables[i]
+            let col = i % perRow
+            if (i > 0 && col === 0) {      // начался новый ряд — опускаемся ниже самой высокой таблицы
+                y += rowHeight
+                rowHeight = 0
+            }
+
+            let fields = []
+            for (let f of t.fields)
+                fields.push({ name: f.name, type: SqlTypes.normalize(f.type, dbEngine), isPk: f.isPk, isFk: false })
+
+            globalTablesModel.addImportedTable(t.name, fields, startX + col * 320, y)
+            rowHeight = Math.max(rowHeight, 100 + fields.length * 30)
+        }
+
+        // 2. связи: по именам находим индексы таблиц и колонок
+        for (let fk of parsed.foreignKeys) {
+            let fromTable = globalTablesModel.findTable(fk.fromTable, first)
+            let toTable = globalTablesModel.findTable(fk.toTable, first)
+            if (fromTable < 0 || toTable < 0) continue          // ссылка на таблицу, которой нет
+
+            let fromField = globalTablesModel.findField(fromTable, fk.fromField)
+            let toField = globalTablesModel.findField(toTable, fk.toField)
+            if (fromField < 0 || toField < 0) continue
+
+            // M:1 — «много заказов у одного пользователя», FK на стороне from
+            if (globalRelationsModel.addRelation(fromTable, fromField, toTable, toField, "M:1"))
+                globalTablesModel.setFieldFk(fromTable, fromField, true)
+        }
+
+        workspaceCanvas.selectedTableIndex = first
+        return count
     }
 
     // удаление со сдвигом выделения потому что индексы после удаленной уменьшаются
@@ -375,42 +515,23 @@ Item {
 
         // Верхняя шапка (Тулбар)
         Rectangle {
+            id: titleBar
             Layout.fillWidth: true
-            height: 52
+            Layout.preferredHeight: 52
             border {
                 color: "#252c37"
                 width: 1
             }
             color: "#11151C"
 
-
-
             RowLayout {
                 anchors.fill: parent
                 anchors.leftMargin: 12
                 anchors.rightMargin: 12
 
-                Item {
-                    id: titleDragArea
-                    anchors.fill: parent
-
-                    DragHandler {
-                        target: null
-                        onActiveChanged: if (active) titleDragArea.Window.window.startSystemMove()
-                    }
-
-                    TapHandler {
-                        onDoubleTapped: {
-                            let win = titleDragArea.Window.window
-                            if (win.visibility === Window.Maximized)
-                                win.showNormal()
-                            else
-                                win.showMaximized()
-                        }
-                    }
-                }
                 // Логотип
                 Item {
+                    id: logoItem
                     implicitWidth: logoRow.implicitWidth
                     implicitHeight: logoRow.implicitHeight
                     opacity: logoMouse.containsMouse ? 0.75 : 1
@@ -448,6 +569,7 @@ Item {
 
                 // Инструменты по центру
                 RowLayout {
+                    id: toolsRow
                     spacing: 4
 
                     ToolbarButton {
@@ -547,6 +669,7 @@ Item {
 
                 // Правые кнопки экспорта
                 RowLayout {
+                    id: actionsRow
                     spacing: 8
 
                     ImportButton {
@@ -565,12 +688,71 @@ Item {
                         Layout.minimumWidth: 60
                         Layout.preferredHeight: 30
                     }
+
+                    // экспорт: меню из двух пунктов — SQL-код или картинка
+                    ImportButton {
+                        id: exportBtn
+                        text: qsTr("Export")
+                        font.bold: true
+                        onClicked: exportMenu.open()
+                        Layout.minimumWidth: 60
+                        Layout.preferredHeight: 30
+
+                        Menu {
+                            id: exportMenu
+                            // ниже шапки: верх шапки QWindowKit считает местом для перетаскивания окна
+                            y: exportBtn.height + 12
+                            x: exportBtn.width - width   // правым краем к кнопке
+                            width: 170
+                            topPadding: 4
+                            bottomPadding: 4
+                            leftPadding: 0
+                            rightPadding: 0
+
+                            background: Rectangle {
+                                color: "#161B22"
+                                border.color: "#252C37"
+                                border.width: 1
+                                radius: 6
+                            }
+
+                            delegate: MenuItem {
+                                id: exportItem
+                                implicitHeight: 28
+                                leftPadding: 12
+                                indicator: null
+                                arrow: null
+
+                                contentItem: Text {
+                                    text: exportItem.text
+                                    font.pixelSize: 12
+                                    verticalAlignment: Text.AlignVCenter
+                                    color: exportItem.highlighted ? "#E6EDF3" : "#A1A9B7"
+                                }
+
+                                background: Rectangle {
+                                    color: exportItem.highlighted ? "#1B222C" : "transparent"
+                                }
+                            }
+
+                            Action {
+                                text: qsTr("SQL code…")
+                                onTriggered: workspaceRoot.openSqlExport()
+                            }
+
+                            Action {
+                                text: qsTr("Image (PNG)…")
+                                onTriggered: pngSaveDialog.open()
+                            }
+                        }
+                    }
                 }
 
                 Item { Layout.fillWidth: true }
 
                 // Кнопки управления окном
                 WindowControls {
+                    id: windowControls
                     onCloseRequested: {
                         if (Window.window) Window.window.close()
                     }
@@ -1324,17 +1506,17 @@ Item {
 
                         Action {
                             text: "PostgreSQL"
-                            onTriggered: workspaceRoot.setEngine(text)
+                            onTriggered: workspaceRoot.requestEngine(text)
                         }
 
                         Action {
                             text: "MySQL"
-                            onTriggered: workspaceRoot.setEngine(text)
+                            onTriggered: workspaceRoot.requestEngine(text)
                         }
 
                         Action {
                             text: "SQLite"
-                            onTriggered: workspaceRoot.setEngine(text)
+                            onTriggered: workspaceRoot.requestEngine(text)
                         }
                     }
                 }

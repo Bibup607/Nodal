@@ -22,12 +22,15 @@ Rectangle {
     opacity: 0
 
     property string fileName: ""
+    // заголовок уведомления; пусто — «Project saved»
+    property string message: ""
     property real offset: 10
 
     transform: Translate { y: root.offset }
 
-    function show(name) {
+    function show(name, text) {
         fileName = name
+        message = text || ""
         hideAnim.stop()
         if (!visible) {
             opacity = 0
@@ -66,7 +69,7 @@ Rectangle {
         }
 
         Text {
-            text: qsTr("Project saved")
+            text: root.message !== "" ? root.message : qsTr("Project saved")
             color: "#FFFFFF"
             font.pixelSize: 12
             font.weight: Font.DemiBold

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Window
 import QtCore
 import NodalDB
+import QWindowKit
 import "Pages/SchemaWorkspace"
 import "Pages/ProjectLauncher"
 import "Components"
@@ -10,25 +11,33 @@ Window {
     id: appWindow
     width: 1280
     height: 800
-    visible: true
-    title: "NodalDB"
-    flags: Qt.Window | Qt.FramelessWindowHint
+    minimumWidth: 900
+    minimumHeight: 560
+    visible: false
+    title: "Nodal"
+
+    WindowAgent {
+        id: frameAgent
+    }
+
+    property bool frameReady: false
+
+    function registerTitleBar() {
+        if (frameReady && pageLoader.item)
+            pageLoader.item.setupTitleBar(frameAgent)
+    }
 
     property string projectName: ""
     property string projectEngine: ""
-    // путь и содержимое открытого файла пустые у нового проекта
     property url projectPath: ""
     property var projectData: null
 
-    ProjectStorage {
-        id: projectStorage
-    }
 
     // читаем файл до перехода чтобы при ошибке остаться в лаунчере
     function openProject(path) {
-        let data = projectStorage.loadProject(path)
+        let data = ProjectStorage.loadProject(path)
         if (!data.tables) {
-            console.warn("open failed:", path, projectStorage.lastError)
+            console.warn("open failed:", path, ProjectStorage.lastError)
             return
         }
         projectName = data.name || "untitled"
@@ -43,6 +52,7 @@ Window {
         id: pageLoader
         anchors.fill: parent
         sourceComponent: launcherPage
+        onLoaded: appWindow.registerTitleBar()
     }
 
     Component {
@@ -51,9 +61,9 @@ Window {
         ProjectLauncherPage {
             onCreateProjectRequested: (name, engine) => {
                 // сразу создаем файл в папке проектов
-                let path = projectStorage.newProjectFile(name)
-                if (!projectStorage.saveProject(path, { name: name, engine: engine, tables: [] })) {
-                    console.warn("create failed:", path, projectStorage.lastError)
+                let path = ProjectStorage.newProjectFile(name)
+                if (!ProjectStorage.saveProject(path, { name: name, engine: engine, tables: [] })) {
+                    console.warn("create failed:", path, ProjectStorage.lastError)
                     return
                 }
                 appWindow.projectName = name
@@ -75,6 +85,7 @@ Window {
             projectPath: appWindow.projectPath
             initialData: appWindow.projectData
             onProjectSaved: (fileName) => saveNotification.show(fileName)
+            onFileExported: (fileName, message) => saveNotification.show(fileName, message)
             onBackRequested: pageLoader.sourceComponent = launcherPage
         }
     }
@@ -89,7 +100,14 @@ Window {
         property string language: "en"
     }
 
-    Component.onCompleted: Qt.uiLanguage = appSettings.language
+    Component.onCompleted: {
+        Qt.uiLanguage = appSettings.language
+
+        frameAgent.setup(appWindow)
+        frameReady = true
+        registerTitleBar()
+        appWindow.visible = true
+    }
     // запоминаем выбранный язык при закрытии окна
     onClosing: appSettings.language = Qt.uiLanguage
 }

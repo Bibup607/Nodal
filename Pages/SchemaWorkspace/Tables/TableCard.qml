@@ -1,8 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-
-import NodalDB
+import NodalDB   // для SqlTypes
 
 Rectangle {
     id: root
@@ -14,7 +13,7 @@ Rectangle {
 
     property bool isSelected: workspaceCanvas.selectedTableIndex === index
     readonly property int tableIndex: index
-    property string dbEngine: "PostgreSQL"
+    property string dbEngine: "PostgreSQL"   // от неё зависит список типов в меню
     readonly property color tableColor: model.tableColor // чтобы связи брали цвет таблицы
 
     signal removeTable()
@@ -455,10 +454,12 @@ Rectangle {
                         }
                     }
 
+                    // создаёт по одному Action на каждый тип выбранной базы и кладёт их в typeMenu;
+                    // сменилась база — список пересоздаётся сам
                     Instantiator {
                         model: SqlTypes.typesFor(root.dbEngine)
                         delegate: Action {
-                            required property string modelData
+                            required property string modelData   // строка из списка, например "varchar"
                             text: modelData
                             onTriggered: root.fieldTypeChanged(rowItem.fieldRowIndex, modelData)
                         }
@@ -469,7 +470,7 @@ Rectangle {
                     Menu {
                         id: typeMenu
                         y: typeSelector.height + 4
-                        width: 130
+                        width: 160   // шире для "double precision"
                         padding: 4
 
                         background: Rectangle {
@@ -498,42 +499,7 @@ Rectangle {
                                 color: typeMenuItem.highlighted ? "#1b222c" : "transparent"
                             }
                         }
-                        // Список основных типов PostgreSQL
-                        Action { text: "uuid"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "uuid") }
-                        Action { text: "serial"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "serial") }
-                        Action { text: "bigserial"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "bigserial") }
-
-                        // Целые числа
-                        Action { text: "smallint"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "smallint") }
-                        Action { text: "integer"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "integer") }
-                        Action { text: "bigint"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "bigint") }
-
-                        // Дробные и точные числа
-                        Action { text: "numeric"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "numeric") }
-                        Action { text: "real"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "real") }
-                        Action { text: "double"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "double") }
-
-                        // Строки и текст
-                        Action { text: "varchar"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "varchar") }
-                        Action { text: "char"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "char") }
-                        Action { text: "text"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "text") }
-
-                        // Логический
-                        Action { text: "boolean"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "boolean") }
-
-                        // Дата и время
-                        Action { text: "date"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "date") }
-                        Action { text: "time"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "time") }
-                        Action { text: "timestamp"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "timestamp") }
-                        Action { text: "timestamptz"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "timestamptz") }
-
-                        // Документы и бинарники
-                        Action { text: "json"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "json") }
-                        Action { text: "jsonb"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "jsonb") }
-                        Action { text: "bytea"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "bytea") }
-
-                        // Сеть
-                        Action { text: "inet"; onTriggered: root.fieldTypeChanged(fieldRowIndex, "inet") }
+                        // пункты меню создаются из списка типов выбранной базы (см. Instantiator выше)
                     }
                 }
 

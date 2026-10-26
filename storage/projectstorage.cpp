@@ -18,9 +18,9 @@ ProjectStorage::ProjectStorage(QObject *parent)
 
 QString ProjectStorage::projectsFolder() const
 {
-    // папка из настроек или Документы NodalDB
+    // папка из настроек или Документы/Nodal
     const QString defaultFolder =
-        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/NodalDB";
+        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/Nodal";
     return QSettings().value("projectsFolder", defaultFolder).toString();
 }
 
@@ -99,12 +99,33 @@ QVariantMap ProjectStorage::loadProject(const QUrl &fileUrl)
         return {};
     }
     if (!doc.isObject()) {
-        setLastError(tr("Not a NodalDB project"));
+        setLastError(tr("Not a Nodal project"));
         return {};
     }
 
     setLastError(QString());
     return doc.object().toVariantMap();
+}
+
+bool ProjectStorage::saveTextFile(const QUrl &fileUrl, const QString &text)
+{
+    // QSaveFile пишет во временный файл и подменяет им настоящий только в конце,
+    // поэтому при ошибке старый файл не испортится
+    QSaveFile file(fileUrl.toLocalFile());
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        setLastError(file.errorString());
+        return false;
+    }
+
+    file.write(text.toUtf8());
+
+    if (!file.commit()) {
+        setLastError(file.errorString());
+        return false;
+    }
+
+    setLastError(QString());
+    return true;
 }
 
 void ProjectStorage::setLastError(const QString &error)

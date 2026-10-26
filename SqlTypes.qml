@@ -1,7 +1,8 @@
-pragma Singleton   // один объект на всё приложение
+pragma Singleton
 import QtQuick
 
 QtObject {
+
     readonly property var types: ({
         "PostgreSQL": [
             "uuid", "smallserial", "serial", "bigserial",
@@ -39,7 +40,7 @@ QtObject {
             "smallserial": "autoIncSmall", "serial": "autoInc", "bigserial": "autoIncBig",
             "smallint": "smallInt", "integer": "int", "bigint": "bigInt",
             "numeric": "decimal", "real": "float",
-            "double precision": "double", "double": "double",   // "double" — для старых проектов
+            "double precision": "double", "double": "double",
             "money": "money",
             "varchar": "string", "char": "char", "text": "text",
             "boolean": "bool", "bit": "bit", "varbit": "varbit",
@@ -136,13 +137,10 @@ QtObject {
         }
     })
 
-
-    // список типов для меню выбранной базы
     function typesFor(engine) {
         return types[engine] || types["PostgreSQL"]
     }
 
-    // перевести тип из одной базы в другую; незнакомый тип оставляем как есть
     function convert(type, fromEngine, toEngine) {
         if (fromEngine === toEngine) return type
         const generic = (toGeneric[fromEngine] || {})[type]
@@ -150,12 +148,37 @@ QtObject {
         return (fromGeneric[toEngine] || {})[generic] || type
     }
 
-    // тип для колонки id у новой таблицы
+    readonly property var aliases: ({
+        "int2": "smallint", "int4": "integer", "int8": "bigint",
+        "serial2": "smallserial", "serial4": "serial", "serial8": "bigserial",
+        "float4": "real", "float8": "double precision", "dec": "decimal",
+        "bool": "boolean",
+        "character varying": "varchar", "character": "char",
+        "nvarchar": "varchar", "nchar": "char",
+        "bit varying": "varbit",
+        "timestamp without time zone": "timestamp", "timestamp with time zone": "timestamptz",
+        "time without time zone": "time", "time with time zone": "timetz"
+    })
+
+    function normalize(rawType, engine) {
+        let t = rawType.toLowerCase().replace(/\s+/g, " ").trim()
+        if (t !== "char(36)")
+            t = t.replace(/\s*\(.*\)/, "")
+        t = t.replace(/ (unsigned|signed|zerofill)/g, "")
+        t = aliases[t] || t
+
+        if (typesFor(engine).includes(t)) return t
+
+        for (const from in toGeneric) {
+            if (toGeneric[from][t]) return convert(t, from, engine)
+        }
+        return t
+    }
+
     function defaultIdType(engine) {
         return convert("uuid", "PostgreSQL", engine)
     }
 
-    // тип для новой обычной колонки
     function defaultColumnType(engine) {
         return convert("varchar", "PostgreSQL", engine)
     }
