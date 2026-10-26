@@ -105,6 +105,26 @@ Item {
             }
             color: "#11151C"
 
+            Item {
+                id: titleDragArea
+                anchors.fill: parent
+
+                DragHandler {
+                    target: null
+                    onActiveChanged: if (active) titleDragArea.Window.window.startSystemMove()
+                }
+
+                TapHandler {
+                    onDoubleTapped: {
+                        let win = titleDragArea.Window.window
+                        if (win.visibility === Window.Maximized)
+                            win.showNormal()
+                        else
+                            win.showMaximized()
+                    }
+                }
+            }
+
             RowLayout {
                 anchors.fill: parent
                 anchors.leftMargin: 12

@@ -12,8 +12,8 @@ int main(int argc, char *argv[])
     QQuickStyle::setStyle("Basic");
 
     // имя раздела в реестре куда Settings из QML сохраняет настройки
-    app.setOrganizationName("NodalDB");
-    app.setApplicationName("NodalDB");
+    app.setOrganizationName("Nodal");
+    app.setApplicationName("Nodal");
 
     // иконка окна в панели задач и альт+таб свг рендерим в нескольких размерах чтобы не было мыла
     QIcon appIcon;
