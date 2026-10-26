@@ -1,43 +1,69 @@
-# 🔷 NodalDB
+# Nodal
 
-**NodalDB** — современный визуальный инструмент для проектирования, моделирования и исследования архитектуры реляционных баз данных с интуитивным узловым интерфейсом на бесконечном холсте.
+Desktop editor for database schemas: ER diagrams, SQL import and export.
 
----
+![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C?style=flat-square&logo=cplusplus&logoColor=white)
+![Qt](https://img.shields.io/badge/Qt-6.11-41CD52?style=flat-square&logo=qt&logoColor=white)
+![QML](https://img.shields.io/badge/UI-QML-41CD52?style=flat-square)
+![CMake](https://img.shields.io/badge/build-CMake-064F8C?style=flat-square&logo=cmake&logoColor=white)
+![Windows](https://img.shields.io/badge/platform-Windows-0078D6?style=flat-square&logo=windows&logoColor=white)
 
-## 🚀 Основные возможности
+**English** • [Русский](README_ru.md)
 
-* **Бесконечный холст (Infinite Canvas):** Свободное перемещение, масштабирование и позиционирование таблиц в пространстве проекта.
-* **Schema Explorer:** Быстрый поиск и фильтрация таблиц в реальном времени с поддержкой прокси-моделей.
-* **Интерактивное управление таблицами:**
-  * Инлайн-переименование сущностей прямо из списка сайдбара.
-  * Контекстное меню быстрых действий (добавление колонок, комментариев, дублирование и удаление).
-  * Плавная интерактивная подсветка и визуальный акцент на деструктивных действиях.
-* **Связи и отношения:** Наглядная настройка связей между полями через порты коннекторов (`1:1`, `1:M`, `M:1`).
-* **Экспорт:** Формирование структуры и выгрузка схемы в SQL.
+Place tables on an infinite canvas, connect them with relations and get ready-to-run SQL
+for PostgreSQL, MySQL or SQLite. Or go the other way: paste existing `CREATE TABLE` code
+and get a diagram. The diagram and the SQL always stay in sync — no rewriting by hand.
 
----
+![Nodal](docs/demo.gif)
 
-## 🛠 Технологический стек
+## Stack
 
-| Категория | Технологии |
-| :--- | :--- |
-| **Фронтенд / UI** | QML, Qt Quick, Qt Quick Controls, Qt Quick Layouts |
-| **Ядро / Бэкенд** | C++ (Qt Core, QAbstractItemModel, QSortFilterProxyModel) |
-| **Сборка** | CMake |
-| **Дизайн-система** | Тёмная тема (`#0D1117`, `#11151C`, `#252C37`), акцент (`#52D6A6`), JetBrains Mono & Inter |
+| | |
+|---|---|
+| Language | C++17, QML, JavaScript |
+| Framework | Qt 6.11 (Qt Quick, Quick Controls 2) |
+| Build | CMake |
+| Window | [QWindowKit](https://github.com/stdware/qwindowkit) |
+| Storage | JSON (`.schema` files) |
+| Platform | Windows |
 
----
+## Features
 
-## ⚙️ Установка и запуск
+Everything you need to design a schema, from the first table to the final SQL.
 
-### Требования
-* **Qt 6.x** (компоненты: `Core`, `Gui`, `Qml`, `Quick`, `QuickControls2`)
-* Компилятор C++20 (GCC 11+, Clang 13+, MSVC 2019+)
-* CMake 3.20+
+- Infinite canvas: zoom, pan, table search
+- Tables: columns, types, PK / FK, colors, comments
+- Relations `1:1`, `1:M`, `M:1`
+- PostgreSQL, MySQL, SQLite: types are converted when switching the database
+- Import SQL (`CREATE TABLE`, `FOREIGN KEY`, `ALTER TABLE`)
+- Export SQL for the selected database, export PNG
+- Windows 11 Snap Layouts, custom title bar
+- English / Russian
 
-### Сборка из исходников
+## Build
 
-1. **Клонируйте репозиторий:**
-   ```bash
-   git clone [https://github.com/Bibup607/NodalDB.git](https://github.com/Bibup607/NodalDB.git)
-   cd NodalDB
+Requires Qt 6.5+, CMake 3.19+, MinGW or MSVC.
+
+```bash
+git clone --recursive https://github.com/<your-username>/Nodal.git
+cd Nodal
+cmake -S . -B build -DCMAKE_PREFIX_PATH=<path-to-Qt>
+cmake --build build --config Release
+```
+
+Or open `CMakeLists.txt` in Qt Creator. Don't forget `--recursive`: the window library
+QWindowKit is a git submodule. If you already cloned without it, run `git submodule update --init --recursive`.
+
+## Structure
+
+C++ handles files and models, QML handles the interface, SQL parsing and generation are in plain JavaScript.
+
+```
+main.cpp, Main.qml        entry point, window
+SqlTypes.qml              data types per database
+storage/                  C++: save / load projects
+models/                   C++: table search
+Pages/ProjectLauncher/    start screen
+Pages/SchemaWorkspace/    editor, canvas, SQL import / export
+3rdparty/qwindowkit/      git submodule
+```
