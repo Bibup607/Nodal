@@ -130,6 +130,18 @@ Item {
         onRejected: workspaceRoot.leaveAfterSave = false
     }
 
+    // окно импорта sql кода
+    ImportPopup {
+        id: importPopup
+        titleFont: fonts.interBold.family
+        monoFont: fonts.jetBrainsMB.family
+
+        onImportRequested: (sql) => {
+            console.log("import:", sql)
+            importPopup.close()
+        }
+    }
+
     // общая палитра для таблиц и связей: базовые цвета и созданные пользователем
     QtObject {
         id: customColorStore
@@ -547,9 +559,10 @@ Item {
                     }
 
                     ImportButton {
-                        text: qsTr("Export SQL")
+                        text: qsTr("Import")
                         font.bold: true
-                        Layout.minimumWidth: 90
+                        onClicked: importPopup.open()
+                        Layout.minimumWidth: 60
                         Layout.preferredHeight: 30
                     }
                 }

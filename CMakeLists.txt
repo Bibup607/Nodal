@@ -50,6 +50,7 @@ qt_add_qml_module(appNodalDB
         Pages/ProjectLauncher/LauncherButtons/ActionCard.qml
         Pages/ProjectLauncher/RecentProjects/RecentProjectRow.qml
         Pages/SchemaWorkspace/SchemaWorkspacePage.qml
+        Pages/SchemaWorkspace/ImportPopup.qml
         Pages/SchemaWorkspace/InfiniteCanvas.qml
         Pages/SchemaWorkspace/Tables/TableCard.qml
         Pages/SchemaWorkspace/Tables/TableItemsView.qml

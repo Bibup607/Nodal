@@ -10,6 +10,29 @@
     </message>
 </context>
 <context>
+    <name>ImportPopup</name>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/ImportPopup.qml" line="70"/>
+        <source>Import SQL</source>
+        <translation>Импорт SQL</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/ImportPopup.qml" line="79"/>
+        <source>Paste CREATE TABLE statements. Tables will be added to this schema.</source>
+        <translation>Вставьте команды CREATE TABLE. Таблицы будут добавлены в эту схему.</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/ImportPopup.qml" line="152"/>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/ImportPopup.qml" line="179"/>
+        <source>Import</source>
+        <translation>Импортировать</translation>
+    </message>
+</context>
+<context>
     <name>LauncherSidebar</name>
     <message>
         <location filename="../Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml" line="61"/>
@@ -347,14 +370,14 @@
         <translation>Таблица</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="516"/>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="553"/>
         <source>Save</source>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="525"/>
-        <source>Export SQL</source>
-        <translation>Экспорт SQL</translation>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="562"/>
+        <source>Import</source>
+        <translation>Импорт</translation>
     </message>
     <message>
         <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="581"/>
