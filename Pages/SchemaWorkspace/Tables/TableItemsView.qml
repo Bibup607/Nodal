@@ -94,6 +94,14 @@ ListModel {
         table.fields.setProperty(fieldIndex, "type", newType)
 
     }
+    // переименование колонки
+    function setFieldName(tableIndex, fieldIndex, newName) {
+        if (tableIndex < 0 || tableIndex >= count) return
+        let table = get(tableIndex)
+        if (!table || !table.fields || fieldIndex < 0 || fieldIndex >= table.fields.count) return
+        table.fields.setProperty(fieldIndex, "name", newName)
+    }
+
     // функция удаления таблицы
     function removeTable(tableIndex) {
         if(tableIndex >= 0 && tableIndex < count) {

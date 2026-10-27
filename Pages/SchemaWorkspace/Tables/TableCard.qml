@@ -22,6 +22,7 @@ Rectangle {
     signal nameChanged(string newName)
     signal fieldKeyChanged(int fieldIndex, string keyType)
     signal fieldTypeChanged(int fieldIndex, string newType)
+    signal fieldRenamed(int fieldIndex, string newName)
     signal relationStarted(int fieldIndex, string relType)
     signal portClicked(int fieldIndex)
 
@@ -409,8 +410,8 @@ Rectangle {
                 TextField {
                     placeholderText: "..."
                     placeholderTextColor: "#64748b"
-                    maximumLength: 20
-                    text: ""
+                    maximumLength: 64
+                    text: name
                     color: "#cbd5e1"
                     font.family: "Monospace"
                     font.pixelSize: 12
@@ -418,7 +419,16 @@ Rectangle {
                     background: null
                     selectByMouse: true
 
-                    onAccepted: {
+                    onEditingFinished: {
+                        let newName = text.trim()
+                        if (newName !== "" && newName !== name)
+                            root.fieldRenamed(rowItem.fieldRowIndex, newName)
+                        text = Qt.binding(() => name)
+                    }
+
+                    onAccepted: focus = false
+                    Keys.onEscapePressed: {
+                        text = Qt.binding(() => name)
                         focus = false
                     }
                 }

@@ -266,6 +266,12 @@ Item {
                         canvasRoot.tablesModel.setFieldType(cardItem.currentTableIndex, fieldIndex, newType)
                     }
                 }
+
+                onFieldRenamed: (fieldIndex, newName) => {
+                    if (canvasRoot.tablesModel) {
+                        canvasRoot.tablesModel.setFieldName(cardItem.currentTableIndex, fieldIndex, newName)
+                    }
+                }
             }
         }
 
