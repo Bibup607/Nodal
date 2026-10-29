@@ -102,6 +102,7 @@ Popup {
             font.pixelSize: 11
             maximumLength: 40
             selectByMouse: true
+            validator: RegularExpressionValidator { regularExpression: /[^\\\/:*?"<>|]*/ }
 
             background: Rectangle {
                 color: "#0d1117"

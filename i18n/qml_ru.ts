@@ -208,6 +208,19 @@
     </message>
 </context>
 <context>
+    <name>Main</name>
+    <message>
+        <location filename="../Main.qml" line="48"/>
+        <source>Could not open project</source>
+        <translation>Не удалось открыть проект</translation>
+    </message>
+    <message>
+        <location filename="../Main.qml" line="74"/>
+        <source>Could not create project</source>
+        <translation>Не удалось создать проект</translation>
+    </message>
+</context>
+<context>
     <name>NewProjectPopup</name>
     <message>
         <location filename="../Pages/ProjectLauncher/NewProjectPopup.qml" line="67"/>
@@ -572,6 +585,16 @@
         <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="134"/>
         <source>Don't save</source>
         <translation>Не сохранять</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="117"/>
+        <source>Save failed</source>
+        <translation>Не удалось сохранить</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="231"/>
+        <source>Export failed</source>
+        <translation>Не удалось экспортировать</translation>
     </message>
 </context>
 <context>

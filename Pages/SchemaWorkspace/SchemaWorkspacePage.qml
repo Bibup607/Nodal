@@ -60,6 +60,7 @@ Item {
     signal fileExported(string fileName, string message)
     signal backRequested()
     signal closeApproved()
+    signal errorOccurred(string text, string details)
 
     // снимок последнего сохранения сравниваем с текущим чтобы показать unsaved
     property string savedSnapshot: ""
@@ -113,7 +114,7 @@ Item {
             projectSaved(path.toString().split("/").pop())
             return true
         }
-        console.warn("save failed:", ProjectStorage.lastError)
+        errorOccurred(qsTr("Save failed"), ProjectStorage.lastError)
         return false
     }
 
@@ -227,7 +228,7 @@ Item {
                 exportPopup.close()
                 workspaceRoot.fileExported(selectedFile.toString().split("/").pop(), qsTr("SQL exported"))
             } else {
-                console.warn("export sql failed:", ProjectStorage.lastError)
+                workspaceRoot.errorOccurred(qsTr("Export failed"), ProjectStorage.lastError)
             }
         }
     }
@@ -245,7 +246,7 @@ Item {
                 if (ok)
                     workspaceRoot.fileExported(fileUrl.toString().split("/").pop(), qsTr("Image exported"))
                 else
-                    console.warn("export png failed:", fileUrl)
+                    workspaceRoot.errorOccurred(qsTr("Export failed"), fileUrl.toString().split("/").pop())
             })
         }
     }

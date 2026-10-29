@@ -45,7 +45,7 @@ Window {
     function openProject(path) {
         let data = ProjectStorage.loadProject(path)
         if (!data.tables) {
-            console.warn("open failed:", path, ProjectStorage.lastError)
+            saveNotification.showError(qsTr("Could not open project"), ProjectStorage.lastError)
             return
         }
         projectName = data.name || "untitled"
@@ -71,7 +71,7 @@ Window {
                 // сразу создаем файл в папке проектов
                 let path = ProjectStorage.newProjectFile(name)
                 if (!ProjectStorage.saveProject(path, { name: name, engine: engine, tables: [] })) {
-                    console.warn("create failed:", path, ProjectStorage.lastError)
+                    saveNotification.showError(qsTr("Could not create project"), ProjectStorage.lastError)
                     return
                 }
                 appWindow.projectName = name
@@ -94,6 +94,7 @@ Window {
             initialData: appWindow.projectData
             onProjectSaved: (fileName) => saveNotification.show(fileName)
             onFileExported: (fileName, message) => saveNotification.show(fileName, message)
+            onErrorOccurred: (text, details) => saveNotification.showError(text, details)
             onBackRequested: pageLoader.sourceComponent = launcherPage
             onCloseApproved: {
                 appWindow.forceClose = true

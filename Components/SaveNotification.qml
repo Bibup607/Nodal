@@ -24,11 +24,19 @@ Rectangle {
     property string fileName: ""
     // заголовок уведомления; пусто — «Project saved»
     property string message: ""
+    property bool isError: false
     property real offset: 10
 
     transform: Translate { y: root.offset }
 
+    // show("a.schema") — проект сохранён; show("a.sql", qsTr("SQL exported")) — свой заголовок
+    function showError(text, details) {
+        show(details, text)
+        isError = true
+    }
+
     function show(name, text) {
+        isError = false
         fileName = name
         message = text || ""
         hideAnim.stop()
@@ -56,14 +64,14 @@ Rectangle {
             Layout.preferredWidth: 24
             Layout.preferredHeight: 24
             radius: 12
-            color: "#183C35"
+            color: root.isError ? "#3D141B" : "#183C35"
 
             LineIcon {
                 anchors.centerIn: parent
                 width: 12
                 height: 12
-                pathData: "M3 8.5L6.2 11.5L13 4.5"
-                color: "#52D6A6"
+                pathData: root.isError ? "M4 4L12 12M12 4L4 12" : "M3 8.5L6.2 11.5L13 4.5"
+                color: root.isError ? "#EF4444" : "#52D6A6"
                 lineWidth: 2.67
             }
         }
