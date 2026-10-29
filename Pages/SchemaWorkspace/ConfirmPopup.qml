@@ -19,8 +19,10 @@ Popup {
     property string titleText: ""
     property string message: ""
     property string confirmText: qsTr("Continue")
+    property string altText: ""
 
     signal confirmed()
+    signal altClicked()
 
     Overlay.modal: Rectangle {
         color: "#99000000"
@@ -98,6 +100,35 @@ Popup {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: popup.close()
+                }
+            }
+
+            Rectangle {
+                visible: popup.altText !== ""
+                Layout.preferredWidth: altLabel.implicitWidth + 28
+                Layout.preferredHeight: 30
+                radius: 6
+                color: altMouse.containsMouse ? "#1b222c" : "transparent"
+                border.width: 1
+                border.color: "#252c37"
+
+                Text {
+                    id: altLabel
+                    anchors.centerIn: parent
+                    text: popup.altText
+                    color: "#cbd5e1"
+                    font.pixelSize: 12
+                }
+
+                MouseArea {
+                    id: altMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        popup.close()
+                        popup.altClicked()
+                    }
                 }
             }
 

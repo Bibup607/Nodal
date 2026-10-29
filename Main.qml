@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Window
 import QtCore
 import NodalDB
-import QWindowKit
+import QWindowKit   // безрамочное окно: Snap Layouts, изменение размера за края
 import "Pages/SchemaWorkspace"
 import "Pages/ProjectLauncher"
 import "Components"
@@ -13,15 +13,21 @@ Window {
     height: 800
     minimumWidth: 900
     minimumHeight: 560
+    // показываем окно только после настройки QWindowKit (в Component.onCompleted), иначе мелькнёт родная рамка
     visible: false
     title: "Nodal"
 
+    // QWindowKit сам убирает родную шапку Windows, но оставляет окну системные свойства:
+    // Snap Layouts, растягивание за края, тени и анимации разворачивания
     WindowAgent {
         id: frameAgent
     }
 
+    // true после frameAgent.setup — до этого шапку регистрировать нельзя
     property bool frameReady: false
 
+    // говорим агенту, где шапка и кнопки у текущей страницы
+    // вызывается при старте и при каждой смене страницы, потому что шапка у каждой страницы своя
     function registerTitleBar() {
         if (frameReady && pageLoader.item)
             pageLoader.item.setupTitleBar(frameAgent)
@@ -29,8 +35,10 @@ Window {
 
     property string projectName: ""
     property string projectEngine: ""
+    // путь и содержимое открытого файла пустые у нового проекта
     property url projectPath: ""
     property var projectData: null
+    property bool forceClose: false
 
 
     // читаем файл до перехода чтобы при ошибке остаться в лаунчере
@@ -87,6 +95,10 @@ Window {
             onProjectSaved: (fileName) => saveNotification.show(fileName)
             onFileExported: (fileName, message) => saveNotification.show(fileName, message)
             onBackRequested: pageLoader.sourceComponent = launcherPage
+            onCloseApproved: {
+                appWindow.forceClose = true
+                appWindow.close()
+            }
         }
     }
 
@@ -109,5 +121,12 @@ Window {
         appWindow.visible = true
     }
     // запоминаем выбранный язык при закрытии окна
-    onClosing: appSettings.language = Qt.uiLanguage
+    onClosing: (close) => {
+        appSettings.language = Qt.uiLanguage
+        let page = pageLoader.item
+        if (!forceClose && page && page.hasUnsavedChanges) {
+            close.accepted = false
+            page.requestClose()
+        }
+    }
 }

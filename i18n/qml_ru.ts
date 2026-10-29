@@ -558,6 +558,21 @@
         <source>Image (PNG)…</source>
         <translation>Изображение (PNG)…</translation>
     </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="131"/>
+        <source>Save changes?</source>
+        <translation>Сохранить изменения?</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="132"/>
+        <source>The project has unsaved changes.</source>
+        <translation>В проекте есть несохранённые изменения.</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="134"/>
+        <source>Don't save</source>
+        <translation>Не сохранять</translation>
+    </message>
 </context>
 <context>
     <name>TableCard</name>

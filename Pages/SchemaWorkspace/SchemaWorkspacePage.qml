@@ -5,13 +5,13 @@ import QtQuick.Window
 import QtQuick.Dialogs
 
 import NodalDB
-import QWindowKit
+import QWindowKit   // для WindowAgent.Minimize / Maximize / Close
 import "Tables"
 import "Relations"
 import "Colors"
 import "CustomButtons"
-import "SqlParser.js" as SqlParser
-import "SqlExporter.js" as SqlExporter
+import "SqlParser.js" as SqlParser       // разбор SQL-кода для импорта
+import "SqlExporter.js" as SqlExporter   // генерация SQL-кода для экспорта
 
 
 Item {
@@ -59,6 +59,7 @@ Item {
     // экспорт SQL или PNG записан в файл: Main.qml покажет уведомление
     signal fileExported(string fileName, string message)
     signal backRequested()
+    signal closeApproved()
 
     // снимок последнего сохранения сравниваем с текущим чтобы показать unsaved
     property string savedSnapshot: ""
@@ -118,6 +119,29 @@ Item {
 
     // сохраняем проект и возвращаемся в меню
     property bool leaveAfterSave: false
+    property bool closeAfterSave: false
+
+    function requestClose() {
+        closeConfirm.open()
+    }
+
+    ConfirmPopup {
+        id: closeConfirm
+        titleFont: fonts.interBold.family
+        titleText: qsTr("Save changes?")
+        message: qsTr("The project has unsaved changes.")
+        confirmText: qsTr("Save")
+        altText: qsTr("Don't save")
+        onAltClicked: workspaceRoot.closeApproved()
+        onConfirmed: {
+            if (workspaceRoot.projectPath.toString() === "") {
+                workspaceRoot.closeAfterSave = true
+                saveDialog.open()
+            } else if (workspaceRoot.writeProject(workspaceRoot.projectPath)) {
+                workspaceRoot.closeApproved()
+            }
+        }
+    }
 
     function leaveProject() {
         if (projectPath.toString() === "") {
@@ -142,11 +166,18 @@ Item {
         nameFilters: [qsTr("Nodal schema (*.schema)")]
         defaultSuffix: "schema"
         onAccepted: {
-            if (workspaceRoot.writeProject(selectedFile) && workspaceRoot.leaveAfterSave)
+            let ok = workspaceRoot.writeProject(selectedFile)
+            if (ok && workspaceRoot.leaveAfterSave)
                 workspaceRoot.backRequested()
+            if (ok && workspaceRoot.closeAfterSave)
+                workspaceRoot.closeApproved()
             workspaceRoot.leaveAfterSave = false
+            workspaceRoot.closeAfterSave = false
         }
-        onRejected: workspaceRoot.leaveAfterSave = false
+        onRejected: {
+            workspaceRoot.leaveAfterSave = false
+            workspaceRoot.closeAfterSave = false
+        }
     }
 
     // окно импорта sql кода
