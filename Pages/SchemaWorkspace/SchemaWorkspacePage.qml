@@ -277,6 +277,10 @@ Item {
     Connections {
         target: globalTablesModel
 
+        function onNameRejected(name) {
+            workspaceRoot.errorOccurred(qsTr("Name already exists"), name)
+        }
+
         function onRowsRemoved(parent, first, last) {
             workspaceCanvas.cancelRelation()
             for (let t = last; t >= first; --t) {
@@ -348,6 +352,7 @@ Item {
         if (count === 0) return 0
 
         let first = globalTablesModel.count   // индекс первой новой таблицы
+        let imported = {}
 
         // 1. таблицы: раскладываем сеткой вокруг центра экрана
         let perRow = Math.ceil(Math.sqrt(count))   // 4 таблицы → 2 в ряд, 9 → 3 в ряд
@@ -368,14 +373,16 @@ Item {
             for (let f of t.fields)
                 fields.push({ name: f.name, type: SqlTypes.normalize(f.type, dbEngine), isPk: f.isPk, isFk: false })
 
+            if (imported[t.name.toLowerCase()] === undefined)
+                imported[t.name.toLowerCase()] = globalTablesModel.count
             globalTablesModel.addImportedTable(t.name, fields, startX + col * 320, y)
             rowHeight = Math.max(rowHeight, 100 + fields.length * 30)
         }
 
         // 2. связи: по именам находим индексы таблиц и колонок
         for (let fk of parsed.foreignKeys) {
-            let fromTable = globalTablesModel.findTable(fk.fromTable, first)
-            let toTable = globalTablesModel.findTable(fk.toTable, first)
+            let fromTable = imported[fk.fromTable.toLowerCase()] ?? globalTablesModel.findTable(fk.fromTable, first)
+            let toTable = imported[fk.toTable.toLowerCase()] ?? globalTablesModel.findTable(fk.toTable, first)
             if (fromTable < 0 || toTable < 0) continue          // ссылка на таблицу, которой нет
 
             let fromField = globalTablesModel.findField(fromTable, fk.fromField)
@@ -1165,7 +1172,7 @@ Item {
                                             topPadding: 0
                                             bottomPadding: 0
                                             verticalAlignment: TextInput.AlignVCenter
-                                            maximumLength: 20
+                                            maximumLength: 64
                                             selectByMouse: true
                                             color: "#ffffff"
                                             selectionColor: "#1f4e43"

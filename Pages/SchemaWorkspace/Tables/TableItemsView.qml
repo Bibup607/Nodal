@@ -7,6 +7,35 @@ ListModel {
     // выбранная база: от неё зависят типы новых колонок
     property string dbEngine: "PostgreSQL"
 
+    signal nameRejected(string name)
+
+    function hasTableName(name, exceptIndex) {
+        for (let t = 0; t < count; ++t)
+            if (t !== exceptIndex && get(t).tableName.toLowerCase() === name.toLowerCase()) return true
+        return false
+    }
+
+    function hasFieldName(tableIndex, name, exceptIndex) {
+        let fields = get(tableIndex).fields
+        for (let i = 0; i < fields.count; ++i)
+            if (i !== exceptIndex && fields.get(i).name.toLowerCase() === name.toLowerCase()) return true
+        return false
+    }
+
+    function uniqueTableName(base) {
+        let name = base
+        for (let i = 2; hasTableName(name, -1); ++i)
+            name = base + "_" + i
+        return name
+    }
+
+    function uniqueFieldName(tableIndex, base) {
+        let name = base
+        for (let i = 2; hasFieldName(tableIndex, name, -1); ++i)
+            name = base + "_" + i
+        return name
+    }
+
     // дефолтная тестовая таблица для старта
     ListElement {
         tableName: "users"
@@ -24,7 +53,7 @@ ListModel {
     // x y необязательные без них таблицы встают лесенкой
     function addNewTable(x, y) {
             append({
-                tableName: "table_" + (count + 1),
+                tableName: uniqueTableName("table_" + (count + 1)),
                 posX: x !== undefined ? Math.round(x) : 120 + (count * 40),
                 posY: y !== undefined ? Math.round(y) : 120 + (count * 40),
                 tableColor: "#60a5fa",
@@ -79,7 +108,7 @@ ListModel {
         let table = get(tableIndex)
         if (table && table.fields) {
             table.fields.append({
-                name: "column_" + (table.fields.count + 1),
+                name: uniqueFieldName(tableIndex, "column_" + (table.fields.count + 1)),
                 type: SqlTypes.defaultColumnType(dbEngine),
                 isPk: false,
                 isFk: false
@@ -99,6 +128,10 @@ ListModel {
         if (tableIndex < 0 || tableIndex >= count) return
         let table = get(tableIndex)
         if (!table || !table.fields || fieldIndex < 0 || fieldIndex >= table.fields.count) return
+        if (hasFieldName(tableIndex, newName, fieldIndex)) {
+            nameRejected(newName)
+            return
+        }
         table.fields.setProperty(fieldIndex, "name", newName)
     }
 
@@ -111,9 +144,12 @@ ListModel {
 
     // фунция синхронизации смены имени таблицы с сайдбаром
     function setTableName(tableIndex, newName) {
-        if (tableIndex >= 0 && tableIndex < count) {
-            setProperty(tableIndex, "tableName", newName)
+        if (tableIndex < 0 || tableIndex >= count) return
+        if (hasTableName(newName, tableIndex)) {
+            nameRejected(newName)
+            return
         }
+        setProperty(tableIndex, "tableName", newName)
     }
 
     // снимок таблицы обычным объектом для буфера обмена (null если индекса нет)
@@ -143,7 +179,7 @@ ListModel {
     function appendTable(data, offset) {
         if (!data) return -1
         append({
-            tableName: data.tableName + "_copy",
+            tableName: uniqueTableName(data.tableName + "_copy"),
             posX: data.posX + offset,
             posY: data.posY + offset,
             tableColor: data.tableColor,
@@ -213,7 +249,7 @@ ListModel {
     // добавить готовую таблицу с колонками (fields — массив объектов {name, type, isPk, isFk})
     function addImportedTable(name, fields, x, y) {
         append({
-            tableName: name,
+            tableName: uniqueTableName(name),
             posX: Math.round(x),
             posY: Math.round(y),
             tableColor: "#60a5fa",

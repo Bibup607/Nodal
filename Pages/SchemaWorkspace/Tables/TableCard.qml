@@ -119,8 +119,8 @@ Rectangle {
             TextField {
                 placeholderText: model.tableName
                 placeholderTextColor: "#64748b"
-                maximumLength: 20
-                text: ""
+                maximumLength: 64
+                text: model.tableName
                 color: "#ffffff"
                 font.bold: true
                 font.pixelSize: 14
@@ -136,10 +136,10 @@ Rectangle {
                 // сохраняет введённое имя при нажатии ентер или потере фокуса.
                 onEditingFinished: {
                     focus = false
-                    if (text.trim() !== "") {
-                        globalTablesModel.setTableName(index, text.trim())
-                        root.nameChanged(text.trim())
-                    }
+                    let newName = text.trim()
+                    if (newName !== "" && newName !== model.tableName)
+                        root.nameChanged(newName)
+                    text = Qt.binding(() => model.tableName)
                 }
             }
 

@@ -596,6 +596,11 @@
         <source>Export failed</source>
         <translation>Не удалось экспортировать</translation>
     </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/SchemaWorkspacePage.qml" line="281"/>
+        <source>Name already exists</source>
+        <translation>Такое имя уже есть</translation>
+    </message>
 </context>
 <context>
     <name>TableCard</name>

@@ -14,7 +14,7 @@ Rectangle {
     property int recentCount: 0
     // код текущего языка ru или en
     property string language: "en"
-    property string versionText: "Qt 6.11.1 · local workspace · v1.0.1"
+    property string versionText: "Qt 6.11.1 · local workspace · v1.1.0"
 
     signal recentRequested()
     signal openFileRequested()
