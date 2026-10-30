@@ -30,6 +30,7 @@ endif()
 
 # SqlTypes.qml — синглтон со списками типов для каждой базы
 set_source_files_properties(SqlTypes.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+set_source_files_properties(Hotkeys.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 qt_add_executable(appNodalDB
     main.cpp
@@ -45,6 +46,7 @@ qt_add_qml_module(appNodalDB
     QML_FILES
         Main.qml
         Fonts.qml
+        Hotkeys.qml
         LineIcon.qml
         SqlTypes.qml
         Components/SaveNotification.qml

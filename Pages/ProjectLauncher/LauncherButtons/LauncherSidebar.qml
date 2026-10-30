@@ -176,7 +176,11 @@ Rectangle {
         width: 320
         modal: true
         padding: 16
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        closePolicy: recordingId !== "" ? Popup.CloseOnPressOutside : Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        property string recordingId: ""
+
+        onClosed: recordingId = ""
 
         Overlay.modal: Rectangle {
             color: "#80000000"
@@ -199,30 +203,43 @@ Rectangle {
                 font.bold: true
             }
 
+            Text {
+                Layout.fillWidth: true
+                text: qsTr("Click a shortcut to change it.")
+                color: "#7d8796"
+                font.pixelSize: 11
+                wrapMode: Text.WordWrap
+            }
+
             Repeater {
                 model: [
-                    { keys: "Ctrl+Shift+Enter", action: qsTr("Add table") },
-                    { keys: "Ctrl+Enter", action: qsTr("Add column") },
-                    { keys: "F2", action: qsTr("Rename table") },
-                    { keys: "Ctrl+Alt+M", action: qsTr("Add comment") },
-                    { keys: "Ctrl+D", action: qsTr("Duplicate table") },
+                    { id: "addTable", action: qsTr("Add table") },
+                    { id: "addColumn", action: qsTr("Add column") },
+                    { id: "rename", action: qsTr("Rename table") },
+                    { id: "comment", action: qsTr("Add comment") },
+                    { id: "duplicate", action: qsTr("Duplicate table") },
                     { keys: "Ctrl+C / Ctrl+V", action: qsTr("Copy / paste table") },
                     { keys: "Ctrl+X", action: qsTr("Cut table") },
-                    { keys: "Delete", action: qsTr("Delete table") },
+                    { id: "deleteTable", action: qsTr("Delete table") },
                     { keys: "Esc", action: qsTr("Deselect / cancel relation") },
-                    { keys: "Ctrl+/", action: qsTr("Search tables") },
-                    { keys: "Ctrl+B", action: qsTr("Toggle left panel") },
+                    { id: "search", action: qsTr("Search tables") },
+                    { id: "togglePanel", action: qsTr("Toggle left panel") },
+                    { id: "save", action: qsTr("Save project") },
+                    { id: "selectTool", action: qsTr("Select tool") },
+                    { id: "panTool", action: qsTr("Pan tool") },
                     { keys: "= / -", action: qsTr("Zoom in / out") },
                     { keys: qsTr("Wheel"), action: qsTr("Pan canvas") },
                     { keys: "Ctrl + " + qsTr("Wheel"), action: qsTr("Zoom canvas") },
                     { keys: qsTr("Middle button"), action: qsTr("Pan canvas") },
-                    { keys: "V / H", action: qsTr("Select / pan tool") },
                     { keys: qsTr("Right click"), action: qsTr("Canvas menu") },
                     { keys: "Enter", action: qsTr("Save field") }
                 ]
 
                 delegate: RowLayout {
+                    id: hotkeyRow
                     required property var modelData
+                    readonly property bool editable: modelData.id !== undefined
+                    readonly property bool recording: editable && hotkeysPopup.recordingId === modelData.id
                     Layout.fillWidth: true
                     spacing: 10
 
@@ -239,18 +256,64 @@ Rectangle {
                         implicitHeight: 20
                         radius: 4
                         color: "#0d1117"
-                        border.color: "#252c37"
+                        border.color: hotkeyRow.recording ? "#52d6a6" : (keyMouse.containsMouse ? "#364152" : "#252c37")
                         border.width: 1
 
                         Text {
                             id: keyText
                             anchors.centerIn: parent
-                            text: modelData.keys
+                            text: hotkeyRow.recording ? qsTr("Press keys…")
+                                  : (hotkeyRow.editable ? (Hotkeys.keys[modelData.id] || "—") : modelData.keys)
                             color: "#52d6a6"
                             font.family: fonts.jetBrainsMB.family
                             font.pixelSize: 10
                         }
+
+                        MouseArea {
+                            id: keyMouse
+                            anchors.fill: parent
+                            enabled: hotkeyRow.editable
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                hotkeysPopup.recordingId = hotkeyRow.modelData.id
+                                keyCatcher.forceActiveFocus()
+                            }
+                        }
+
+                        Item {
+                            id: keyCatcher
+
+                            Keys.onShortcutOverride: (event) => event.accepted = hotkeyRow.recording
+                            Keys.onPressed: (event) => {
+                                if (!hotkeyRow.recording) return
+                                event.accepted = true
+                                if (event.key === Qt.Key_Escape) {
+                                    hotkeysPopup.recordingId = ""
+                                    return
+                                }
+                                if ([Qt.Key_Control, Qt.Key_Shift, Qt.Key_Alt, Qt.Key_Meta].includes(event.key)) return
+                                Hotkeys.set(hotkeyRow.modelData.id, ProjectStorage.keySequence(event.key, event.modifiers))
+                                hotkeysPopup.recordingId = ""
+                            }
+                            onActiveFocusChanged: if (!activeFocus && hotkeyRow.recording) hotkeysPopup.recordingId = ""
+                        }
                     }
+                }
+            }
+
+            Text {
+                Layout.topMargin: 4
+                text: qsTr("Reset to defaults")
+                color: resetHover.hovered ? "#52d6a6" : "#7d8796"
+                font.pixelSize: 11
+
+                HoverHandler {
+                    id: resetHover
+                    cursorShape: Qt.PointingHandCursor
+                }
+                TapHandler {
+                    onTapped: Hotkeys.reset()
                 }
             }
         }

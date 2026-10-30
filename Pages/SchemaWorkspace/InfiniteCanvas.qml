@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import NodalDB
 import "Tables"
 import "Relations"
 
@@ -397,7 +398,7 @@ Item {
 
         Action {
             text: qsTr("Add table")
-            property string hint: "Ctrl+Shift+Enter"
+            property string hint: Hotkeys.keys.addTable
             onTriggered: canvasRoot.addTableRequested(canvasRoot.menuPoint.x, canvasRoot.menuPoint.y)
         }
 

@@ -8,6 +8,7 @@
 #include <QFileInfo>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QKeySequence>
 
 ProjectStorage::ProjectStorage(QObject *parent)
     : QObject(parent)
@@ -126,6 +127,12 @@ bool ProjectStorage::saveTextFile(const QUrl &fileUrl, const QString &text)
 
     setLastError(QString());
     return true;
+}
+
+QString ProjectStorage::keySequence(int key, int modifiers) const
+{
+    return QKeySequence(QKeyCombination(Qt::KeyboardModifiers(modifiers), Qt::Key(key)))
+        .toString(QKeySequence::PortableText);
 }
 
 void ProjectStorage::setLastError(const QString &error)

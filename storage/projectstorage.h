@@ -34,6 +34,7 @@ public:
     Q_INVOKABLE bool saveTextFile(const QUrl &fileUrl, const QString &text);
     // file:///C:/a.png → C:/a.png (нужно для saveToFile у картинки)
     Q_INVOKABLE QString toLocalFile(const QUrl &fileUrl) const { return fileUrl.toLocalFile(); }
+    Q_INVOKABLE QString keySequence(int key, int modifiers) const;
 
 signals:
     void lastErrorChanged();

@@ -454,41 +454,41 @@ Item {
     readonly property bool hasSelection: workspaceCanvas.selectedTableIndex >= 0
 
     Shortcut {
-        sequences: ["Ctrl+Shift+Return", "Ctrl+Shift+Enter"]
+        sequence: Hotkeys.keys.addTable
         onActivated: workspaceRoot.addTableAtView()
     }
 
     Shortcut {
-        sequences: ["Ctrl+Return", "Ctrl+Enter"]
+        sequence: Hotkeys.keys.addColumn
         enabled: workspaceRoot.targetTableIndex >= 0
         onActivated: globalTablesModel.addColumnToTable(workspaceRoot.targetTableIndex)
     }
 
     Shortcut {
-        sequence: "Ctrl+D"
+        sequence: Hotkeys.keys.duplicate
         enabled: workspaceRoot.hasSelection
         onActivated: workspaceCanvas.selectedTableIndex = globalTablesModel.duplicateTable(workspaceCanvas.selectedTableIndex)
     }
 
     Shortcut {
-        sequence: StandardKey.Save
+        sequence: Hotkeys.keys.save
         onActivated: workspaceRoot.saveProject()
     }
 
     Shortcut {
-        sequence: "F2"
+        sequence: Hotkeys.keys.rename
         enabled: workspaceRoot.hasSelection && !workspaceRoot.isTyping
         onActivated: workspaceRoot.renameTable(workspaceCanvas.selectedTableIndex)
     }
 
     Shortcut {
-        sequence: "Ctrl+Alt+M"
+        sequence: Hotkeys.keys.comment
         enabled: workspaceRoot.hasSelection && !workspaceRoot.isTyping
         onActivated: workspaceRoot.commentTable(workspaceCanvas.selectedTableIndex)
     }
 
     Shortcut {
-        sequences: [StandardKey.Delete, "Backspace"]
+        sequence: Hotkeys.keys.deleteTable
         enabled: workspaceRoot.hasSelection && !workspaceRoot.isTyping
         onActivated: workspaceRoot.deleteTable(workspaceCanvas.selectedTableIndex)
     }
@@ -522,25 +522,25 @@ Item {
     }
 
     Shortcut {
-        sequence: "V"
+        sequence: Hotkeys.keys.selectTool
         enabled: !workspaceRoot.isTyping
         onActivated: workspaceCanvas.tool = "select"
     }
 
     Shortcut {
-        sequence: "H"
+        sequence: Hotkeys.keys.panTool
         enabled: !workspaceRoot.isTyping
         onActivated: workspaceCanvas.tool = "pan"
     }
 
     Shortcut {
-        sequence: "Ctrl+B"
+        sequence: Hotkeys.keys.togglePanel
         onActivated: sidebarPanel.visible = !sidebarPanel.visible
     }
 
 
     Shortcut {
-        sequences: ["Ctrl+/", StandardKey.Find]
+        sequences: [Hotkeys.keys.search, StandardKey.Find]
         onActivated: {
             sidebarPanel.visible = true
             searchField.forceActiveFocus()
@@ -1343,31 +1343,31 @@ Item {
 
                                                 Action {
                                                     text: qsTr("Rename table")
-                                                    property string hint: "F2"
+                                                    property string hint: Hotkeys.keys.rename
                                                     onTriggered: tableAction.renameRequested = true
                                                 }
 
                                                 Action {
                                                     text: qsTr("Add column")
-                                                    property string hint: "Ctrl+Enter"
+                                                    property string hint: Hotkeys.keys.addColumn
                                                     onTriggered: globalTablesModel.addColumnToTable(realIndex)
                                                 }
 
                                                 Action {
                                                     text: qsTr("Add comment")
-                                                    property string hint: "Ctrl+Alt+M"
+                                                    property string hint: Hotkeys.keys.comment
                                                     onTriggered: tableAction.commentRequested = true
                                                 }
 
                                                 Action {
                                                     text: qsTr("Duplicate table")
-                                                    property string hint: "Ctrl+D"
+                                                    property string hint: Hotkeys.keys.duplicate
                                                     onTriggered: globalTablesModel.duplicateTable(realIndex)
                                                 }
 
                                                 Action {
                                                     text: qsTr("Delete table")
-                                                    property string hint: "Del"
+                                                    property string hint: Hotkeys.keys.deleteTable
                                                     property bool isDestructive: true
                                                     onTriggered: workspaceRoot.deleteTable(realIndex)
                                                 }
