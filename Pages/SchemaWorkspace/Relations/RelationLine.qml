@@ -21,6 +21,29 @@ Item {
 
     signal removeRequested()
     signal colorChangeRequested(string color)
+    signal typeChangeRequested(string type)
+    signal reverseRequested()
+
+    component RelationItem: MenuItem {
+        id: relItem
+        property bool current: false
+        implicitHeight: 28
+
+        contentItem: Text {
+            text: relItem.text
+            color: relItem.current || relItem.highlighted ? "#52d6a6" : "#a1a9b7"
+            font.family: "Monospace"
+            font.pixelSize: 10
+            font.bold: relItem.current
+            verticalAlignment: Text.AlignVCenter
+            leftPadding: 6
+        }
+
+        background: Rectangle {
+            radius: 4
+            color: relItem.highlighted ? "#1b222c" : "transparent"
+        }
+    }
 
     visible: fromCard !== null && (isPreview || toCard !== null)
 
@@ -186,6 +209,29 @@ Item {
                                                                     : (root.fromCard ? root.fromCard.tableColor : "#52d6a6"))
                     }
                 }
+            }
+
+            RelationItem {
+                text: "1:1"
+                current: root.relType === "1:1"
+                onTriggered: root.typeChangeRequested("1:1")
+            }
+
+            RelationItem {
+                text: "1:M"
+                current: root.relType === "1:M"
+                onTriggered: root.typeChangeRequested("1:M")
+            }
+
+            RelationItem {
+                text: "M:1"
+                current: root.relType === "M:1"
+                onTriggered: root.typeChangeRequested("M:1")
+            }
+
+            RelationItem {
+                text: qsTr("Reverse")
+                onTriggered: root.reverseRequested()
             }
 
             MenuItem {

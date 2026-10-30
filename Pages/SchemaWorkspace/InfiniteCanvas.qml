@@ -66,6 +66,16 @@ Item {
         pendingType = ""
     }
 
+    function updateRelation(relationIndex, change) {
+        let oldFk = relationsModel.fkEnd(relationIndex)
+        change()
+        let newFk = relationsModel.fkEnd(relationIndex)
+        if (oldFk.table === newFk.table && oldFk.field === newFk.field) return
+        tablesModel.setFieldFk(newFk.table, newFk.field, true)
+        if (!relationsModel.isFkUsed(oldFk.table, oldFk.field))
+            tablesModel.setFieldFk(oldFk.table, oldFk.field, false)
+    }
+
     function removeRelation(relationIndex) {
         let fk = relationsModel.fkEnd(relationIndex)
         relationsModel.remove(relationIndex)
@@ -220,6 +230,8 @@ Item {
 
                 onRemoveRequested: canvasRoot.removeRelation(index)
                 onColorChangeRequested: (color) => canvasRoot.relationsModel.setRelationColor(index, color)
+                onTypeChangeRequested: (type) => canvasRoot.updateRelation(index, () => canvasRoot.relationsModel.setRelationType(index, type))
+                onReverseRequested: canvasRoot.updateRelation(index, () => canvasRoot.relationsModel.reverseRelation(index))
             }
         }
 

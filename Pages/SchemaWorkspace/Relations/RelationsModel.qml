@@ -21,6 +21,22 @@ ListModel {
         return true
     }
 
+    function setRelationType(i, type) {
+        if (i < 0 || i >= count) return
+        setProperty(i, "relType", type)
+    }
+
+    function reverseRelation(i) {
+        if (i < 0 || i >= count) return
+        let r = get(i)
+        let fromTable = r.fromTable
+        let fromField = r.fromField
+        setProperty(i, "fromTable", r.toTable)
+        setProperty(i, "fromField", r.toField)
+        setProperty(i, "toTable", fromTable)
+        setProperty(i, "toField", fromField)
+    }
+
     function setRelationColor(i, color) {
         if (i < 0 || i >= count) return
         setProperty(i, "relColor", color)

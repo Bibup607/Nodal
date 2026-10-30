@@ -239,6 +239,36 @@
         <source>Canvas menu</source>
         <translation>Меню холста</translation>
     </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml" line="208"/>
+        <source>Click a shortcut to change it.</source>
+        <translation>Нажмите на сочетание, чтобы изменить его.</translation>
+    </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml" line="227"/>
+        <source>Save project</source>
+        <translation>Сохранить проект</translation>
+    </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml" line="228"/>
+        <source>Select tool</source>
+        <translation>Инструмент «Курсор»</translation>
+    </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml" line="229"/>
+        <source>Pan tool</source>
+        <translation>Инструмент «Рука»</translation>
+    </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml" line="265"/>
+        <source>Press keys…</source>
+        <translation>Нажмите клавиши…</translation>
+    </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml" line="307"/>
+        <source>Reset to defaults</source>
+        <translation>Сбросить по умолчанию</translation>
+    </message>
 </context>
 <context>
     <name>Main</name>
@@ -424,6 +454,11 @@
         <location filename="../Pages/SchemaWorkspace/Relations/RelationLine.qml" line="216"/>
         <source>Del Relation</source>
         <translation>Удалить связь</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/Relations/RelationLine.qml" line="233"/>
+        <source>Reverse</source>
+        <translation>Развернуть</translation>
     </message>
 </context>
 <context>
