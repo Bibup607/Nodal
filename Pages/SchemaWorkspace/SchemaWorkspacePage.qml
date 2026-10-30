@@ -522,6 +522,18 @@ Item {
     }
 
     Shortcut {
+        sequence: "V"
+        enabled: !workspaceRoot.isTyping
+        onActivated: workspaceCanvas.tool = "select"
+    }
+
+    Shortcut {
+        sequence: "H"
+        enabled: !workspaceRoot.isTyping
+        onActivated: workspaceCanvas.tool = "pan"
+    }
+
+    Shortcut {
         sequence: "Ctrl+B"
         onActivated: sidebarPanel.visible = !sidebarPanel.visible
     }
@@ -1414,6 +1426,14 @@ Item {
                     relationsModel: globalRelationsModel
                     colorStore: customColorStore
                     dbEngine: workspaceRoot.dbEngine
+                    canPaste: workspaceRoot.tableClipboard !== null
+
+                    onAddTableRequested: (x, y) => {
+                        globalTablesModel.addNewTable(x, y)
+                        workspaceCanvas.selectedTableIndex = globalTablesModel.count - 1
+                    }
+                    onPasteRequested: workspaceRoot.pasteTable()
+                    onImportRequested: importPopup.open()
 
                     Rectangle {
                         id: tableCard

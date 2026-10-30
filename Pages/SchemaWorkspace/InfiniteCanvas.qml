@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import "Tables"
 import "Relations"
 
@@ -12,6 +13,22 @@ Item {
     property var colorStore: null
     property string dbEngine: "PostgreSQL"   // нужна карточкам для меню типов
     property int selectedTableIndex: -1
+    property bool canPaste: false
+
+    signal addTableRequested(real x, real y)
+    signal pasteRequested()
+    signal importRequested()
+
+    property point menuPoint
+
+    function tableAt(x, y) {
+        for (let i = 0; i < tablesRepeater.count; ++i) {
+            let card = tablesRepeater.itemAt(i)
+            if (card && x >= card.x && x <= card.x + card.width && y >= card.y && y <= card.y + card.height)
+                return i
+        }
+        return -1
+    }
 
     property bool isConnecting: false
     property int pendingTable: -1
@@ -320,6 +337,83 @@ Item {
         onTapped: canvasRoot.forceActiveFocus()
     }
 
+    TapHandler {
+        acceptedButtons: Qt.RightButton
+        onTapped: (eventPoint) => {
+            let wx = (eventPoint.position.x - canvasRoot.panX) / canvasRoot.zoom
+            let wy = (eventPoint.position.y - canvasRoot.panY) / canvasRoot.zoom
+            if (canvasRoot.tableAt(wx, wy) !== -1) return
+            canvasRoot.cancelRelation()
+            canvasRoot.menuPoint = Qt.point(wx, wy)
+            canvasMenu.popup()
+        }
+    }
+
+    Menu {
+        id: canvasMenu
+        width: 210
+        topPadding: 4
+        bottomPadding: 4
+        leftPadding: 0
+        rightPadding: 0
+
+        background: Rectangle {
+            color: "#161B22"
+            border.color: "#252C37"
+            border.width: 1
+            radius: 6
+        }
+
+        delegate: MenuItem {
+            id: canvasItem
+            implicitHeight: 28
+            leftPadding: 12
+            rightPadding: 12
+            indicator: null
+            arrow: null
+
+            contentItem: Item {
+                Text {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: canvasItem.text
+                    font.pixelSize: 12
+                    color: !canvasItem.enabled ? "#4b5563" : (canvasItem.highlighted ? "#E6EDF3" : "#A1A9B7")
+                }
+
+                Text {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: canvasItem.action && canvasItem.action.hint ? canvasItem.action.hint : ""
+                    font.pixelSize: 10
+                    color: "#64748b"
+                }
+            }
+
+            background: Rectangle {
+                color: canvasItem.highlighted && canvasItem.enabled ? "#1B222C" : "transparent"
+            }
+        }
+
+        Action {
+            text: qsTr("Add table")
+            property string hint: "Ctrl+Shift+Enter"
+            onTriggered: canvasRoot.addTableRequested(canvasRoot.menuPoint.x, canvasRoot.menuPoint.y)
+        }
+
+        Action {
+            text: qsTr("Paste table")
+            property string hint: "Ctrl+V"
+            enabled: canvasRoot.canPaste
+            onTriggered: canvasRoot.pasteRequested()
+        }
+
+        Action {
+            text: qsTr("Import SQL…")
+            onTriggered: canvasRoot.importRequested()
+        }
+    }
+
     Shortcut {
         sequence: "Esc"
         enabled: canvasRoot.isConnecting
@@ -365,6 +459,15 @@ Item {
         id: zoomWheelHandler
         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
 
-        onWheel: (event) => canvasRoot.zoomAt(event.angleDelta.y > 0 ? 1.1 : 0.9, event.x, event.y)
+        onWheel: (event) => {
+            if (event.modifiers & Qt.ControlModifier) {
+                canvasRoot.zoomAt(Math.pow(1.0015, event.angleDelta.y), event.x, event.y)
+            } else if (event.modifiers & Qt.ShiftModifier) {
+                canvasRoot.panX += event.angleDelta.y / 2
+            } else {
+                canvasRoot.panX += event.angleDelta.x / 2
+                canvasRoot.panY += event.angleDelta.y / 2
+            }
+        }
     }
 }

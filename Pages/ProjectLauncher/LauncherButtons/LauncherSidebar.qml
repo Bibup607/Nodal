@@ -14,7 +14,7 @@ Rectangle {
     property int recentCount: 0
     // код текущего языка ru или en
     property string language: "en"
-    property string versionText: "Qt 6.11.1 · local workspace · v1.1.0"
+    property string versionText: "Qt 6.11.1 · local workspace · v1.0.0"
 
     signal recentRequested()
     signal openFileRequested()
@@ -213,8 +213,11 @@ Rectangle {
                     { keys: "Ctrl+/", action: qsTr("Search tables") },
                     { keys: "Ctrl+B", action: qsTr("Toggle left panel") },
                     { keys: "= / -", action: qsTr("Zoom in / out") },
-                    { keys: qsTr("Wheel"), action: qsTr("Zoom canvas") },
+                    { keys: qsTr("Wheel"), action: qsTr("Pan canvas") },
+                    { keys: "Ctrl + " + qsTr("Wheel"), action: qsTr("Zoom canvas") },
                     { keys: qsTr("Middle button"), action: qsTr("Pan canvas") },
+                    { keys: "V / H", action: qsTr("Select / pan tool") },
+                    { keys: qsTr("Right click"), action: qsTr("Canvas menu") },
                     { keys: "Enter", action: qsTr("Save field") }
                 ]
 

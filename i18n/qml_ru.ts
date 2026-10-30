@@ -79,6 +79,24 @@
     </message>
 </context>
 <context>
+    <name>InfiniteCanvas</name>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/InfiniteCanvas.qml" line="399"/>
+        <source>Add table</source>
+        <translation>Добавить таблицу</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/InfiniteCanvas.qml" line="405"/>
+        <source>Paste table</source>
+        <translation>Вставить таблицу</translation>
+    </message>
+    <message>
+        <location filename="../Pages/SchemaWorkspace/InfiniteCanvas.qml" line="412"/>
+        <source>Import SQL…</source>
+        <translation>Импорт SQL…</translation>
+    </message>
+</context>
+<context>
     <name>LauncherSidebar</name>
     <message>
         <location filename="../Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml" line="61"/>
@@ -205,6 +223,21 @@
         <location filename="../Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml" line="218"/>
         <source>Save field</source>
         <translation>Сохранить поле</translation>
+    </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml" line="219"/>
+        <source>Select / pan tool</source>
+        <translation>Инструмент: курсор / рука</translation>
+    </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml" line="220"/>
+        <source>Right click</source>
+        <translation>Правый клик</translation>
+    </message>
+    <message>
+        <location filename="../Pages/ProjectLauncher/LauncherButtons/LauncherSidebar.qml" line="220"/>
+        <source>Canvas menu</source>
+        <translation>Меню холста</translation>
     </message>
 </context>
 <context>
