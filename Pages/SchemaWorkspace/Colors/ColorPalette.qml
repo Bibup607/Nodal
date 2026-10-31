@@ -2,7 +2,7 @@ import QtQuick
 
 //  базовые свои цвета пользователя и кнопка + для создания нового
 Grid {
-    id: palette
+    id: paletteRoot
     columns: 4
     spacing: 6
 
@@ -16,14 +16,14 @@ Grid {
     readonly property var allColors: colorStore ? colorStore.baseColors.concat(colorStore.colors) : []
 
     Repeater {
-        model: palette.allColors
+        model: paletteRoot.allColors
 
         delegate: Rectangle {
             required property string modelData
             required property int index
 
             // свои цвета идут после базовых, их можно удалить правым кликом
-            readonly property bool isCustom: index >= palette.baseColors.length
+            readonly property bool isCustom: index >= paletteRoot.baseColors.length
 
             width: 18
             height: 18
@@ -31,7 +31,7 @@ Grid {
             color: modelData
             // обводка при наведении и у текущего цвета
             border.width: swatchMouse.containsMouse
-                          || (palette.currentColor !== "" && Qt.colorEqual(modelData, palette.currentColor)) ? 2 : 0
+                          || (paletteRoot.currentColor !== "" && Qt.colorEqual(modelData, paletteRoot.currentColor)) ? 2 : 0
             border.color: "#ffffff"
 
             MouseArea {
@@ -43,9 +43,9 @@ Grid {
                 onClicked: (mouse) => {
                     if (mouse.button === Qt.RightButton) {
                         if (parent.isCustom)
-                            palette.colorStore.remove(parent.index - palette.baseColors.length)
+                            paletteRoot.colorStore.remove(parent.index - paletteRoot.baseColors.length)
                     } else {
-                        palette.colorSelected(parent.modelData)
+                        paletteRoot.colorSelected(parent.modelData)
                     }
                 }
             }
@@ -74,7 +74,7 @@ Grid {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-            onClicked: palette.addRequested()
+            onClicked: paletteRoot.addRequested()
         }
     }
 }

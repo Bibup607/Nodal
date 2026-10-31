@@ -180,14 +180,13 @@ Rectangle {
                         text: qsTr("Add Column")
                         height: 28
                         // подсказка клавиш справа
-                        property string hint: "Ctrl+Enter"
+                        property string hint: Hotkeys.keys.addColumn
 
                         onTriggered: {
                             root.requestAddColumn()
                         }
 
                         background: Rectangle {
-                            implicitWidth: parent.width
                             implicitHeight: 28
                             radius: 4
                             color: addColumnItem.down ? "#1f4e43" : (addColumnItem.hovered ? "#183c35" : "transparent")
@@ -225,14 +224,13 @@ Rectangle {
                         id: delTable
                         text: qsTr("Del Table")
                         height: 28
-                        property string hint: "Del"
+                        property string hint: Hotkeys.keys.deleteTable
 
                         onTriggered: {
                             root.removeTable()
                         }
 
                         background: Rectangle {
-                            implicitWidth: parent.width
                             implicitHeight: 28
                             radius: 4
                             color: delTable.down ? "#541c24" : (delTable.hovered ? "#3d141b" : "transparent")

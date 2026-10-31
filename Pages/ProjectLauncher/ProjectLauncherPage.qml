@@ -17,8 +17,8 @@ Item {
     signal openProjectRequested(string path)
 
     // горячие клавиши работают пока страница видна
-    Shortcut { sequence: StandardKey.New;  enabled: page.visible; onActivated: newProjectPopup.open() }
-    Shortcut { sequence: StandardKey.Open; enabled: page.visible; onActivated: openDialog.open() }
+    Shortcut { sequences: [StandardKey.New];  enabled: page.visible; onActivated: newProjectPopup.open() }
+    Shortcut { sequences: [StandardKey.Open]; enabled: page.visible; onActivated: openDialog.open() }
 
     FileDialog {
         id: openDialog
@@ -27,7 +27,7 @@ Item {
         nameFilters: [qsTr("Nodal schema (*.schema)")]
         onAccepted: page.openProjectRequested(selectedFile)
     }
-    Shortcut { sequence: StandardKey.Find; enabled: page.visible; onActivated: searchField.forceActiveFocus() }
+    Shortcut { sequences: [StandardKey.Find]; enabled: page.visible; onActivated: searchField.forceActiveFocus() }
 
 
     ListModel {

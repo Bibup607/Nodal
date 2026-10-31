@@ -494,13 +494,13 @@ Item {
     }
 
     Shortcut {
-        sequence: StandardKey.Copy
+        sequences: [StandardKey.Copy]
         enabled: workspaceRoot.hasSelection && !workspaceRoot.isTyping
         onActivated: workspaceRoot.copySelected()
     }
 
     Shortcut {
-        sequence: StandardKey.Cut
+        sequences: [StandardKey.Cut]
         enabled: workspaceRoot.hasSelection && !workspaceRoot.isTyping
         onActivated: {
             workspaceRoot.copySelected()
@@ -509,7 +509,7 @@ Item {
     }
 
     Shortcut {
-        sequence: StandardKey.Paste
+        sequences: [StandardKey.Paste]
         enabled: workspaceRoot.tableClipboard !== null && !workspaceRoot.isTyping
         onActivated: workspaceRoot.pasteTable()
     }
